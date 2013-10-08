@@ -1,4 +1,4 @@
-     
+
 %{
 // flex lexicalAnalizer.l 
 // gcc lex.yy.c -lfl -o lexAnalizer	
@@ -22,6 +22,7 @@ alphanumeric	{character}|{digit}
 exponent_pos    E"+"?{numeral}
 exponent_neg    E"-"{numeral}
 exponent 		{exponent_neg}|{exponent_pos}
+
 
 %%
 	/* Rules Section */
