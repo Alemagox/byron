@@ -1,4 +1,3 @@
-
 %{
 // flex lexicalAnalizer.l 
 // gcc lex.yy.c -lfl -o lexAnalizer	
