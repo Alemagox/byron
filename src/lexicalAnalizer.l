@@ -1,5 +1,10 @@
-/* Defining varaibles */
+     
 %{
+// flex lexicalAnalizer.l 
+// gcc lex.yy.c -lfl -o lexAnalizer	
+
+
+/* Defining variables */
 void error(char*); //Function to display erro r 
 
 int line=1;
@@ -17,82 +22,82 @@ exponent_int	E"+"?{numeral}
 exponent 			{exponent_int}|E"-"{numeral}
 
 %%
-/* Rules Section */
-/* Reserverd words*/
-and				{return "AND";}
-array			{return "ARRAY";}
-begin			{return "BEGIN";}
-body			{return "BODY";}
-case			{return "CASE";}
-constant		{return "CONSTANT";}
-do 				{return "DO";}
-else			{return "ELSE";}
-elsif			{return "ELSIF";}
-end				{return "END";}
-function 		{return "FUNCTION";}
-if 				{return "IF";}
-is				{return "IS";}
-loop			{return "LOOP";}
-not 			{return "NOT";}
-null			{return "NULL";}
-of				{return "OF";}
-or 				{return "OR";}
-others			{return "OTHERS";}
-out				{return "OUT";}
-procedure		{return "PROCEDURE";}
-record			{return "RECORD";}
-return			{return "RETURN";}
-then			{return "THEN";}
-type			{return "TYPE";}
-when			{return "WHEN";}
-while			{return "WHILE";}
+%{	/* Rules Section */
+	/* Reserverd words*/%}
+and				{printf("AND");}
+array			{printf("ARRAY");}
+begin			{printf("BEGIN");}
+body			{printf("BODY");}
+case			{printf("CASE");}
+constant		{printf("CONSTANT");}
+do 				{printf("DO");}
+else			{printf("ELSE");}
+elsif			{printf("ELSIF");}
+end				{printf("END");}
+function 		{printf("FUNCTION");}
+if 				{printf("IF");}
+is				{printf("IS");}
+loop			{printf("LOOP");}
+not 			{printf("NOT");}
+null			{printf("NULL");}
+of				{printf("OF");}
+or 				{printf("OR");}
+others			{printf("OTHERS");}
+out				{printf("OUT");}
+procedure		{printf("PROCEDURE");}
+record			{printf("RECORD");}
+return			{printf("RETURN");}
+then			{printf( "THEN");}
+type			{printf( "TYPE");}
+when			{printf( "WHEN");}
+while			{printf( "WHILE");}
  
-/* Basic data types */
-Integer 	{return "INTEGER_TYPE";}	
-Real		{return "REAL_TYPE"}
-Character	{return "CHARACTER_TYPE";}
-Boolean		{return "BOOLEAN_TYPE";}
+%{/* Basic data types */%}
+Integer 	{printf( "INTEGER_TYPE");}	
+Real		{printf( "REAL_TYPE"}
+Character	{printf( "CHARACTER_TYPE");}
+Boolean		{printf( "BOOLEAN_TYPE");}
 
-/* Data literals */
-{numeral}{exponent_int}?			{return "INTEGER_LITERAL";}
-{numeral}"."{numeral}{exponent}?	{return "FLOAT_LITERAL";}
-\'.\'								{return "CHARACTER_LITERAL";} 	//'
-\"{alphanumeric}*\\"    			{return "STRING_LITERAL"}   	//"
-TRUE								{return "BOOLEAN_LITERAL";}
-FALSE								{return "BOOLEAN_LITERAL";}
+%{/* Data literals */%}
+{numeral}{exponent_int}?			{printf( "INTEGER_LITERAL");}
+{numeral}"."{numeral}{exponent}?	{printf( "FLOAT_LITERAL");}
+\'.\'								{printf( "CHARACTER_LITERAL");} 	//'
+\"{alphanumeric}*\\"    			{printf( "STRING_LITERAL");}   	//"
+TRUE								{printf( "BOOLEAN_LITERAL");}
+FALSE								{printf( "BOOLEAN_LITERAL");}
 
-/* Special characters */
-"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|":"|"."|","|";" {return yytext[0];}
-"=>" 	{ return "ARROW"; }
-"**"	{ return "POWER_OP"; }
-":="	{ return "ASSIGNATION_OP";}
-"/="	{ return "NOT_EQUAL_OP";}
-">="	{ return "GREATER_EQUAL_OP";}
-"<="	{ return "LESSER_EQUAL_OP";}
+%{/* Special characters */%}
+"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|":"|"."|","|";" {printf( yytext[0]);}
+"=>" 	{ printf( "ARROW"; }
+"**"	{ printf( "POWER_OP"; }
+":="	{ printf( "ASSIGNATION_OP");}
+"/="	{ printf( "NOT_EQUAL_OP");}
+">="	{ printf( "GREATER_EQUAL_OP");}
+"<="	{ printf( "LESSER_EQUAL_OP");}
 
 {character}({alphanumeric}|_)*
 
-/* Comments */
+%{/* Comments */%}
 --.* 					{/* ignore  line */}
 --"*".*"*"--	{/* ignore lines*/}
 
 /* Built in functions */
-Put			{return "PUT";}
-Get 		{return "GET";}
-\'Length	{return "LENGTH"}				//'
-New_Line	{return "NEW_LINE";}
-"++"		{return "CONCAT"}
+Put			{printf("PUT");}
+Get 		{printf("GET");}
+\'Length	{printf("LENGTH");}				//'
+New_Line	{printf("NEW_LINE");}
+"++"		{printf("CONCAT");}
 
-/* Non printable characters */
+%{/* Non printable characters */%}
 \t 			{/* ignore tabs*/}
-\n 			{line++; return "END_LINE";}
+\n 			{line++; printf( "END_LINE");}
 <<EOF>>		{return 0; /* by default */}
 
-/* Unknown characters */
+%{/* Unknown characters */%}
 .			{error("Unknown character");}
 
 %%
-/* User Code Section */
+%{/* User Code Section */%}
 void error(char* errorMessage) {
 	printf("\n\tLexical analisis failed, Line: _%i_. Error: _%s_. Character: _%c_.\n",line,errorMessage, yytext[0]);
 }
