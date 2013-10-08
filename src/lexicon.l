@@ -3,8 +3,6 @@
 void error(char*); //Function to display erro r 
 
 int line=1;
-int integerValue;
-int floatValue;
 
 %}
 
@@ -56,12 +54,12 @@ Character	{return "CHARACTER_TYPE";}
 Boolean		{return "BOOLEAN_TYPE";}
 
 /* Data literals */
-{numeral}{exponent_int}?					{integerValue=atoi(yytext); return "INTEGER_LITERAL";}
-{numeral}"."{numeral}{exponent}?	{floatValue=atof(yytext); return "FLOAT_LITERAL";}
-'.'																{integerValue=yytext[1]; return "CHARACTER_LITERAL";}
-\"{alphanumeric}*\"    						{return "STRING_LITERAL"}//"
-TRUE															{integerValue=1; return "BOOLEAN_LITERAL";}
-FALSE															{integerValue=0; return "BOOLEAN_LITERAL";}
+{numeral}{exponent_int}?					{return "INTEGER_LITERAL";}
+{numeral}"."{numeral}{exponent}?	{return "FLOAT_LITERAL";}
+\'.\'														{return "CHARACTER_LITERAL";} //'
+\"{alphanumeric}*\\"    					{return "STRING_LITERAL"}   //"
+TRUE															{return "BOOLEAN_LITERAL";}
+FALSE															{return "BOOLEAN_LITERAL";}
 
 /* Special characters */
 "="|"<"|">"|"-"|"+"|"*"|"/"|"."|","|";" {return yytext[0];}
