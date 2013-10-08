@@ -11,19 +11,21 @@ int line=1;
 
 %}
 
-/* Definitions Section */
+	/* Definitions Section */
 
-/* To test regex quickly -> http://gskinner.com/RegExr/ */
-character			[a-zA-Z]
-digit					[0-9]
-numeral				{digit}+(_({digit}+)+
+	/* To test regex quickly -> http://gskinner.com/RegExr/ */
+character		[a-zA-Z]
+digit			[0-9]
+bu 				[bu]
+numeral			({digit}+)(_{digit}+)*
 alphanumeric	{character}|{digit}
-exponent_int	E"+"?{numeral}
-exponent 			{exponent_int}|E"-"{numeral}
+exponent_pos    E"+"?{numeral}
+exponent_neg    E"-"{numeral}
+exponent 		{exponent_neg}|{exponent_pos}
 
 %%
-%{	/* Rules Section */
-	/* Reserverd words*/%}
+	/* Rules Section */
+	/* Reserverd words*/
 and				{printf("AND");}
 array			{printf("ARRAY");}
 begin			{printf("BEGIN");}
@@ -47,57 +49,60 @@ out				{printf("OUT");}
 procedure		{printf("PROCEDURE");}
 record			{printf("RECORD");}
 return			{printf("RETURN");}
-then			{printf( "THEN");}
-type			{printf( "TYPE");}
-when			{printf( "WHEN");}
-while			{printf( "WHILE");}
+then			{printf("THEN");}
+type			{printf("TYPE");}
+when			{printf("WHEN");}
+while			{printf("WHILE");}
  
-%{/* Basic data types */%}
-Integer 	{printf( "INTEGER_TYPE");}	
-Real		{printf( "REAL_TYPE"}
-Character	{printf( "CHARACTER_TYPE");}
-Boolean		{printf( "BOOLEAN_TYPE");}
+	/* Basic data types */
+Integer		{printf("INTEGER_TYPE");}	
+Real		{printf("REAL_TYPE");}
+Character	{printf("CHARACTER_TYPE");}
+Boolean		{printf("BOOLEAN_TYPE");}
 
-%{/* Data literals */%}
-{numeral}{exponent_int}?			{printf( "INTEGER_LITERAL");}
-{numeral}"."{numeral}{exponent}?	{printf( "FLOAT_LITERAL");}
-\'.\'								{printf( "CHARACTER_LITERAL");} 	//'
-\"{alphanumeric}*\\"    			{printf( "STRING_LITERAL");}   	//"
-TRUE								{printf( "BOOLEAN_LITERAL");}
-FALSE								{printf( "BOOLEAN_LITERAL");}
+	/* Data literals */
 
-%{/* Special characters */%}
-"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|":"|"."|","|";" {printf( yytext[0]);}
-"=>" 	{ printf( "ARROW"; }
-"**"	{ printf( "POWER_OP"; }
-":="	{ printf( "ASSIGNATION_OP");}
-"/="	{ printf( "NOT_EQUAL_OP");}
-">="	{ printf( "GREATER_EQUAL_OP");}
-"<="	{ printf( "LESSER_EQUAL_OP");}
+{numeral}({exponent_pos})?			{printf("INTEGER_LITERAL");}
+{numeral}{exponent_neg}				{printf("FLOAT_LITERAL");}
+{numeral}"."{numeral}{exponent}?	{printf("FLOAT_LITERAL");}
+\'.\'								{printf("CHARACTER_LITERAL");} 	/* ' */
+\"({alphanumeric}|" ")*\"    				{printf("STRING_LITERAL");}   	/* " */
+TRUE								{printf("BOOLEAN_LITERAL");}
+FALSE								{printf("BOOLEAN_LITERAL");}
 
-{character}({alphanumeric}|_)*
+	/* Special characters */
+"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|":"|"."|","|";" {printf("%c",yytext[0]);}
+"=>" 	{ printf("ARROW"); }
+"**"	{ printf("POWER_OP");}
+":="	{ printf("ASSIGNATION_OP");}
+"/="	{ printf("NOT_EQUAL_OP");}
+">="	{ printf("GREATER_EQUAL_OP");}
+"<="	{ printf("LESSER_EQUAL_OP");}
 
-%{/* Comments */%}
---.* 					{/* ignore  line */}
---"*".*"*"--	{/* ignore lines*/}
+{character}({alphanumeric}|_)*	{printf("IDENTIFIER");}
 
-/* Built in functions */
-Put			{printf("PUT");}
-Get 		{printf("GET");}
-\'Length	{printf("LENGTH");}				//'
-New_Line	{printf("NEW_LINE");}
+	/* Comments */
+"--".* 					{/* ignore  line */}
+'--*'.*'*--'	{/* ignore lines*/}
+
+	/* Built in functions */
+'Put'		{printf("PUT");}
+'Get' 		{printf("GET");}
+\'Length	{printf("LENGTH");}				/* ' */
+'New_Line'	{printf("NEW_LINE");}
 "++"		{printf("CONCAT");}
 
-%{/* Non printable characters */%}
+	/* Non printable characters */
+[ ]			{printf(" ");}
 \t 			{/* ignore tabs*/}
-\n 			{line++; printf( "END_LINE");}
+\n 			{line++; printf(" END_LINE\n");}
 <<EOF>>		{return 0; /* by default */}
 
-%{/* Unknown characters */%}
+	/* Unknown characters */
 .			{error("Unknown character");}
 
 %%
-%{/* User Code Section */%}
+	/* User Code Section */
 void error(char* errorMessage) {
 	printf("\n\tLexical analisis failed, Line: _%i_. Error: _%s_. Character: _%c_.\n",line,errorMessage, yytext[0]);
 }
