@@ -62,14 +62,24 @@ Boolean		{return "BOOLEAN_TYPE";}
 TRUE															{integerValue=1; return "BOOLEAN_LITERAL";}
 FALSE															{integerValue=0; return "BOOLEAN_LITERAL";}
 
+/* Special characters */
+"="|"<"|">"|"-"|"+"|"*"|"/"|"."|","|";" {return yytext[0];}
+"=>" 	{ return "ARROW"; }
+"**"	{ return "POWER_OP"; }
+":="	{ return "ASSIGNATION_OP";}
+"/="	{ return "NOT_EQUAL_OP";}
+">="	{ return "GREATER_EQUAL_OP";}
+"<="	{ return "LESSER_EQUAL_OP";}
+
 
 
 /* Comments */
---.* 			{/* ignore  line */}
+--.* 					{/* ignore  line */}
+--"*".*"*"--	{/* ignore lines*/}
 
-
+/* Non printable characters */
+\t 					{/* ignore tabs*/}
 \n 				{line++; return "END_LINE";}
-
 <<EOF>>		{return 0; /* by default */}
 
 %%
