@@ -58,6 +58,7 @@ Boolean		{return "BOOLEAN_TYPE";}
 /* Data literals */
 {numeral}{exponent_int}?					{integerValue=atoi(yytext); return "INTEGER_LITERAL";}
 {numeral}"."{numeral}{exponent}?	{floatValue=atof(yytext); return "FLOAT_LITERAL";}
+'.'																{integerValue=yytext[1]; return "CHARACTER_LITERAL";}
 \"{alphanumeric}*\"    						{return "STRING_LITERAL"}//"
 TRUE															{integerValue=1; return "BOOLEAN_LITERAL";}
 FALSE															{integerValue=0; return "BOOLEAN_LITERAL";}
@@ -71,16 +72,26 @@ FALSE															{integerValue=0; return "BOOLEAN_LITERAL";}
 ">="	{ return "GREATER_EQUAL_OP";}
 "<="	{ return "LESSER_EQUAL_OP";}
 
-
+{character}({alphanumeric}|_)*
 
 /* Comments */
 --.* 					{/* ignore  line */}
 --"*".*"*"--	{/* ignore lines*/}
 
+/* Built in functions */
+Put				{return "PUT";}
+Get 			{return "GET";}
+\'Length	{return "LENGTH"}				//'
+New_Line	{return "NEW_LINE";}
+"++"			{return "CONCAT"}
+
 /* Non printable characters */
 \t 					{/* ignore tabs*/}
 \n 				{line++; return "END_LINE";}
 <<EOF>>		{return 0; /* by default */}
+
+/* Unknown characters */
+.					{error("Unknown character");}
 
 %%
 /* User Code Section */
