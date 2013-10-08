@@ -1,6 +1,6 @@
 /* Defining varaibles */
 %{
-void error(char*); //Function to display error
+void error(char*); //Function to display erro r 
 
 int line=1;
 int integerValue;
