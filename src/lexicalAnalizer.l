@@ -24,12 +24,12 @@ array			{return "ARRAY";}
 begin			{return "BEGIN";}
 body			{return "BODY";}
 case			{return "CASE";}
-constant	{return "CONSTANT";}
+constant		{return "CONSTANT";}
 do 				{return "DO";}
 else			{return "ELSE";}
 elsif			{return "ELSIF";}
 end				{return "END";}
-function 	{return "FUNCTION";}
+function 		{return "FUNCTION";}
 if 				{return "IF";}
 is				{return "IS";}
 loop			{return "LOOP";}
@@ -37,11 +37,11 @@ not 			{return "NOT";}
 null			{return "NULL";}
 of				{return "OF";}
 or 				{return "OR";}
-others		{return "OTHERS";}
+others			{return "OTHERS";}
 out				{return "OUT";}
-procedure	{return "PROCEDURE";}
-record		{return "RECORD";}
-return		{return "RETURN";}
+procedure		{return "PROCEDURE";}
+record			{return "RECORD";}
+return			{return "RETURN";}
 then			{return "THEN";}
 type			{return "TYPE";}
 when			{return "WHEN";}
@@ -49,20 +49,20 @@ while			{return "WHILE";}
  
 /* Basic data types */
 Integer 	{return "INTEGER_TYPE";}	
-Real			{return "REAL_TYPE"}
+Real		{return "REAL_TYPE"}
 Character	{return "CHARACTER_TYPE";}
 Boolean		{return "BOOLEAN_TYPE";}
 
 /* Data literals */
-{numeral}{exponent_int}?					{return "INTEGER_LITERAL";}
+{numeral}{exponent_int}?			{return "INTEGER_LITERAL";}
 {numeral}"."{numeral}{exponent}?	{return "FLOAT_LITERAL";}
-\'.\'														{return "CHARACTER_LITERAL";} //'
-\"{alphanumeric}*\\"    					{return "STRING_LITERAL"}   //"
-TRUE															{return "BOOLEAN_LITERAL";}
-FALSE															{return "BOOLEAN_LITERAL";}
+\'.\'								{return "CHARACTER_LITERAL";} 	//'
+\"{alphanumeric}*\\"    			{return "STRING_LITERAL"}   	//"
+TRUE								{return "BOOLEAN_LITERAL";}
+FALSE								{return "BOOLEAN_LITERAL";}
 
 /* Special characters */
-"="|"<"|">"|"-"|"+"|"*"|"/"|"."|","|";" {return yytext[0];}
+"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|":"|"."|","|";" {return yytext[0];}
 "=>" 	{ return "ARROW"; }
 "**"	{ return "POWER_OP"; }
 ":="	{ return "ASSIGNATION_OP";}
@@ -77,19 +77,19 @@ FALSE															{return "BOOLEAN_LITERAL";}
 --"*".*"*"--	{/* ignore lines*/}
 
 /* Built in functions */
-Put				{return "PUT";}
-Get 			{return "GET";}
+Put			{return "PUT";}
+Get 		{return "GET";}
 \'Length	{return "LENGTH"}				//'
 New_Line	{return "NEW_LINE";}
-"++"			{return "CONCAT"}
+"++"		{return "CONCAT"}
 
 /* Non printable characters */
-\t 					{/* ignore tabs*/}
-\n 				{line++; return "END_LINE";}
+\t 			{/* ignore tabs*/}
+\n 			{line++; return "END_LINE";}
 <<EOF>>		{return 0; /* by default */}
 
 /* Unknown characters */
-.					{error("Unknown character");}
+.			{error("Unknown character");}
 
 %%
 /* User Code Section */
