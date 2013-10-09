@@ -1,4 +1,4 @@
-     
+
 %{
 // flex lexicalAnalizer.l 
 // gcc lex.yy.c -lfl -o lexAnalizer	
@@ -14,12 +14,12 @@ int line=1;
 /* Definitions Section */
 
 /* To test regex quickly -> http://gskinner.com/RegExr/ */
-character			[a-zA-Z]
+character				[a-zA-Z]
 digit					[0-9]
-numeral				{digit}+(_({digit}+)+
-alphanumeric	{character}|{digit}
-exponent_int	E"+"?{numeral}
-exponent 			{exponent_int}|E"-"{numeral}
+numeral					{digit}+(_({digit}+)+
+alphanumeric			{character}|{digit}
+exponent_int			E"+"?{numeral}
+exponent 				{exponent_int}|E"-"{numeral}
 
 %%
 %{	/* Rules Section */
