@@ -66,7 +66,7 @@ Boolean		{printf("BOOLEAN_TYPE");}
 {numeral}{exponent_neg}				{printf("FLOAT_LITERAL");}
 {numeral}"."{numeral}{exponent}?	{printf("FLOAT_LITERAL");}
 \'.\'								{printf("CHARACTER_LITERAL");} 	/* ' */
-\"({alphanumeric}|" ")*\"    				{printf("STRING_LITERAL");}   	/* " */
+\"({alphanumeric}|" ")*\"    		{printf("STRING_LITERAL");}   	/* " */
 TRUE								{printf("BOOLEAN_LITERAL");}
 FALSE								{printf("BOOLEAN_LITERAL");}
 
@@ -82,7 +82,7 @@ FALSE								{printf("BOOLEAN_LITERAL");}
 {character}({alphanumeric}|_)*	{printf("IDENTIFIER");}
 
 	/* Comments */
-"--".* 					{/* ignore  line */}
+"--".* 			{/* ignore  line */}
 '--*'.*'*--'	{/* ignore lines*/}
 
 	/* Built in functions */
