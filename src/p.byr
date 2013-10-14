@@ -1,1 +1,118 @@
-and
+"Caracteres"
+a b c d e f g h i j k l m n o p q r s t u v w x y z
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+
+"Digitos"
+0 1 2 3 4 5 6 7 8 9
+
+"Numeral"
+2013 1000000 1_000_000 
+
+"Alfanumerico"
+Agno12 Alfanum3r1c0
+
+"Exponentes"
+E+128 E-256
+
+"Palabras reservadas"
+and                
+array              
+begin              
+body               
+case               
+constant           
+do                 
+else               
+elsif              
+end                
+function           
+if                 
+is                 
+loop               
+not                
+null               
+of                 
+or                 
+others             
+out                
+procedure          
+record             
+return             
+then               
+type               
+when               
+while              
+
+"Tipos de datos"
+Integer            
+Real               
+Character          
+Boolean            
+
+"Numeros con exponentes"
+12E+8 75E-12
+
+"Numeros decimales"
+3.14 0.589 125.255
+
+"Numeros deciamles con exponentes"
+0.34E+6 12.2E-3
+
+"Literales caracter"
+'A' 'X' 'b' 'y'
+
+"Literales ristras"
+"String Literal" "String Literal 2" "String Literal 3"
+
+"Literales buleanos"
+TRUE FALSE
+
+"Caracteres especiales"
+=                 
+<                 
+>                 
+-                 
++                 
+*                 
+/                 
+(                 
+)                 
+:                 
+.                 
+,                 
+;                 
+=>                
+**                
+:=                
+/=                
+>=                
+<=                
+
+"Identificador"
+Variable3 Variable_X concpeto_uno
+
+"Comentarios"
+-- Comentarios monolinea
+
+--* Comentarios multilinea
+	Comentarios multilinea
+	Comentarios multilinea
+	Comentarios multilinea *--
+	
+"Funciones construidas"
+Put		
+Get 		
+Vecrtor'Length	
+New_Line	
+++		
+
+"Caracteres no imprimibles"
+[ ]			
+\t 			
+\n 			
+
+"Caracteres desconocidos"
+@ ~ ç
+
+
+
