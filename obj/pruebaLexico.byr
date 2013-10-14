@@ -107,12 +107,7 @@ New_Line
 ++		
 
 "Caracteres no imprimibles"
-[ ]			
-\t 			
-\n 			
-
+			
+			
 "Caracteres desconocidos"
-@ ~ รง
-
-
-
+@ ~ ็

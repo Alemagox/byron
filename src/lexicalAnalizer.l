@@ -95,6 +95,7 @@ FALSE								{printf("BOOLEAN_LITERAL");}
 	/* Non printable characters */
 [ ]			{printf(" ");}
 \t 			{/* ignore tabs*/}
+\r			{/* ignore carry returns*/}
 \n 			{line++; printf(" END_LINE\n");}
 <<EOF>>		{return 0; /* by default */}
 
