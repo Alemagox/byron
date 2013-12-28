@@ -1,6 +1,9 @@
 %{
+// Remember to run bison to generate tokens and symbols table before running flex
 // flex lexicalAnalizer.l 
-// gcc lex.yy.c -lfl -o lexAnalizer	
+// gcc lex.yy.c compiler.tab.c -lfl -o compiler	
+
+#include "compiler.tab.h"  // We need the tokens expressed in .tab.h 
 
 
 /* Defining variables */
@@ -25,76 +28,76 @@ exponent 		{exponent_neg}|{exponent_pos}
 %%
 	/* Rules Section */
 	/* Reserverd words*/
-and				{printf("AND");}
-array			{printf("ARRAY");}
-begin			{printf("BEGIN");}
-body			{printf("BODY");}
-case			{printf("CASE");}
-constant		{printf("CONSTANT");}
-do 				{printf("DO");}
-else			{printf("ELSE");}
-elsif			{printf("ELSIF");}
-end				{printf("END");}
-function 		{printf("FUNCTION");}
-if 				{printf("IF");}
-is				{printf("IS");}
-loop			{printf("LOOP");}
-not 			{printf("NOT");}
-null			{printf("NULL");}
-of				{printf("OF");}
-or 				{printf("OR");}
-others			{printf("OTHERS");}
-out				{printf("OUT");}
-procedure		{printf("PROCEDURE");}
-record			{printf("RECORD");}
-return			{printf("RETURN");}
-then			{printf("THEN");}
-type			{printf("TYPE");}
-when			{printf("WHEN");}
-while			{printf("WHILE");}
+and				{return AND;}
+array			{return ARRAY;}
+begin			{return BEGIN;}
+body			{return BODY;}
+case			{return CASE;}
+constant		{return CONSTANT;}
+do 				{return DO;}
+else			{return ELSE;}
+elsif			{return ELSIF;}
+end				{return END;}
+function 		{return FUNCTION;}
+if 				{return IF;}
+is				{return IS;}
+loop			{return LOOP;}
+not 			{return NOT;}
+null			{return NULL;}
+of				{return OF;}
+or 				{return OR;}
+others			{return OTHERS;}
+out				{return OUT;}
+procedure		{return PROCEDURE;}
+record			{return RECORD;}
+return			{return RETURN;}
+then			{return THEN;}
+type			{return TYPE;}
+when			{return WHEN;}
+while			{return WHILE;}
  
 	/* Basic data types */
-Integer		{printf("INTEGER_TYPE");}	
-Real		{printf("REAL_TYPE");}
-Character	{printf("CHARACTER_TYPE");}
-Boolean		{printf("BOOLEAN_TYPE");}
+Integer		{return INTEGER_TYPE;}	
+Real		{return REAL_TYPE;}
+Character	{return CHARACTER_TYPE;}
+Boolean		{return BOOLEAN_TYPE;}
 
 	/* Data literals */
 
-{numeral}({exponent_pos})?			{printf("INTEGER_LITERAL");}
-{numeral}{exponent_neg}				{printf("FLOAT_LITERAL");}
-{numeral}"."{numeral}{exponent}?	{printf("FLOAT_LITERAL");}
-\'.\'								{printf("CHARACTER_LITERAL");} 	/* ' */
-\"({alphanumeric}|" ")*\"    				{printf("STRING_LITERAL");}   	/* " */
-TRUE								{printf("BOOLEAN_LITERAL");}
-FALSE								{printf("BOOLEAN_LITERAL");}
+{numeral}({exponent_pos})?			{return INTEGER_LITERAL;}
+{numeral}{exponent_neg}				{return FLOAT_LITERAL;}
+{numeral}"."{numeral}{exponent}?	{return FLOAT_LITERAL;}
+\'.\'								{return CHARACTER_LITERAL;} 	/* ' */
+\"({alphanumeric}|" *\"    		    {return STRING_LITERAL;}   	/* " */
+TRUE								{return BOOLEAN_LITERAL;}
+FALSE								{return BOOLEAN_LITERAL;}
 
 	/* Special characters */
 "="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|":"|"."|","|";" {printf("%c",yytext[0]);}
-"=>" 	{ printf("ARROW"); }
-"**"	{ printf("POWER_OP");}
-":="	{ printf("ASSIGNATION_OP");}
-"/="	{ printf("NOT_EQUAL_OP");}
-">="	{ printf("GREATER_EQUAL_OP");}
-"<="	{ printf("LESSER_EQUAL_OP");}
+"=>" 	{ return ARROW; }
+"**"	{ return POWER_OP;}
+":="	{ return ASSIGNATION_OP;}
+"/="	{ return NOT_EQUAL_OP;}
+">="	{ return GREATER_EQUAL_OP;}
+"<="	{ return LESSER_EQUAL_OP;}
 
-{character}({alphanumeric}|_)*	{printf("IDENTIFIER");}
+{character}({alphanumeric}|_)*	{return IDENTIFIER;}
 
 	/* Comments */
 "--".* 					{/* ignore  line */}
 '--*'.*'*--'	{/* ignore lines*/}
 
 	/* Built in functions */
-'Put'		{printf("PUT");}
-'Get' 		{printf("GET");}
-\'Length	{printf("LENGTH");}				/* ' */
-'New_Line'	{printf("NEW_LINE");}
-"++"		{printf("CONCAT");}
+'Put'		{return PUT;}
+'Get' 		{return GET;}
+\'Length	{return LENGTH;}				/* ' */
+'New_Line'	{return NEW_LINE;}
+"++"		{return CONCAT;}
 
 	/* Non printable characters */
 [ ]			{printf(" ");}
 \t 			{/* ignore tabs*/}
-\n 			{line++; printf(" END_LINE\n");}
+\n 			{line++; return  END_LINE;}
 <<EOF>>		{return 0; /* by default */}
 
 	/* Unknown characters */

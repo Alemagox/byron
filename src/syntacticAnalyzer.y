@@ -10,12 +10,13 @@ extern FILE *yyin; 	// Input stream , declared by lexical analyzer
 extern int line;   	// Read line, values are given by lexical analyzer
 
 int yydebug=1; 		// Debu mode if -t is passed
+FILE *yyout;		// Compiled file
 
 %}
 //Declaraciones de Bison
 
 // Data returned by token or non terminal 
-%union {int integer}
+%union {int integer; char string[50]}
 
 ///////////////////////////
 // Tokens declaration
