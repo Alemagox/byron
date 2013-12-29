@@ -600,20 +600,23 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "lexicalAnalizer.l"
-#line 3 "lexicalAnalizer.l"
-// flex lexicalAnalizer.l 
-// gcc lex.yy.c -lfl -o lexAnalizer	
+#line 1 "lexicalAnalyzer.l"
+#line 2 "lexicalAnalyzer.l"
+// Remember to run bison to generate tokens and symbols table before running flex
+// flex lexicalAnalyzer.l 
+// gcc lex.yy.c compiler.tab.c -lfl -o compiler
+
+#include "compiler.tab.h"  // We need the tokens expressed in .tab.h 
 
 
 /* Defining variables */
-void error(char*); //Function to display erro r 
+void error(char*); //Function to display error 
 
 int line=1;
 
 /* Definitions Section */
 /* To test regex quickly -> http://gskinner.com/RegExr/ */
-#line 617 "lex.yy.c"
+#line 620 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -795,11 +798,11 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 26 "lexicalAnalizer.l"
+#line 28 "lexicalAnalyzer.l"
 
 	/* Rules Section */
 	/* Reserverd words*/
-#line 803 "lex.yy.c"
+#line 806 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -884,307 +887,307 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 29 "lexicalAnalizer.l"
-{printf("AND");}
+#line 31 "lexicalAnalyzer.l"
+{return AND;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 30 "lexicalAnalizer.l"
-{printf("ARRAY");}
+#line 32 "lexicalAnalyzer.l"
+{return ARRAY;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 31 "lexicalAnalizer.l"
-{printf("BEGIN");}
+#line 33 "lexicalAnalyzer.l"
+{return BEGIN_;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 32 "lexicalAnalizer.l"
-{printf("BODY");}
+#line 34 "lexicalAnalyzer.l"
+{return BODY;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 33 "lexicalAnalizer.l"
-{printf("CASE");}
+#line 35 "lexicalAnalyzer.l"
+{return CASE;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 34 "lexicalAnalizer.l"
-{printf("CONSTANT");}
+#line 36 "lexicalAnalyzer.l"
+{return CONSTANT;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 35 "lexicalAnalizer.l"
-{printf("DO");}
+#line 37 "lexicalAnalyzer.l"
+{return DO;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 36 "lexicalAnalizer.l"
-{printf("ELSE");}
+#line 38 "lexicalAnalyzer.l"
+{return ELSE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 37 "lexicalAnalizer.l"
-{printf("ELSIF");}
+#line 39 "lexicalAnalyzer.l"
+{return ELSIF;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 38 "lexicalAnalizer.l"
-{printf("END");}
+#line 40 "lexicalAnalyzer.l"
+{return END;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 39 "lexicalAnalizer.l"
-{printf("FUNCTION");}
+#line 41 "lexicalAnalyzer.l"
+{return FUNCTION;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 40 "lexicalAnalizer.l"
-{printf("IF");}
+#line 42 "lexicalAnalyzer.l"
+{return IF;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 41 "lexicalAnalizer.l"
-{printf("IS");}
+#line 43 "lexicalAnalyzer.l"
+{return IS;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 42 "lexicalAnalizer.l"
-{printf("LOOP");}
+#line 44 "lexicalAnalyzer.l"
+{return LOOP;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 43 "lexicalAnalizer.l"
-{printf("NOT");}
+#line 45 "lexicalAnalyzer.l"
+{return NOT;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 44 "lexicalAnalizer.l"
-{printf("NULL");}
+#line 46 "lexicalAnalyzer.l"
+{return NULL_;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 45 "lexicalAnalizer.l"
-{printf("OF");}
+#line 47 "lexicalAnalyzer.l"
+{return OF;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 46 "lexicalAnalizer.l"
-{printf("OR");}
+#line 48 "lexicalAnalyzer.l"
+{return OR;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 47 "lexicalAnalizer.l"
-{printf("OTHERS");}
+#line 49 "lexicalAnalyzer.l"
+{return OTHERS;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 48 "lexicalAnalizer.l"
-{printf("OUT");}
+#line 50 "lexicalAnalyzer.l"
+{return OUT;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 49 "lexicalAnalizer.l"
-{printf("PROCEDURE");}
+#line 51 "lexicalAnalyzer.l"
+{return PROCEDURE;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 50 "lexicalAnalizer.l"
-{printf("RECORD");}
+#line 52 "lexicalAnalyzer.l"
+{return RECORD;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 51 "lexicalAnalizer.l"
-{printf("RETURN");}
+#line 53 "lexicalAnalyzer.l"
+{return RETURN;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 52 "lexicalAnalizer.l"
-{printf("THEN");}
+#line 54 "lexicalAnalyzer.l"
+{return THEN;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 53 "lexicalAnalizer.l"
-{printf("TYPE");}
+#line 55 "lexicalAnalyzer.l"
+{return TYPE;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 54 "lexicalAnalizer.l"
-{printf("WHEN");}
+#line 56 "lexicalAnalyzer.l"
+{return WHEN;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 55 "lexicalAnalizer.l"
-{printf("WHILE");}
+#line 57 "lexicalAnalyzer.l"
+{return WHILE;}
 	YY_BREAK
 /* Basic data types */
 case 28:
 YY_RULE_SETUP
-#line 58 "lexicalAnalizer.l"
-{printf("INTEGER_TYPE");}	
+#line 60 "lexicalAnalyzer.l"
+{return INTEGER_TYPE;}	
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 59 "lexicalAnalizer.l"
-{printf("REAL_TYPE");}
+#line 61 "lexicalAnalyzer.l"
+{return REAL_TYPE;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 60 "lexicalAnalizer.l"
-{printf("CHARACTER_TYPE");}
+#line 62 "lexicalAnalyzer.l"
+{return CHARACTER_TYPE;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 61 "lexicalAnalizer.l"
-{printf("BOOLEAN_TYPE");}
+#line 63 "lexicalAnalyzer.l"
+{return BOOLEAN_TYPE;}
 	YY_BREAK
 /* Data literals */
 case 32:
 YY_RULE_SETUP
-#line 65 "lexicalAnalizer.l"
-{printf("INTEGER_LITERAL");}
+#line 67 "lexicalAnalyzer.l"
+{return INTEGER_LITERAL;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 66 "lexicalAnalizer.l"
-{printf("FLOAT_LITERAL");}
+#line 68 "lexicalAnalyzer.l"
+{return FLOAT_LITERAL;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 67 "lexicalAnalizer.l"
-{printf("FLOAT_LITERAL");}
+#line 69 "lexicalAnalyzer.l"
+{return FLOAT_LITERAL;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 68 "lexicalAnalizer.l"
-{printf("CHARACTER_LITERAL");} 	/* ' */
+#line 70 "lexicalAnalyzer.l"
+{return CHARACTER_LITERAL;} 	/* ' */
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 69 "lexicalAnalizer.l"
-{printf("STRING_LITERAL");}   	/* " */
+#line 71 "lexicalAnalyzer.l"
+{return STRING_LITERAL;}   	/* " */
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 70 "lexicalAnalizer.l"
-{printf("BOOLEAN_LITERAL");}
+#line 72 "lexicalAnalyzer.l"
+{return BOOLEAN_LITERAL;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 71 "lexicalAnalizer.l"
-{printf("BOOLEAN_LITERAL");}
+#line 73 "lexicalAnalyzer.l"
+{return BOOLEAN_LITERAL;}
 	YY_BREAK
 /* Special characters */
 case 39:
 YY_RULE_SETUP
-#line 74 "lexicalAnalizer.l"
+#line 76 "lexicalAnalyzer.l"
 {printf("%c",yytext[0]);}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 75 "lexicalAnalizer.l"
-{ printf("ARROW"); }
+#line 77 "lexicalAnalyzer.l"
+{ return ARROW; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 76 "lexicalAnalizer.l"
-{ printf("POWER_OP");}
+#line 78 "lexicalAnalyzer.l"
+{ return POWER_OP;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 77 "lexicalAnalizer.l"
-{ printf("ASSIGNATION_OP");}
+#line 79 "lexicalAnalyzer.l"
+{ return ASSIGNATION_OP;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 78 "lexicalAnalizer.l"
-{ printf("NOT_EQUAL_OP");}
+#line 80 "lexicalAnalyzer.l"
+{ return NOT_EQUAL_OP;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 79 "lexicalAnalizer.l"
-{ printf("GREATER_EQUAL_OP");}
+#line 81 "lexicalAnalyzer.l"
+{ return GREATER_EQUAL_OP;}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 80 "lexicalAnalizer.l"
-{ printf("LESSER_EQUAL_OP");}
+#line 82 "lexicalAnalyzer.l"
+{ return LESSER_EQUAL_OP;}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 82 "lexicalAnalizer.l"
-{printf("IDENTIFIER");}
+#line 84 "lexicalAnalyzer.l"
+{return IDENTIFIER;}
 	YY_BREAK
 /* Comments */
 case 47:
 YY_RULE_SETUP
-#line 85 "lexicalAnalizer.l"
+#line 87 "lexicalAnalyzer.l"
 {/* ignore  line */}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 86 "lexicalAnalizer.l"
+#line 88 "lexicalAnalyzer.l"
 {/* ignore lines*/}
 	YY_BREAK
 /* Built in functions */
 case 49:
 YY_RULE_SETUP
-#line 89 "lexicalAnalizer.l"
-{printf("PUT");}
+#line 91 "lexicalAnalyzer.l"
+{return PUT;}
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 90 "lexicalAnalizer.l"
-{printf("GET");}
+#line 92 "lexicalAnalyzer.l"
+{return GET;}
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 91 "lexicalAnalizer.l"
-{printf("LENGTH");}				/* ' */
+#line 93 "lexicalAnalyzer.l"
+{return LENGTH;}				/* ' */
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 92 "lexicalAnalizer.l"
-{printf("NEW_LINE");}
+#line 94 "lexicalAnalyzer.l"
+{return NEW_LINE;}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 93 "lexicalAnalizer.l"
-{printf("CONCAT");}
+#line 95 "lexicalAnalyzer.l"
+{return CONCAT;}
 	YY_BREAK
 /* Non printable characters */
 case 54:
 YY_RULE_SETUP
-#line 96 "lexicalAnalizer.l"
+#line 98 "lexicalAnalyzer.l"
 {printf(" ");}
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 97 "lexicalAnalizer.l"
+#line 99 "lexicalAnalyzer.l"
 {/* ignore tabs*/}
 	YY_BREAK
 case 56:
 /* rule 56 can match eol */
 YY_RULE_SETUP
-#line 98 "lexicalAnalizer.l"
-{line++; printf(" END_LINE\n");}
+#line 100 "lexicalAnalyzer.l"
+{line++; return  END_LINE;}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 99 "lexicalAnalizer.l"
+#line 101 "lexicalAnalyzer.l"
 {return 0; /* by default */}
 	YY_BREAK
 /* Unknown characters */
 case 57:
 YY_RULE_SETUP
-#line 102 "lexicalAnalizer.l"
+#line 104 "lexicalAnalyzer.l"
 {error("Unknown character");}
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 104 "lexicalAnalizer.l"
+#line 106 "lexicalAnalyzer.l"
 ECHO;
 	YY_BREAK
-#line 1188 "lex.yy.c"
+#line 1191 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2176,7 +2179,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 104 "lexicalAnalizer.l"
+#line 106 "lexicalAnalyzer.l"
 
 
 	/* User Code Section */

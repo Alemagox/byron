@@ -16,13 +16,13 @@ FILE *yyout;		// Compiled file
 //Declaraciones de Bison
 
 // Data returned by token or non terminal 
-%union {int integer; char string[50]}
+%union {int integer; char string[50];}
 
 ///////////////////////////
 // Tokens declaration
 %token AND
 %token ARRAY
-%token BEGIN
+%token BEGIN_	// It created conflict with BEGIN from flex :(
 %token BODY
 %token CASE
 %token CONSTANT
@@ -37,7 +37,7 @@ FILE *yyout;		// Compiled file
 %token IS
 %token LOOP
 %token NOT
-%token NULL
+%token NULL_	// It created conflict with NULL from flex :(
 %token OF
 %token OR
 %token OTHERS
@@ -91,7 +91,8 @@ FILE *yyout;		// Compiled file
 %%
 //Reglas gramaticales
 
-program : ;
+main : PROCEDURE IDENTIFIER IS BEGIN_ END IDENTIFIER;
+//main : PROCEDURE ;
 
 %%
 //Codigo C adicional
@@ -103,6 +104,6 @@ int main(int argc, char** argv){
 	else printf("There's no file to open in the arguments.");
 }
 
-void yyerror(char* mens){
-	printf("Error ocurred in line %i: %s\n", line, mens);
+void yyerror(char* message){
+	printf("Error ocurred in line %i: %s\n", line, message);
 }

@@ -1,7 +1,7 @@
 %{
 // Remember to run bison to generate tokens and symbols table before running flex
-// flex lexicalAnalizer.l 
-// gcc lex.yy.c compiler.tab.c -lfl -o compiler	
+// flex lexicalAnalyzer.l 
+// gcc lex.yy.c compiler.tab.c -lfl -o compiler
 
 #include "compiler.tab.h"  // We need the tokens expressed in .tab.h 
 
@@ -30,7 +30,7 @@ exponent 		{exponent_neg}|{exponent_pos}
 	/* Reserverd words*/
 and				{return AND;}
 array			{return ARRAY;}
-begin			{return BEGIN;}
+begin			{return BEGIN_;}
 body			{return BODY;}
 case			{return CASE;}
 constant		{return CONSTANT;}
@@ -43,7 +43,7 @@ if 				{return IF;}
 is				{return IS;}
 loop			{return LOOP;}
 not 			{return NOT;}
-null			{return NULL;}
+null			{return NULL_;}
 of				{return OF;}
 or 				{return OR;}
 others			{return OTHERS;}
@@ -68,7 +68,7 @@ Boolean		{return BOOLEAN_TYPE;}
 {numeral}{exponent_neg}				{return FLOAT_LITERAL;}
 {numeral}"."{numeral}{exponent}?	{return FLOAT_LITERAL;}
 \'.\'								{return CHARACTER_LITERAL;} 	/* ' */
-\"({alphanumeric}|" *\"    		    {return STRING_LITERAL;}   	/* " */
+\"({alphanumeric}|" ")*\"    		    {return STRING_LITERAL;}   	/* " */
 TRUE								{return BOOLEAN_LITERAL;}
 FALSE								{return BOOLEAN_LITERAL;}
 
