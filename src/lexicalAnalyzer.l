@@ -73,7 +73,7 @@ TRUE								{return BOOLEAN_LITERAL;}
 FALSE								{return BOOLEAN_LITERAL;}
 
 	/* Special characters */
-"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|":"|"."|","|";" {printf("%c",yytext[0]);}
+"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|":"|"."|","|";" {return yytext[0];}
 "=>" 	{ return ARROW; }
 "**"	{ return POWER_OP;}
 ":="	{ return ASSIGNATION_OP;}
@@ -95,7 +95,7 @@ FALSE								{return BOOLEAN_LITERAL;}
 "++"		{return CONCAT;}
 
 	/* Non printable characters */
-[ ]			{printf(" ");}
+[ ]			{/*return ' ';ignore spaces*/}
 \t 			{/* ignore tabs*/}
 \n 			{line++; return  END_LINE;}
 <<EOF>>		{return 0; /* by default */}

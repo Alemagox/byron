@@ -91,7 +91,14 @@ FILE *yyout;		// Compiled file
 %%
 //Reglas gramaticales
 
-main : PROCEDURE IDENTIFIER IS BEGIN_ END IDENTIFIER;
+main : PROCEDURE IDENTIFIER IS BEGIN_ END IDENTIFIER ';'
+		; 
+
+/*
+separator :
+        ';'
+        ;
+*/
 //main : PROCEDURE ;
 
 %%
@@ -101,7 +108,7 @@ int main(int argc, char** argv){
 		yyin=fopen(argv[1], "r");
 		yyparse();
 	}
-	else printf("There's no file to open in the arguments.");
+	else printf("Please specify a file to compile\n");
 }
 
 void yyerror(char* message){
