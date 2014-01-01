@@ -1,0 +1,7 @@
+#!/bin/bash
+
+bison -d syntacticAnalyzer.y -o compiler.tab.c
+
+flex lexicalAnalyzer.l 
+
+gcc lex.yy.c compiler.tab.c -lfl -o compiler

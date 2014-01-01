@@ -10,6 +10,7 @@
 void error(char*); //Function to display error 
 
 int line=1;
+int column=1;
 
 %}
 
@@ -28,58 +29,58 @@ exponent 		{exponent_neg}|{exponent_pos}
 %%
 	/* Rules Section */
 	/* Reserverd words*/
-and				{return AND;}
-array			{return ARRAY;}
-begin			{return BEGIN_;}
-body			{return BODY;}
-case			{return CASE;}
-constant		{return CONSTANT;}
-do 				{return DO;}
-else			{return ELSE;}
-elsif			{return ELSIF;}
-end				{return END;}
-function 		{return FUNCTION;}
-if 				{return IF;}
-is				{return IS;}
-loop			{return LOOP;}
-not 			{return NOT;}
-null			{return NULL_;}
-of				{return OF;}
-or 				{return OR;}
-others			{return OTHERS;}
-out				{return OUT;}
-procedure		{return PROCEDURE;}
-record			{return RECORD;}
-return			{return RETURN;}
-then			{return THEN;}
-type			{return TYPE;}
-when			{return WHEN;}
-while			{return WHILE;}
+and				{ column=column+strlen(yytext); return AND;}
+array			{ column=column+strlen(yytext); return ARRAY;}
+begin			{ column=column+strlen(yytext); return BEGIN_;}
+body			{ column=column+strlen(yytext); return BODY;}
+case			{ column=column+strlen(yytext); return CASE;}
+constant		{ column=column+strlen(yytext); return CONSTANT;}
+do 				{ column=column+strlen(yytext); return DO;}
+else			{ column=column+strlen(yytext); return ELSE;}
+elsif			{ column=column+strlen(yytext); return ELSIF;}
+end				{ column=column+strlen(yytext); return END;}
+function 		{ column=column+strlen(yytext); return FUNCTION;}
+if 				{ column=column+strlen(yytext); return IF;}
+is				{ column=column+strlen(yytext); return IS;}
+loop			{ column=column+strlen(yytext); return LOOP;}
+not 			{ column=column+strlen(yytext); return NOT;}
+null			{ column=column+strlen(yytext); return NULL_;}
+of				{ column=column+strlen(yytext); return OF;}
+or 				{ column=column+strlen(yytext); return OR;}
+others			{ column=column+strlen(yytext); return OTHERS;}
+out				{ column=column+strlen(yytext); return OUT;}
+procedure		{ column=column+strlen(yytext); return PROCEDURE;}
+record			{ column=column+strlen(yytext); return RECORD;}
+return			{ column=column+strlen(yytext); return RETURN;}
+then			{ column=column+strlen(yytext); return THEN;}
+type			{ column=column+strlen(yytext); return TYPE;}
+when			{ column=column+strlen(yytext); return WHEN;}
+while			{ column=column+strlen(yytext); return WHILE;}
  
 	/* Basic data types */
-Integer		{return INTEGER_TYPE;}	
-Real		{return REAL_TYPE;}
-Character	{return CHARACTER_TYPE;}
-Boolean		{return BOOLEAN_TYPE;}
+Integer		{ column=column+strlen(yytext); return INTEGER_TYPE;}	
+Real		{ column=column+strlen(yytext); return REAL_TYPE;}
+Character	{ column=column+strlen(yytext); return CHARACTER_TYPE;}
+Boolean		{ column=column+strlen(yytext); return BOOLEAN_TYPE;}
 
 	/* Data literals */
 
-{numeral}({exponent_pos})?			{return INTEGER_LITERAL;}
-{numeral}{exponent_neg}				{return FLOAT_LITERAL;}
-{numeral}"."{numeral}{exponent}?	{return FLOAT_LITERAL;}
-\'.\'								{return CHARACTER_LITERAL;} 	/* ' */
-\"({alphanumeric}|" ")*\"    		    {return STRING_LITERAL;}   	/* " */
-TRUE								{return BOOLEAN_LITERAL;}
-FALSE								{return BOOLEAN_LITERAL;}
+{numeral}({exponent_pos})?			{ column=column+strlen(yytext); return INTEGER_LITERAL;}
+{numeral}{exponent_neg}				{ column=column+strlen(yytext); return FLOAT_LITERAL;}
+{numeral}"."{numeral}{exponent}?	{ column=column+strlen(yytext); return FLOAT_LITERAL;}
+\'.\'								{ column=column+strlen(yytext); return CHARACTER_LITERAL;} 	/* ' */
+\"({alphanumeric}|" ")*\"    		{ column=column+strlen(yytext); return STRING_LITERAL;}   	/* " */
+TRUE								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
+FALSE								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 
 	/* Special characters */
 "="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|":"|"."|","|";" {return yytext[0];}
-"=>" 	{ return ARROW; }
-"**"	{ return POWER_OP;}
-":="	{ return ASSIGNATION_OP;}
-"/="	{ return NOT_EQUAL_OP;}
-">="	{ return GREATER_EQUAL_OP;}
-"<="	{ return LESSER_EQUAL_OP;}
+"=>" 	{ column=column+strlen(yytext); return ARROW; }
+"**"	{ column=column+strlen(yytext); return POWER_OP;}
+":="	{ column=column+strlen(yytext); return ASSIGNATION_OP;}
+"/="	{ column=column+strlen(yytext); return NOT_EQUAL_OP;}
+">="	{ column=column+strlen(yytext); return GREATER_EQUAL_OP;}
+"<="	{ column=column+strlen(yytext); return LESSER_EQUAL_OP;}
 
 {character}({alphanumeric}|_)*	{return IDENTIFIER;}
 
@@ -88,16 +89,16 @@ FALSE								{return BOOLEAN_LITERAL;}
 '--*'.*'*--'	{/* ignore lines*/}
 
 	/* Built in functions */
-'Put'		{return PUT;}
-'Get' 		{return GET;}
-\'Length	{return LENGTH;}				/* ' */
-'New_Line'	{return NEW_LINE;}
-"++"		{return CONCAT;}
+'Put'		{ column=column+strlen(yytext); return PUT; }
+'Get' 		{ column=column+strlen(yytext); return GET; }
+\'Length	{ column=column+strlen(yytext); return LENGTH; }	/* ' */
+'New_Line'	{ column=column+strlen(yytext); return NEW_LINE; }
+"++"		{ column=column+strlen(yytext); return CONCAT; }
 
 	/* Non printable characters */
-[ ]			{/*return ' ';ignore spaces*/}
-\t 			{/* ignore tabs*/}
-\n 			{line++; return  END_LINE;}
+[ ]			{column++;/*ignore spaces*/}
+\t 			{column=column+4;/* ignore tabs*/}
+\n 			{line++; column=1;/*return  END_LINE;*/}
 <<EOF>>		{return 0; /* by default */}
 
 	/* Unknown characters */
@@ -106,5 +107,5 @@ FALSE								{return BOOLEAN_LITERAL;}
 %%
 	/* User Code Section */
 void error(char* errorMessage) {
-	printf("\n\tLexical analisis failed, Line: _%i_. Error: _%s_. Character: _%c_.\n",line,errorMessage, yytext[0]);
+	printf("\n\tLexical analisis failed, Line: _%i_. Column: _%i_ Error: _%s_. Character: _%c_.\n",line, column, errorMessage, yytext[0]);
 }

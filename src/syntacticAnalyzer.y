@@ -8,6 +8,8 @@
 
 extern FILE *yyin; 	// Input stream , declared by lexical analyzer
 extern int line;   	// Read line, values are given by lexical analyzer
+extern int column;  // Read column, values are given by lexical analyzer
+extern char* yytext;
 
 int yydebug=1; 		// Debu mode if -t is passed
 FILE *yyout;		// Compiled file
@@ -30,7 +32,7 @@ FILE *yyout;		// Compiled file
 %token ELSE
 %token ELSIF
 %token END
-%token END_LINE
+//%token END_LINE  //In byron we can directly ignore new lines
 %token FUNCTION
 %token IF
 %token IDENTIFIER
@@ -91,8 +93,10 @@ FILE *yyout;		// Compiled file
 %%
 //Reglas gramaticales
 
-main : PROCEDURE IDENTIFIER IS BEGIN_ END IDENTIFIER ';'
-		; 
+main :	PROCEDURE IDENTIFIER IS
+	    BEGIN_
+	    END IDENTIFIER ';'
+	   	; 
 
 /*
 separator :
@@ -112,5 +116,5 @@ int main(int argc, char** argv){
 }
 
 void yyerror(char* message){
-	printf("Error ocurred in line %i: %s\n", line, message);
+	printf("Error ocurred in line %i, column %i: %s. Last read: '%s'-''\n", line, column, message, yytext);
 }
