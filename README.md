@@ -31,5 +31,7 @@ TODO: type_declaration y type_definition
 
 - Página 18, eliminar defining_designator. Faltan los ; en procedure_specification y function_
 
-- Sustituir default_expression por expression
+- Sustituir default_expression por expression.
+
+- Página 6. Simplificar type_definition añadiendo directamente array y record type_definition. En type_declaration cambiar complex_type_definition por type_definition.
 
