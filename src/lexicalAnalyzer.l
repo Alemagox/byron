@@ -41,6 +41,7 @@ elsif			{ column=column+strlen(yytext); return ELSIF;}
 end				{ column=column+strlen(yytext); return END;}
 function 		{ column=column+strlen(yytext); return FUNCTION;}
 if 				{ column=column+strlen(yytext); return IF;}
+in 				{ column=column+strlen(yytext); return IN;}
 is				{ column=column+strlen(yytext); return IS;}
 loop			{ column=column+strlen(yytext); return LOOP;}
 not 			{ column=column+strlen(yytext); return NOT;}
@@ -70,14 +71,14 @@ Boolean		{ column=column+strlen(yytext); return BOOLEAN_TYPE;}
 {numeral}"."{numeral}{exponent}?	{ column=column+strlen(yytext); return FLOAT_LITERAL;}
 \'.\'								{ column=column+strlen(yytext); return CHARACTER_LITERAL;} 	/* ' */
 \"({alphanumeric}|" ")*\"    		{ column=column+strlen(yytext); return STRING_LITERAL;}   	/* " */
-TRUE								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
-FALSE								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
+True								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
+False								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 
 	/* Special characters */
-"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|":"|"."|","|";" {return yytext[0];}
+"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|":"|"."|","|";"|"|" {return yytext[0];}
 "=>" 	{ column=column+strlen(yytext); return ARROW; }
 "**"	{ column=column+strlen(yytext); return POWER_OP;}
-":="	{ column=column+strlen(yytext); return ASSIGNATION_OP;}
+":="	{ column=column+strlen(yytext); return ASSIGNMENT_OP;}
 "/="	{ column=column+strlen(yytext); return NOT_EQUAL_OP;}
 ">="	{ column=column+strlen(yytext); return GREATER_EQUAL_OP;}
 "<="	{ column=column+strlen(yytext); return LESSER_EQUAL_OP;}

@@ -1,1 +1,3 @@
-procedure main is begin end main
+procedure main is
+begin 
+end main;

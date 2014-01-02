@@ -55,10 +55,10 @@ extern int yydebug;
     ELSE = 265,
     ELSIF = 266,
     END = 267,
-    END_LINE = 268,
-    FUNCTION = 269,
-    IF = 270,
-    IDENTIFIER = 271,
+    FUNCTION = 268,
+    IF = 269,
+    IDENTIFIER = 270,
+    IN = 271,
     IS = 272,
     LOOP = 273,
     NOT = 274,
@@ -102,7 +102,7 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 19 "syntacticAnalyzer.y" /* yacc.c:1909  */
+#line 21 "syntacticAnalyzer.y" /* yacc.c:1909  */
 int integer; char string[50];
 
 #line 109 "compiler.tab.h" /* yacc.c:1909  */
