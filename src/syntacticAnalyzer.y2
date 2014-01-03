@@ -94,7 +94,7 @@ FILE *yyout;		// Compiled file
 %%
 // Grammar rules, after main all non-terminals are ordered alphabetically
 
-main :
+main : {printf("-- Entered main\n");}
 	PROCEDURE IDENTIFIER IS
        	declarative_part
 	BEGIN_
@@ -103,79 +103,79 @@ main :
 	; 
 
 
-actual_parameter_part : 
+actual_parameter_part : {printf("-- Entered actual_parameter_part\n");}
 	'(' explicit_actual_parameter_list ')'
 	| /* empty */
 	;
 
 
-after_end_program_name :  // Simplify in semantic iteration
+after_end_program_name : {printf("-- Entered after_end_program_name\n");} // Simplify in semantic iteration
 	IDENTIFIER
 	| /* empty */
 	;
 
 
 
-array_type_definition : 
+array_type_definition : {printf("-- Entered array_type_definition\n");}
 	ARRAY '(' expression expression_list ')' OF type_definition
 	;
 
 
-assign_expression : 
+assign_expression : {printf("-- Entered assign_expression\n");}
 	ASSIGNMENT_OP expression 
 	| /* empty */
 	;
 
 
-assignment_statement :
-	name ASSIGNMENT_OP expression ';' // In semantics be careful
-									  // to not to assign in a function call
+assignment_statement : {printf("-- Entered assignment_statement\n");}
+	variable ASSIGNMENT_OP expression ';'
 	;
 
 
-binary_adding_list : 
-	term
-	| term binary_adding_operator binary_adding_list 
+binary_adding_list : {printf("-- Entered binary adding list\n");}
+	binary_adding_list binary_adding_operator term
+	| binary_adding_operator term
+	| /* empty */
 	;
 
 
-binary_adding_operator : 
+binary_adding_operator : {printf("-- Entered binary_adding_operator\n");}
 	'+'
 	| '-'
 	;
 
 
-case_statement : 
+case_statement : {printf("-- Entered case_statement\n");}
 	CASE IDENTIFIER IS
 		case_statement_alternative_list
 	END CASE ';'
 	;
 
 
-case_statement_alternative : 
+case_statement_alternative : {printf("-- Entered case_statement_alternative\n");}
 	WHEN discrete_choice_list ARROW 
 		sequence_of_statements
 	;
 
 
-case_statement_alternative_list : 
+case_statement_alternative_list : {printf("-- Entered case_statement_alternative_list\n");}
 	case_statement_alternative_list case_statement_alternative
 	| /* empty */
 	;
 
 
-component_item : 
+component_item : {printf("-- Entered component_item\n");}
 	IDENTIFIER identifier_list ':' type_definition assign_expression ';'
 	;
 
 
-component_list : 
+component_list : {printf("-- Entered component_list\n");}
 	component_list component_item
 	| /* empty */
 	;
 
 
-compound_statement : 
+compound_statement : {printf("-- Entered compound_statement\n");}
 	if_statement
 	| loop_statement
 	| case_statement
@@ -183,13 +183,13 @@ compound_statement :
 	;
 
 
-constant : 
+constant : {printf("-- Entered constant\n");}
 	CONSTANT
 	| /* empty */
 	;
 
 
-declarative_item :  
+declarative_item :  {printf("-- Entered declarative_item\n");}
 	type_declaration
 	| object_declaration
 	| subprogram_specification ';'
@@ -197,101 +197,103 @@ declarative_item :
 	; 
 
 
-declarative_part : 	
-	declarative_item declarative_part
+declarative_part : 	{printf("-- Entered declarative_part\n");}
+	declarative_item
+	| declarative_part declarative_item
 	| /* empty */
 	;
 
 
-discrete_choice : 
+discrete_choice : {printf("-- Entered discrete_choice\n");}
 	expression
 	| INTEGER_TYPE
 	| OTHERS
 	;
 
 
-discrete_choice_list :
+discrete_choice_list : {printf("-- Entered discrete_choice_list\n");}
 	discrete_choice_list '|' discrete_choice
 	| discrete_choice
 	| /* emtpy */
 	;
 
 
-elsif_list : 
-	elsif_statement elsif_list
+elsif_list : {printf("-- Entered elsif_list\n");}
+	elsif_list elsif_statement
+	| elsif_statement
 	| /* empty */
 	;
 
 
-else_statement : 
+else_statement : {printf("-- Entered else\n");}
 	ELSE expression THEN
 		sequence_of_statements
 	| /* empty */
 	;
 
 
-elsif_statement : 
+elsif_statement : {printf("-- Entered elsif_statement\n");}
 	ELSIF expression THEN
 		sequence_of_statements
 	;
 
 
-explicit_actual_parameter : 
+explicit_actual_parameter : {printf("-- Entered explicit_actual_parameter\n");}
 	expression
-	name
+	| name
 	;
 
 
-explicit_actual_parameter_list : 
+explicit_actual_parameter_list : {printf("-- Entered explicit_actual_parameter_list\n");}
 	explicit_actual_parameter_list ',' explicit_actual_parameter
 	| explicit_actual_parameter
 	| /* empty */
 	;
 
 
-expression : 
+expression : {printf("-- Entered expression\n");}
 	relation relation_list
 	;
 
 
-expression_list : 
+expression_list : {printf("-- Entered expression_list\n");}
 	expression_list ',' expression
 	| expression
 	| /* empty */
 	;
 
 
-factor : 
+factor : {printf("-- Entered factor\n");}
 	primary
 	| primary POWER_OP primary
 	| NOT primary
 	;
 
 
-formal_part : 
+formal_part : {printf("-- Entered formal_part\n");}
 	'(' parameter_specification parameter_specification_list ')'
 	| /* empty */ 
 	;
 
-/* Function call is part of name
-function_call : 
+
+function_call : {printf("-- Entered function_call\n");}
 	IDENTIFIER actual_parameter_part
 	;
-*/
 
-function_specification : 
+
+function_specification : {printf("-- Entered function_specification\n");}
 	FUNCTION IDENTIFIER formal_part RETURN type_definition
 	;
 
 
-identifier_list :
+identifier_list : {printf("-- Entered identifier_list\n");}
 	identifier_list ',' IDENTIFIER
 	| IDENTIFIER
 	| /* empty */
 	;
 
 
-if_statement : 
+if_statement : {printf("-- Entered if_statement\n");}
 	IF expression THEN
 		sequence_of_statements
 	elsif_list
@@ -300,112 +302,114 @@ if_statement :
 	;
 
 
-indexed_component : 
+indexed_component : {printf("-- Entered indexed_component\n");}
 	IDENTIFIER '(' expression expression_list ')'
 	;
 
 
-logical_operator : 
+logical_operator : {printf("-- Entered indexed_component\n");}
 	AND
 	| OR
 	;
 
 
-loop_statement : 
+loop_statement : {printf("-- Entered loop_statement\n");}
 	WHILE expression LOOP
 		sequence_of_statements
 	END LOOP ';'
 	;
 
 
-mode : 
+mode : {printf("-- Entered mode\n");}
 	OUT
 	| IN OUT
 	| /* empty */
 	;
 
 
-multiplying_operator_list : 
+multiplying_operator_list : {printf("-- Entered multiplying_operator_list\n");}
 	'*'
 	| '/'
 	| /* empty */
 	;
 
-name :   // Or call it variable :)
-	IDENTIFIER actual_parameter_part // The variable could be a function call
+name : {printf("-- Entered name\n");}  // Or call it variable :)
+	IDENTIFIER
 	| indexed_component
 	| selected_component
+	| function_call
 	;
 
 
-null_statement : 
+null_statement : {printf("-- Entered null_statement\n");}
 	NULL_ ';'
 	;
 
 
-object_declaration : 
+object_declaration : {printf("-- Entered object_declaration\n");}
 	IDENTIFIER identifier_list ':' constant type_definition assign_expression ';'
 	;
 
 
-optional_simple_expression : 
+optional_simple_expression : {printf("-- Entered optional_simple_expression\n");}
 	simple_expression
 	| /* empty */
 	;
 
 
-parameter_specification : 
+parameter_specification : {printf("-- Entered parameter_specification\n");}
 	IDENTIFIER identifier_list ':' mode type_definition assign_expression
 	;
 
 
-parameter_specification_list :
+parameter_specification_list : {printf("-- Entered parameter_specification_list\n");}
 	';' parameter_specification parameter_specification_list  
 	| /* empty */ 
 	;
 
 
-primary : 
+primary : {printf("-- Entered primary\n");}
 	INTEGER_LITERAL
 	| FLOAT_LITERAL
 	| BOOLEAN_LITERAL
 	| NULL_
 	| STRING_LITERAL
-	| name 
+	| name
 	| '(' expression ')'
 	;
 
 
-procedure_call_statement : 
+procedure_call_statement : {printf("-- Entered procedure_call_statement\n");}
 	IDENTIFIER actual_parameter_part ';'
 	;
 
 
-procedure_specification : 
+procedure_specification : {printf("-- Entered procedure_specification\n");}
 	PROCEDURE IDENTIFIER formal_part 
 	;
 
 
-record_type_definition : 
+record_type_definition : {printf("-- Entered record_type_definition\n");}
 	RECORD
 		component_list
 	END RECORD
 	;
 
 
-relation :
+relation : {printf("-- Entered relation\n");}
 	simple_expression
 	| simple_expression relational_operator simple_expression
 	;
 
 
-relation_list :
-	logical_operator relation relation_list
+relation_list : {printf("-- Entered relation_list\n");}
+	relation_list logical_operator relation
+	| logical_operator relation
 	| /* empty */
 	;
 
 
-relational_operator : 
+relational_operator : {printf("-- Entered relational relational_operator\n");}
 	'='
 	| '<'
 	| '>'
@@ -415,44 +419,41 @@ relational_operator :
 	;
 
 
-return_statement : 
+return_statement : {printf("-- Entered return_statement\n");}
 	RETURN optional_simple_expression';'
 	;
 
 
-selected_component : 
-	name '.' IDENTIFIER // Original rule was 
-						// name '.' IDENTIFIER 
-						// which allowed select directly from a function
+selected_component : {printf("-- Entered selected_component\n");}
+	name '.' IDENTIFIER
 	;
 
 
-sequence_of_statements : 
+sequence_of_statements : {printf("-- Entered sequence_of_statements\n");}
 	statement 
 	| statement sequence_of_statements
 	;
 
 
-simple_expression : 
+simple_expression : {printf("-- Entered simple_expression\n");}
 	unary_adding_operator term binary_adding_list
-	| term binary_adding_list
 	;
 
 
-simple_statement : 
+simple_statement : {printf("-- Entered simple_statement\n");}
 	null_statement
 	| return_statement
 	| procedure_call_statement
 	;
 
 
-statement : 
+statement : {printf("-- Entered statement\n");}
 	simple_statement
 	| compound_statement
 	;
 
 
-subprogram_body : 
+subprogram_body : {printf("-- Entered subprogram_body\n");}
 	subprogram_specification IS
 		declarative_part
 	BEGIN_
@@ -461,23 +462,23 @@ subprogram_body :
 	;
 
 
-subprogram_specification : 
+subprogram_specification : {printf("-- Entered subprogram_specification\n");}
 	procedure_specification 
 	| function_specification
 	;
 
 
-term : 
+term : {printf("-- Entered term\n");}
 	factor multiplying_operator_list
 	;
 
 
-type_declaration : 
+type_declaration : {printf("-- Entered type_declaration\n");}
 	TYPE IDENTIFIER IS type_definition ';'
 	;
 
 
-type_definition : 
+type_definition : {printf("-- Entered type_definition\n");}
 	INTEGER_TYPE
 	| REAL_TYPE
 	| CHARACTER_TYPE
@@ -487,9 +488,17 @@ type_definition :
 	;
 
 
-unary_adding_operator : 
+unary_adding_operator : {printf("-- Entered unary_adding_operator\n");}
 	'+'
 	| '-'
+	| /* empty */
+	;
+
+
+variable : {printf("-- Entered variable\n");}  // Or call it variable :)
+	IDENTIFIER
+	| indexed_component
+	| selected_component
 	;
 
 %%

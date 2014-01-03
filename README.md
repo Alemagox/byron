@@ -1,7 +1,8 @@
 byron
 =====
-TODO: type_declaration y type_definition
+TODO: 
 
+NOTAS: Se han implementado listas recursivas por la izquierda siempre que se ha podido y no han creado conflictos avance/reducción.
 
 // CAMBIOS en la memorio
 
@@ -10,6 +11,8 @@ TODO: type_declaration y type_definition
 - Quitar code_statement. Equivalen a quialified_expression y no tenemos expresiones cualificadas. Revisar manual de ADA para ver a lo que me refiero.
 
 - Quitar function_pefix y procedure_prefix, dejarlo como program_name. Cambiar también varaible_name por name. Página 21. En página 14 quitar al regla variable_name. Sustituir todos los variable_name por name.
+
+- Renombar name 
 
 - Página 12. Condition no existe y en la especificación de ADA se dice que es un boolean_expression y ya. Revisar qeu cambios hacer a condition y expression para que todo cuadre. -> Solucion: condition se cambia por expression y expression se actualiza. Cambios en expression y primary ->
 
@@ -34,4 +37,10 @@ TODO: type_declaration y type_definition
 - Sustituir default_expression por expression.
 
 - Página 6. Simplificar type_definition añadiendo directamente array y record type_definition. En type_declaration cambiar complex_type_definition por type_definition.
+
+- Eliminar body de palabras reservadas
+
+
+
+
 

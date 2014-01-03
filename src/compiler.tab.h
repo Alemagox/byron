@@ -34,7 +34,7 @@
 # define YY_YY_COMPILER_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -48,52 +48,51 @@ extern int yydebug;
     AND = 258,
     ARRAY = 259,
     BEGIN_ = 260,
-    BODY = 261,
-    CASE = 262,
-    CONSTANT = 263,
-    DO = 264,
-    ELSE = 265,
-    ELSIF = 266,
-    END = 267,
-    FUNCTION = 268,
-    IF = 269,
-    IDENTIFIER = 270,
-    IN = 271,
-    IS = 272,
-    LOOP = 273,
-    NOT = 274,
-    NULL_ = 275,
-    OF = 276,
-    OR = 277,
-    OTHERS = 278,
-    OUT = 279,
-    PROCEDURE = 280,
-    RECORD = 281,
-    RETURN = 282,
-    THEN = 283,
-    TYPE = 284,
-    WHEN = 285,
-    WHILE = 286,
-    ARROW = 287,
-    ASSIGNATION_OP = 288,
-    NOT_EQUAL_OP = 289,
-    GREATER_EQUAL_OP = 290,
-    LESSER_EQUAL_OP = 291,
-    POWER_OP = 292,
-    PUT = 293,
-    GET = 294,
-    LENGTH = 295,
-    NEW_LINE = 296,
-    CONCAT = 297,
-    INTEGER_TYPE = 298,
-    REAL_TYPE = 299,
-    CHARACTER_TYPE = 300,
-    BOOLEAN_TYPE = 301,
-    INTEGER_LITERAL = 302,
-    FLOAT_LITERAL = 303,
-    CHARACTER_LITERAL = 304,
-    STRING_LITERAL = 305,
-    BOOLEAN_LITERAL = 306
+    CASE = 261,
+    CONSTANT = 262,
+    DO = 263,
+    ELSE = 264,
+    ELSIF = 265,
+    END = 266,
+    FUNCTION = 267,
+    IF = 268,
+    IDENTIFIER = 269,
+    IN = 270,
+    IS = 271,
+    LOOP = 272,
+    NOT = 273,
+    NULL_ = 274,
+    OF = 275,
+    OR = 276,
+    OTHERS = 277,
+    OUT = 278,
+    PROCEDURE = 279,
+    RECORD = 280,
+    RETURN = 281,
+    THEN = 282,
+    TYPE = 283,
+    WHEN = 284,
+    WHILE = 285,
+    ARROW = 286,
+    ASSIGNMENT_OP = 287,
+    NOT_EQUAL_OP = 288,
+    GREATER_EQUAL_OP = 289,
+    LESSER_EQUAL_OP = 290,
+    POWER_OP = 291,
+    PUT = 292,
+    GET = 293,
+    LENGTH = 294,
+    NEW_LINE = 295,
+    CONCAT = 296,
+    INTEGER_TYPE = 297,
+    REAL_TYPE = 298,
+    CHARACTER_TYPE = 299,
+    BOOLEAN_TYPE = 300,
+    INTEGER_LITERAL = 301,
+    FLOAT_LITERAL = 302,
+    CHARACTER_LITERAL = 303,
+    STRING_LITERAL = 304,
+    BOOLEAN_LITERAL = 305
   };
 #endif
 
@@ -102,10 +101,10 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 21 "syntacticAnalyzer.y" /* yacc.c:1909  */
+#line 22 "syntacticAnalyzer.y" /* yacc.c:1909  */
 int integer; char string[50];
 
-#line 109 "compiler.tab.h" /* yacc.c:1909  */
+#line 108 "compiler.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

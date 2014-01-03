@@ -1,8 +1,9 @@
 #!/bin/bash
 
-clear clear
+clear 
+clear
 
-bison -d syntacticAnalyzer.y -o compiler.tab.c
+bison --debug --report=all -d syntacticAnalyzer.y -o compiler.tab.c 
 
 flex lexicalAnalyzer.l 
 

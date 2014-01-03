@@ -1,3 +1,142 @@
+-- arithmeticInterpreter.byr
+
+--With										-- To compile in Ada
+--Ada.Text_IO;  					-- To compile in Ada
+
 procedure main is
-begin 
+
+   --Use Ada.Text_IO; 		-- To compile in Ada
+
+   procedure expresion(C: in out Character; resultado: out Integer);
+
+   procedure error is
+   begin   
+
+      Put("Expresion erronea");  
+
+   end error;
+
+
+   procedure numero(C: in out Character; resultado: out Integer) is
+   begin
+
+      resultado := 0;
+      
+      if (C < '0' or C > '9') then
+         error;        
+      end if;
+
+      while (C > '0' and C < '9') loop
+         --resultado := 10*resultado+Character'Pos(C)-Character'Pos('0');	-- To compile in Ada
+         resultado := 10*resultado + C - '0' ; 														-- Byron style, explicit casting.
+         Get (C);
+      end loop; 
+
+   end numero;
+
+   procedure factor(C: in out Character; resultado: out Integer) is
+   begin
+
+      resultado := 0;
+      
+      if (C = '(') then
+         Get (C);
+         
+         expresion(C,resultado);
+         
+         if (C = ')') then
+            Get (C);
+         else
+            Put("1");
+            error;
+         end if;
+         
+      else
+      	numero(C, resultado);   
+      end if;
+
+   end factor;
+       
+   procedure termino(C: in out Character; resultado: out Integer) is
+      aux : Integer;
+      op : Character;
+   begin
+      factor(C, resultado);
+      
+      while (C = '*' or C = '/') loop
+         op:=C;
+         Get(C);
+         factor(C, aux);
+         
+         case Character'Pos(op) is
+            when Character'Pos('*') => resultado := resultado*aux;
+            when Character'Pos('/') => resultado := resultado/aux;
+            when others => null;              
+         end case;
+      end loop;
+            
+   end termino;
+
+  procedure expresion(C: in out Character; resultado: out Integer) is 
+      aux : Integer;
+      op : Character;
+  begin
+         
+      if(C='+' or C='-')then
+         op := C;
+         Get(C);
+      end if;
+      
+      termino(C, resultado);
+      
+      if (op = '-') then
+         resultado := -resultado;
+      end if;
+      
+      while (C = '+' or C = '-') loop
+         op:=C;
+         Get(C);
+         termino(C, aux);
+         
+         --case Character'Pos(op) is																	-- To compile in Ada
+         --   when Character'Pos('+') => resultado := resultado+aux;	-- To compile in Ada
+         --   when Character'Pos('-') => resultado := resultado-aux;	-- To compile in Ada
+         --   when others => null;              											-- To compile in Ada
+         --end case;																									-- To compile in Ada
+
+         case op is																			-- Byron style, Character is directly considered Integer
+            when '+' => resultado := resultado+aux;			-- Byron style
+            when '-' => resultado := resultado-aux;			-- Byron style
+            when others => null;              					-- Byron style
+         end case;																			-- Byron style
+
+      end loop;
+            
+   end expresion;
+      
+      
+   C : Character;
+   resultado : Integer;
+
+begin
+
+   C:='y';
+   
+   -- Debido a limitaciones del get de Ada las expresiones han de terminar con ;
+   
+   while (C /= 'n') loop
+      Get(C);
+      expresion(C, resultado);
+      
+      Put("Result is: "); 
+      -- Put(Integer'Image(resultado)); -- To compile in Ada
+      Put(resultado);  -- Byron style, implicit casting to literal_string
+      new_line;
+      
+      Put("New expression?(y/n): ");
+      Get (C);
+   end loop;
+    
+   null;
+
 end main;

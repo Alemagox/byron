@@ -4,7 +4,7 @@
 // gcc lex.yy.c compiler.tab.c -lfl -o compiler
 
 #include "compiler.tab.h"  // We need the tokens expressed in .tab.h 
-
+#include <stdio.h>
 
 /* Defining variables */
 void error(char*); //Function to display error 
@@ -32,7 +32,6 @@ exponent 		{exponent_neg}|{exponent_pos}
 and				{ column=column+strlen(yytext); return AND;}
 array			{ column=column+strlen(yytext); return ARRAY;}
 begin			{ column=column+strlen(yytext); return BEGIN_;}
-body			{ column=column+strlen(yytext); return BODY;}
 case			{ column=column+strlen(yytext); return CASE;}
 constant		{ column=column+strlen(yytext); return CONSTANT;}
 do 				{ column=column+strlen(yytext); return DO;}
