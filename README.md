@@ -40,7 +40,9 @@ NOTAS: Se han implementado listas recursivas por la izquierda siempre que se ha 
 
 - Eliminar body de palabras reservadas
 
+- Name se elimina, ahora solo existe variable u function_call pasa a ser una primary
 
+- Explicit_actual_paremeter pasa a ser igual a expression. Se cambian las reglas de explicit actual_parameter a expression.
 
-
+- Cambiamos el componente indezado para que se haga con corchetes. Generaba conflictos con las llamadas a funciones.
 

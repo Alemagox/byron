@@ -12,7 +12,7 @@ procedure main is
    procedure error is
    begin   
 
-      Put("Expresion erronea");  
+      null; 
 
    end error;
 

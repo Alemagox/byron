@@ -74,7 +74,7 @@ True								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 False								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 
 	/* Special characters */
-"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|":"|"."|","|";"|"|" {return yytext[0];}
+"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|"["|"]"|":"|"."|","|";"|"|" {return yytext[0];}
 "=>" 	{ column=column+strlen(yytext); return ARROW; }
 "**"	{ column=column+strlen(yytext); return POWER_OP;}
 ":="	{ column=column+strlen(yytext); return ASSIGNMENT_OP;}
@@ -83,6 +83,7 @@ False								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 "<="	{ column=column+strlen(yytext); return LESSER_EQUAL_OP;}
 
 {character}({alphanumeric}|_)*	{return IDENTIFIER;}
+
 
 	/* Comments */
 "--".* 					{/* ignore  line */}

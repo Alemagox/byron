@@ -103,17 +103,15 @@ main :
 	; 
 
 
+actual_parameter_list : 
+	expression expression_list
+	;
+
+
 actual_parameter_part : 
-	'(' explicit_actual_parameter_list ')'
-	| /* empty */
+	'(' ')' 
+	| '(' actual_parameter_list ')' 
 	;
-
-
-after_end_program_name :  // Simplify in semantic iteration
-	IDENTIFIER
-	| /* empty */
-	;
-
 
 
 array_type_definition : 
@@ -128,14 +126,14 @@ assign_expression :
 
 
 assignment_statement :
-	name ASSIGNMENT_OP expression ';' // In semantics be careful
+	variable ASSIGNMENT_OP expression ';' // In semantics be careful
 									  // to not to assign in a function call
 	;
 
 
 binary_adding_list : 
-	term
-	| term binary_adding_operator binary_adding_list 
+	binary_adding_operator term
+	| binary_adding_operator term binary_adding_list 
 	;
 
 
@@ -218,7 +216,7 @@ discrete_choice_list :
 
 
 elsif_list : 
-	elsif_statement elsif_list
+	elsif_list elsif_statement
 	| /* empty */
 	;
 
@@ -236,27 +234,13 @@ elsif_statement :
 	;
 
 
-explicit_actual_parameter : 
-	expression
-	name
-	;
-
-
-explicit_actual_parameter_list : 
-	explicit_actual_parameter_list ',' explicit_actual_parameter
-	| explicit_actual_parameter
-	| /* empty */
-	;
-
-
 expression : 
 	relation relation_list
 	;
 
 
 expression_list : 
-	expression_list ',' expression
-	| expression
+	',' expression expression_list
 	| /* empty */
 	;
 
@@ -273,11 +257,11 @@ formal_part :
 	| /* empty */ 
 	;
 
-/* Function call is part of name
+
 function_call : 
-	IDENTIFIER actual_parameter_part
+	IDENTIFIER actual_parameter_part 
 	;
-*/
+
 
 function_specification : 
 	FUNCTION IDENTIFIER formal_part RETURN type_definition
@@ -301,7 +285,7 @@ if_statement :
 
 
 indexed_component : 
-	IDENTIFIER '(' expression expression_list ')'
+	IDENTIFIER '[' expression expression_list ']'
 	;
 
 
@@ -325,16 +309,9 @@ mode :
 	;
 
 
-multiplying_operator_list : 
+multiplying_operator : 
 	'*'
 	| '/'
-	| /* empty */
-	;
-
-name :   // Or call it variable :)
-	IDENTIFIER actual_parameter_part // The variable could be a function call
-	| indexed_component
-	| selected_component
 	;
 
 
@@ -345,12 +322,6 @@ null_statement :
 
 object_declaration : 
 	IDENTIFIER identifier_list ':' constant type_definition assign_expression ';'
-	;
-
-
-optional_simple_expression : 
-	simple_expression
-	| /* empty */
 	;
 
 
@@ -368,11 +339,13 @@ parameter_specification_list :
 primary : 
 	INTEGER_LITERAL
 	| FLOAT_LITERAL
+	| CHARACTER_LITERAL
 	| BOOLEAN_LITERAL
 	| NULL_
 	| STRING_LITERAL
-	| name 
-	| '(' expression ')'
+	| variable
+	| function_call
+	| '(' expression ')' 
 	;
 
 
@@ -416,12 +389,13 @@ relational_operator :
 
 
 return_statement : 
-	RETURN optional_simple_expression';'
+	RETURN ';'
+	| RETURN simple_expression ';'
 	;
 
 
 selected_component : 
-	name '.' IDENTIFIER // Original rule was 
+	variable '.' IDENTIFIER // Original rule was 
 						// name '.' IDENTIFIER 
 						// which allowed select directly from a function
 	;
@@ -435,7 +409,9 @@ sequence_of_statements :
 
 simple_expression : 
 	unary_adding_operator term binary_adding_list
+	| unary_adding_operator term 
 	| term binary_adding_list
+	| term 
 	;
 
 
@@ -453,11 +429,17 @@ statement :
 
 
 subprogram_body : 
-	subprogram_specification IS
-		declarative_part
-	BEGIN_
-		sequence_of_statements
-	END after_end_program_name ';'
+		subprogram_specification IS
+			declarative_part
+		BEGIN_
+			sequence_of_statements
+		END IDENTIFIER';'
+
+	|	subprogram_specification IS
+			declarative_part
+		BEGIN_
+			sequence_of_statements
+		END ';'
 	;
 
 
@@ -468,9 +450,9 @@ subprogram_specification :
 
 
 term : 
-	factor multiplying_operator_list
+	factor
+	| multiplying_operator term
 	;
-
 
 type_declaration : 
 	TYPE IDENTIFIER IS type_definition ';'
@@ -492,6 +474,12 @@ unary_adding_operator :
 	| '-'
 	;
 
+variable :  
+	IDENTIFIER
+	| indexed_component
+	| selected_component
+	;
+
 %%
 //Codigo C adicional
 int main(int argc, char** argv){
@@ -508,5 +496,5 @@ int main(int argc, char** argv){
 }
 
 void yyerror(char* message){
-	printf("-- Error ocurred in line %i, column %i: %s. Last read: '%s'-''\n", line, column, message, yytext);
+	printf("-- Error ocurred in line %i, column %i: %s. Last read token read '%s'\n", line, column, message, yytext);
 }
