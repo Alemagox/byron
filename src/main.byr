@@ -1,142 +1,91 @@
--- arithmeticInterpreter.byr
+-- funcionesArraysRecords
 
---With										-- To compile in Ada
---Ada.Text_IO;  					-- To compile in Ada
+--With                        -- To compile in Ada
+--Ada.Text_IO;                -- To compile in Ada
 
 procedure main is
 
-   --Use Ada.Text_IO; 		-- To compile in Ada
+   -- Use Ada.Text_IO;        -- To compile in Ada
 
-   procedure expresion(C: in out Character; resultado: out Integer);
-
-   procedure error is
-   begin   
-
-      null; 
-
-   end error;
-
-
-   procedure numero(C: in out Character; resultado: out Integer) is
-   begin
-
-      resultado := 0;
-      
-      if (C < '0' or C > '9') then
-         error;        
-      end if;
-
-      while (C > '0' and C < '9') loop
-         --resultado := 10*resultado+Character'Pos(C)-Character'Pos('0');	-- To compile in Ada
-         resultado := 10*resultado + C - '0' ; 														-- Byron style, explicit casting.
-         Get (C);
-      end loop; 
-
-   end numero;
-
-   procedure factor(C: in out Character; resultado: out Integer) is
-   begin
-
-      resultado := 0;
-      
-      if (C = '(') then
-         Get (C);
-         
-         expresion(C,resultado);
-         
-         if (C = ')') then
-            Get (C);
-         else
-            Put("1");
-            error;
-         end if;
-         
-      else
-      	numero(C, resultado);   
-      end if;
-
-   end factor;
-       
-   procedure termino(C: in out Character; resultado: out Integer) is
-      aux : Integer;
-      op : Character;
-   begin
-      factor(C, resultado);
-      
-      while (C = '*' or C = '/') loop
-         op:=C;
-         Get(C);
-         factor(C, aux);
-         
-         case Character'Pos(op) is
-            when Character'Pos('*') => resultado := resultado*aux;
-            when Character'Pos('/') => resultado := resultado/aux;
-            when others => null;              
-         end case;
-      end loop;
+   type Registro is 
+      record
+         Campo1: Integer;
+         Campo2: Integer;         
+      end record;
+   
+   -- type ArrayRegistros is array(0..3) of Registro;    -- To compile in Ada
+   type ArrayRegistros is array(4) of Registro;          -- Byron style
             
-   end termino;
-
-  procedure expresion(C: in out Character; resultado: out Integer) is 
-      aux : Integer;
-      op : Character;
-  begin
-         
-      if(C='+' or C='-')then
-         op := C;
-         Get(C);
-      end if;
+   function RegistroCero return Registro is
+      aux: Registro;
+   begin
+      aux.Campo1 :=0;
+      aux.Campo2 :=0;
       
-      termino(C, resultado);
-      
-      if (op = '-') then
-         resultado := -resultado;
-      end if;
-      
-      while (C = '+' or C = '-') loop
-         op:=C;
-         Get(C);
-         termino(C, aux);
-         
-         --case Character'Pos(op) is																	-- To compile in Ada
-         --   when Character'Pos('+') => resultado := resultado+aux;	-- To compile in Ada
-         --   when Character'Pos('-') => resultado := resultado-aux;	-- To compile in Ada
-         --   when others => null;              											-- To compile in Ada
-         --end case;																									-- To compile in Ada
-
-         case op is																			-- Byron style, Character is directly considered Integer
-            when '+' => resultado := resultado+aux;			-- Byron style
-            when '-' => resultado := resultado-aux;			-- Byron style
-            when others => null;              					-- Byron style
-         end case;																			-- Byron style
-
-      end loop;
+      return aux;
+   end RegistroCero;
+   
+   function InicializarArrayRegistros return ArrayRegistros is
+      i : Integer := 0;
+      auxArray: ArrayRegistros;
+   begin
             
-   end expresion;
+      while i < ArrayRegistros'Length loop               -- ¡Atributo de tipo!
+         auxArray[i]:=registroCero;
+         i:=i+1;
+      end loop;
       
+      return auxArray;      
+   end InicializarArrayRegistros;
+   
+   procedure ImprimirRegistro(auxRegistro: in Registro) is
+   begin
+      Put("  Campo1: "); 
+      -- Put(Integer'Image(auxRegistro.Campo1));         -- To compile in Ada
+      Put(auxRegistro.Campo1);                           -- Byron style, explicit casting
+      New_Line;
       
-   C : Character;
-   resultado : Integer;
+      Put("  Campo2: "); 
+      -- Put(Integer'Image(auxRegistro.Campo2));         -- To compile in Ada
+      Put(auxRegistro.Campo2);                           -- Byron style, explicit casting
+      New_Line;
+   end ImprimirRegistro;
+   
+   procedure ImprimirArrayRegistros (auxArrayRegistros: in ArrayRegistros) is
+      i : Integer := 0;
+   begin
+            
+      while i < auxArrayRegistros'Length loop            -- ¡Atributo de variable!
+         Put("Registro ");
+         -- Put(Integer'Image(i));         -- To compile in Ada
+         Put(i);                           -- Byron style, explicit casting
+         Put(":");
+         New_Line;
+         
+         imprimirRegistro(auxArrayRegistros(i));         i:=i+1;
+      end loop;
+        
+   end ImprimirArrayRegistros;
+   
+   auxArray: ArrayRegistros;
 
 begin
-
-   C:='y';
+  Put("Este es el registro 0: ");
+  New_Line;
+  ImprimirRegistro(registroCero);
+  New_Line; New_Line;
    
-   -- Debido a limitaciones del get de Ada las expresiones han de terminar con ;
+  Put("Aux Array sin inicializar: ");
+  New_Line;
+  ImprimirArrayRegistros(auxArray);
+  New_Line; New_Line;
    
-   while (C /= 'n') loop
-      Get(C);
-      expresion(C, resultado);
-      
-      Put("Result is: "); 
-      -- Put(Integer'Image(resultado)); -- To compile in Ada
-      Put(resultado);  -- Byron style, implicit casting to literal_string
-      new_line;
-      
-      Put("New expression?(y/n): ");
-      Get (C);
-   end loop;
-    
-   null;
+  Put("Aux Array inicializado: ");
+  New_Line;
+  auxArray:=InicializarArrayRegistros; 
+  ImprimirArrayRegistros(auxArray);
+  New_Line; New_Line; 
+   
+  null;
 
 end main;

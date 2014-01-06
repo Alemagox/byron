@@ -28,7 +28,7 @@ FILE *yyout;		// Compiled file
 %token BEGIN_	// It created conflict with BEGIN from flex :(
 %token CASE
 %token CONSTANT
-%token DO
+//%token DO
 %token ELSE
 %token ELSIF
 %token END
@@ -222,7 +222,7 @@ elsif_list :
 
 
 else_statement : 
-	ELSE expression THEN
+	ELSE
 		sequence_of_statements
 	| /* empty */
 	;
@@ -260,6 +260,7 @@ formal_part :
 
 function_call : 
 	IDENTIFIER actual_parameter_part 
+	| IDENTIFIER LENGTH // Identifier is an array variable
 	;
 
 
@@ -305,6 +306,7 @@ loop_statement :
 mode : 
 	OUT
 	| IN OUT
+	| IN
 	| /* empty */
 	;
 
@@ -351,6 +353,10 @@ primary :
 
 procedure_call_statement : 
 	IDENTIFIER actual_parameter_part ';'
+	| PUT '(' STRING_LITERAL ')' ';'
+	| PUT '(' variable ')' ';'
+	| GET '(' variable ')' ';'
+	| NEW_LINE ';'
 	;
 
 
@@ -451,7 +457,7 @@ subprogram_specification :
 
 term : 
 	factor
-	| multiplying_operator term
+	| term multiplying_operator factor
 	;
 
 type_declaration : 
@@ -466,6 +472,7 @@ type_definition :
 	| BOOLEAN_TYPE
 	| array_type_definition
 	| record_type_definition
+	| IDENTIFIER // Custom type, must be defined before
 	;
 
 

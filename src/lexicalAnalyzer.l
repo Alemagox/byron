@@ -34,7 +34,7 @@ array			{ column=column+strlen(yytext); return ARRAY;}
 begin			{ column=column+strlen(yytext); return BEGIN_;}
 case			{ column=column+strlen(yytext); return CASE;}
 constant		{ column=column+strlen(yytext); return CONSTANT;}
-do 				{ column=column+strlen(yytext); return DO;}
+ /*do 				{ column=column+strlen(yytext); return DO;}*/
 else			{ column=column+strlen(yytext); return ELSE;}
 elsif			{ column=column+strlen(yytext); return ELSIF;}
 end				{ column=column+strlen(yytext); return END;}
@@ -69,7 +69,7 @@ Boolean		{ column=column+strlen(yytext); return BOOLEAN_TYPE;}
 {numeral}{exponent_neg}				{ column=column+strlen(yytext); return FLOAT_LITERAL;}
 {numeral}"."{numeral}{exponent}?	{ column=column+strlen(yytext); return FLOAT_LITERAL;}
 \'.\'								{ column=column+strlen(yytext); return CHARACTER_LITERAL;} 	/* ' */
-\"({alphanumeric}|" ")*\"    		{ column=column+strlen(yytext); return STRING_LITERAL;}   	/* " */
+\"({alphanumeric}|" "|.)*\"   		{ column=column+strlen(yytext); return STRING_LITERAL;}   	/* " */
 True								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 False								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 
@@ -82,19 +82,20 @@ False								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 ">="	{ column=column+strlen(yytext); return GREATER_EQUAL_OP;}
 "<="	{ column=column+strlen(yytext); return LESSER_EQUAL_OP;}
 
-{character}({alphanumeric}|_)*	{return IDENTIFIER;}
-
 
 	/* Comments */
 "--".* 					{/* ignore  line */}
 '--*'.*'*--'	{/* ignore lines*/}
 
 	/* Built in functions */
-'Put'		{ column=column+strlen(yytext); return PUT; }
-'Get' 		{ column=column+strlen(yytext); return GET; }
+Put			{ column=column+strlen(yytext); return PUT; }
+Get			{ column=column+strlen(yytext); return GET; }
 \'Length	{ column=column+strlen(yytext); return LENGTH; }	/* ' */
-'New_Line'	{ column=column+strlen(yytext); return NEW_LINE; }
+New_Line 	{ column=column+strlen(yytext); return NEW_LINE; }
 "++"		{ column=column+strlen(yytext); return CONCAT; }
+
+
+{character}({alphanumeric}|_)*	{return IDENTIFIER;}
 
 	/* Non printable characters */
 [ ]			{column++;/*ignore spaces*/}

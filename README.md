@@ -46,3 +46,4 @@ NOTAS: Se han implementado listas recursivas por la izquierda siempre que se ha 
 
 - Cambiamos el componente indezado para que se haga con corchetes. Generaba conflictos con las llamadas a funciones.
 
+- quitar de palabras reservadas el do. Tenemos el bucle while y no lo necesita
