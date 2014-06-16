@@ -1,8 +1,10 @@
 %{
-// Remember to run bison to generate tokens and symbols table before running flex
-// flex lexicalAnalyzer.l 
-// gcc lex.yy.c compiler.tab.c -lfl -o compiler
-
+//////////////////////////////////////////////////////////////////////////////////////
+// Instructions of use:
+//  - Remember to run bison to generate tokens and symbols table before running flex.
+//  - flex lexicalAnalyzer.l 
+//  - gcc lex.yy.c compiler.tab.c -lfl -o compiler
+#include "symbolsTable.h" 
 #include "compiler.tab.h"  // We need the tokens expressed in .tab.h 
 #include <stdio.h>
 
@@ -14,9 +16,10 @@ int column=1;
 
 %}
 
-	/* Definitions Section */
-
-	/* To test regex quickly -> http://gskinner.com/RegExr/ */
+/************************************************************
+  Definitions section 
+   - To test regex quickly -> http://gskinner.com/RegExr/
+*/
 character		[a-zA-Z]
 digit			[0-9]
 numeral			({digit}+)(_{digit}+)*
@@ -74,7 +77,7 @@ True								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 False								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 
 	/* Special characters */
-"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|"["|"]"|":"|"."|","|";"|"|" {return yytext[0];}
+"="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|"["|"]"|":"|"."|","|";"|"|" {column=column+strlen(yytext); return yytext[0];}
 "=>" 	{ column=column+strlen(yytext); return ARROW; }
 "**"	{ column=column+strlen(yytext); return POWER_OP;}
 ":="	{ column=column+strlen(yytext); return ASSIGNMENT_OP;}
@@ -84,8 +87,8 @@ False								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 
 
 	/* Comments */
-"--".* 					{/* ignore  line */}
-'--*'.*'*--'	{/* ignore lines*/}
+"--".* 					{column=column+strlen(yytext);/* ignore  line */}
+'--*'.*'*--'	{column=column+strlen(yytext);/* ignore lines*/}
 
 	/* Built in functions */
 Put			{ column=column+strlen(yytext); return PUT; }
@@ -95,9 +98,18 @@ New_Line 	{ column=column+strlen(yytext); return NEW_LINE; }
 "++"		{ column=column+strlen(yytext); return CONCAT; }
 
 
-{character}({alphanumeric}|_)*	{return IDENTIFIER;}
+{character}({alphanumeric}|_)*	{column=column+strlen(yytext);
+	                             strcpy(yylval.string, yytext); 
+	                             return IDENTIFIER;}
 
 	/* Non printable characters */
+	/* Fix column problem: 
+	   - Add another int var which name is increment
+	   - In increment you'll put the size of the token just read
+	   - Before reading the token, add to column the previous increment
+	   - After that, update the increment value to the current token
+	   - Example: [ ] { column+=increment; increment = 1; -*ignore spaces *- }
+	*/
 [ ]			{column++;/*ignore spaces*/}
 \t 			{column=column+4;/* ignore tabs*/}
 \n 			{line++; column=1;/*return  END_LINE;*/}
