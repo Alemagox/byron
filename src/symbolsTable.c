@@ -14,19 +14,37 @@ void getVariableTypeName( char *name, variableType vType );
 void addTypesMethods( symbolsTable *sT ){
   registerStruct *auxRegister;
 
+  // main
   auxRegister = createRegister( "main", sT->currentScope,  Procedure, Void );
   markSubprogramAsDefined( auxRegister );
   addRegister( sT, auxRegister ); 
 
 
+  //Put
   auxRegister = createRegister( "Put", sT->currentScope,  Procedure, Void );
   markSubprogramAsDefined( auxRegister );
-  addRegister( sT, auxRegister ); 
+  addRegisterToList(
+    &auxRegister->registerList, 
+    createRegister( "_put_parameter", sT->currentScope,
+                    In, String 
+                  )
+  );
+  auxRegister->nRegisters = 1;
+  addRegister( sT, auxRegister );
 
+  // Get
   auxRegister = createRegister( "Get", sT->currentScope,  Procedure, Void ); 
   markSubprogramAsDefined( auxRegister );
+  addRegisterToList(
+    &auxRegister->registerList, 
+    createRegister( "_get_parameter", sT->currentScope,
+                    Out, String 
+                  )
+  );
+  auxRegister->nRegisters = 1;
   addRegister( sT, auxRegister ); 
 
+  // New_line
   auxRegister = createRegister( "New_Line", sT->currentScope,  Procedure, Void ); 
   markSubprogramAsDefined( auxRegister );
   addRegister( sT, auxRegister ); 
@@ -514,7 +532,7 @@ void printSubprogramRegisterList( registerStruct *subprogram ){
         iterator=iterator->hh.next )
   {
     getSymbolTypeName( name, iterator->typeSymbol );
-    getVariableTypeName( nameVar, iterator->typeSymbol );
+    getVariableTypeName( nameVar, iterator->typeVariable );
 
     printf("    + Param(%u): id -> %s; symbolType -> %s; variableType -> %s\n", 
             counter, iterator->key.id, name, nameVar);

@@ -602,8 +602,17 @@ procedure_call_statement :
 	}
 
 	| PUT '(' STRING_LITERAL ')' ';'
+		{
+
+		}
 	| PUT '(' variable ')' ';'
+		{
+
+		}
 	| GET '(' variable ')' ';'
+		{
+			
+		}
 	| NEW_LINE ';'
 	;
 
@@ -946,9 +955,9 @@ int main(int argc, char** argv){
 
 		yyparse();
 
-		printf("-- Parsing finished.\n");
+		printf("-- Parsing finished.\n\n");
 	}
-	else printf("-- Please specify a file to compile\n");
+	else printf("-- Please specify a file to compile\n\n");
 
 ///////
 	
