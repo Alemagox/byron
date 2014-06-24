@@ -87,7 +87,7 @@ False								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 
 
 	/* Comments */
-"--".* 					{column=column+strlen(yytext);/* ignore  line */}
+"--".* 			{column=column+strlen(yytext);/* ignore  line */}
 '--*'.*'*--'	{column=column+strlen(yytext);/* ignore lines*/}
 
 	/* Built in functions */

@@ -149,6 +149,10 @@ int checkAssignmentType( registerStruct *r1, registerStruct *r2 );
 
 int checkIfNumeric( char *errorString, registerStruct *r, int operationType );
 
+int checkIfOthers( char *errorString, registerStruct *r1, registerStruct *r2 );
+
+int checkIfDiscreteChoice( char *errorString, registerStruct *r );
+
 variableType getFactorVariableType( registerStruct *r1, registerStruct *r2 );
 
 int forceCasting( variableType vT1, variableType vT2 );
@@ -159,6 +163,7 @@ int forceCasting( variableType vT1, variableType vT2 );
 void getSymbolTypeName( char *name, symbolType sType );
 void getVariableTypeName( char *name, variableType vType );
 
+void printRegister(registerStruct r);
 void printSymbolsTable( symbolsTable sT );
 
 /**********************

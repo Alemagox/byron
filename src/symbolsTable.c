@@ -180,7 +180,7 @@ void destroySymbolsTable( symbolsTable *sT ) {
 ***********************/
 void enterScope( symbolsTable *sT ){
   sT->currentScope++;
-};
+}
 
 void exitScope( symbolsTable *sT ){
   registerStruct *iterator = sT->lastRegister;
@@ -202,7 +202,7 @@ void exitScope( symbolsTable *sT ){
 
   // Decrease currentScope
   sT->currentScope--;
-};
+}
 
 void markSubprogramAsDefined( registerStruct *r ){
   r->defined = 1;
@@ -302,7 +302,9 @@ int checkIfNumeric( char *errorString, registerStruct *r, int operationType ){
       { "Factor cannot be multiplied",    // operationType == 0
         "Term cannot be added",           // operationType == 1
         "Expression cannot be compared",  // operationType == 2
-        "Condition can't be evaluated"    // operationType == 3
+        "Condition can't be evaluated",   // operationType == 3
+        "Loop can't be evaluated",        // operationType == 4
+        "Case can't be evaluated"         // operationType == 5
       };
 
   
@@ -329,6 +331,45 @@ int checkIfNumeric( char *errorString, registerStruct *r, int operationType ){
     return -2;
   }
 
+  return 0;
+}
+
+int checkIfOthers( char *errorString, registerStruct *r1, registerStruct *r2 ){
+  
+  if(  r1->typeVariable == Void || r2->typeVariable == Void )
+  {
+    
+    sprintf(  errorString,"Others must be alone in a dsicrete choice."  ); 
+    return -1;
+  }
+  
+  return 0;
+}
+
+int checkIfDiscreteChoice( char *errorString, registerStruct *r ){
+  char string1[15];
+  
+  // Check if symbol is a multiplyable type
+  if( r->typeSymbol != Variable  &&  r->typeSymbol != Literal )
+  {
+    getSymbolTypeName(string1, r->typeSymbol);
+    sprintf(  errorString, "Incorrect discrete choice -> typeSymbol is %s", 
+              string1
+           ); 
+    return -1;
+  }
+
+  if( r->typeVariable != Integer  &&  r->typeVariable != Character  && 
+      r->typeVariable != Real     &&  r->typeVariable != Bool     
+    )
+  {
+    getVariableTypeName(string1, r->typeSymbol);
+    sprintf(  errorString, "Incorrect discrete choice -> typeVariable is %s", 
+              string1
+           ); 
+    return -2;
+  }
+  
   return 0;
 }
 

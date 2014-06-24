@@ -8,7 +8,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 37
+#define YY_FLEX_SUBMINOR_VERSION 35
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -141,7 +141,15 @@ typedef unsigned int flex_uint32_t;
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k.
+ * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
+ * Ditto for the __ia64__ case accordingly.
+ */
+#define YY_BUF_SIZE 32768
+#else
 #define YY_BUF_SIZE 16384
+#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -153,12 +161,7 @@ typedef unsigned int flex_uint32_t;
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 #endif
 
-#ifndef YY_TYPEDEF_YY_SIZE_T
-#define YY_TYPEDEF_YY_SIZE_T
-typedef size_t yy_size_t;
-#endif
-
-extern yy_size_t yyleng;
+extern int yyleng;
 
 extern FILE *yyin, *yyout;
 
@@ -184,6 +187,11 @@ extern FILE *yyin, *yyout;
 
 #define unput(c) yyunput( c, (yytext_ptr)  )
 
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef size_t yy_size_t;
+#endif
+
 #ifndef YY_STRUCT_YY_BUFFER_STATE
 #define YY_STRUCT_YY_BUFFER_STATE
 struct yy_buffer_state
@@ -201,7 +209,7 @@ struct yy_buffer_state
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
 	 */
-	yy_size_t yy_n_chars;
+	int yy_n_chars;
 
 	/* Whether we "own" the buffer - i.e., we know we created it,
 	 * and can realloc() it to grow it, and should free() it to
@@ -271,8 +279,8 @@ static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
 
 /* yy_hold_char holds the character lost when yytext is formed. */
 static char yy_hold_char;
-static yy_size_t yy_n_chars;		/* number of characters read into yy_ch_buf */
-yy_size_t yyleng;
+static int yy_n_chars;		/* number of characters read into yy_ch_buf */
+int yyleng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = (char *) 0;
@@ -300,7 +308,7 @@ static void yy_init_buffer (YY_BUFFER_STATE b,FILE *file  );
 
 YY_BUFFER_STATE yy_scan_buffer (char *base,yy_size_t size  );
 YY_BUFFER_STATE yy_scan_string (yyconst char *yy_str  );
-YY_BUFFER_STATE yy_scan_bytes (yyconst char *bytes,yy_size_t len  );
+YY_BUFFER_STATE yy_scan_bytes (yyconst char *bytes,int len  );
 
 void *yyalloc (yy_size_t  );
 void *yyrealloc (void *,yy_size_t  );
@@ -606,10 +614,12 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "lexicalAnalyzer.l"
 #line 2 "lexicalAnalyzer.l"
-// Remember to run bison to generate tokens and symbols table before running flex
-// flex lexicalAnalyzer.l 
-// gcc lex.yy.c compiler.tab.c -lfl -o compiler
-
+//////////////////////////////////////////////////////////////////////////////////////
+// Instructions of use:
+//  - Remember to run bison to generate tokens and symbols table before running flex.
+//  - flex lexicalAnalyzer.l 
+//  - gcc lex.yy.c compiler.tab.c -lfl -o compiler
+#include "symbolsTable.h" 
 #include "compiler.tab.h"  // We need the tokens expressed in .tab.h 
 #include <stdio.h>
 
@@ -619,9 +629,11 @@ void error(char*); //Function to display error
 int line=1;
 int column=1;
 
-/* Definitions Section */
-/* To test regex quickly -> http://gskinner.com/RegExr/ */
-#line 625 "lex.yy.c"
+/************************************************************
+  Definitions section 
+   - To test regex quickly -> http://gskinner.com/RegExr/
+*/
+#line 637 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -660,7 +672,7 @@ FILE *yyget_out (void );
 
 void yyset_out  (FILE * out_str  );
 
-yy_size_t yyget_leng (void );
+int yyget_leng (void );
 
 char *yyget_text (void );
 
@@ -702,7 +714,12 @@ static int input (void );
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k */
+#define YY_READ_BUF_SIZE 16384
+#else
 #define YY_READ_BUF_SIZE 8192
+#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -803,11 +820,11 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 29 "lexicalAnalyzer.l"
+#line 32 "lexicalAnalyzer.l"
 
 	/* Rules Section */
 	/* Reserverd words*/
-#line 811 "lex.yy.c"
+#line 828 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -892,303 +909,312 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 32 "lexicalAnalyzer.l"
+#line 35 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return AND;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 33 "lexicalAnalyzer.l"
+#line 36 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return ARRAY;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 34 "lexicalAnalyzer.l"
+#line 37 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return BEGIN_;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 35 "lexicalAnalyzer.l"
+#line 38 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return CASE;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 36 "lexicalAnalyzer.l"
+#line 39 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return CONSTANT;}
 	YY_BREAK
 /*do 				{ column=column+strlen(yytext); return DO;}*/
 case 6:
 YY_RULE_SETUP
-#line 38 "lexicalAnalyzer.l"
+#line 41 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return ELSE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 39 "lexicalAnalyzer.l"
+#line 42 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return ELSIF;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 40 "lexicalAnalyzer.l"
+#line 43 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return END;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 41 "lexicalAnalyzer.l"
+#line 44 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return FUNCTION;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 42 "lexicalAnalyzer.l"
+#line 45 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return IF;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 43 "lexicalAnalyzer.l"
+#line 46 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return IN;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 44 "lexicalAnalyzer.l"
+#line 47 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return IS;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 45 "lexicalAnalyzer.l"
+#line 48 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return LOOP;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 46 "lexicalAnalyzer.l"
+#line 49 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return NOT;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 47 "lexicalAnalyzer.l"
+#line 50 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return NULL_;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 48 "lexicalAnalyzer.l"
+#line 51 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return OF;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 49 "lexicalAnalyzer.l"
+#line 52 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return OR;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 50 "lexicalAnalyzer.l"
+#line 53 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return OTHERS;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 51 "lexicalAnalyzer.l"
+#line 54 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return OUT;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 52 "lexicalAnalyzer.l"
+#line 55 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return PROCEDURE;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 53 "lexicalAnalyzer.l"
+#line 56 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return RECORD;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 54 "lexicalAnalyzer.l"
+#line 57 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return RETURN;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 55 "lexicalAnalyzer.l"
+#line 58 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return THEN;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 56 "lexicalAnalyzer.l"
+#line 59 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return TYPE;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 57 "lexicalAnalyzer.l"
+#line 60 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return WHEN;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 58 "lexicalAnalyzer.l"
+#line 61 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return WHILE;}
 	YY_BREAK
 /* Basic data types */
 case 27:
 YY_RULE_SETUP
-#line 61 "lexicalAnalyzer.l"
+#line 64 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return INTEGER_TYPE;}	
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 62 "lexicalAnalyzer.l"
+#line 65 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return REAL_TYPE;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 63 "lexicalAnalyzer.l"
+#line 66 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return CHARACTER_TYPE;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 64 "lexicalAnalyzer.l"
+#line 67 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return BOOLEAN_TYPE;}
 	YY_BREAK
 /* Data literals */
 case 31:
 YY_RULE_SETUP
-#line 68 "lexicalAnalyzer.l"
+#line 71 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return INTEGER_LITERAL;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 69 "lexicalAnalyzer.l"
+#line 72 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return FLOAT_LITERAL;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 70 "lexicalAnalyzer.l"
+#line 73 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return FLOAT_LITERAL;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 71 "lexicalAnalyzer.l"
+#line 74 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return CHARACTER_LITERAL;} 	/* ' */
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 72 "lexicalAnalyzer.l"
+#line 75 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return STRING_LITERAL;}   	/* " */
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 73 "lexicalAnalyzer.l"
+#line 76 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 74 "lexicalAnalyzer.l"
+#line 77 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return BOOLEAN_LITERAL;}
 	YY_BREAK
 /* Special characters */
 case 38:
 YY_RULE_SETUP
-#line 77 "lexicalAnalyzer.l"
-{return yytext[0];}
+#line 80 "lexicalAnalyzer.l"
+{column=column+strlen(yytext); return yytext[0];}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 78 "lexicalAnalyzer.l"
+#line 81 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return ARROW; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 79 "lexicalAnalyzer.l"
+#line 82 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return POWER_OP;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 80 "lexicalAnalyzer.l"
+#line 83 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return ASSIGNMENT_OP;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 81 "lexicalAnalyzer.l"
+#line 84 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return NOT_EQUAL_OP;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 82 "lexicalAnalyzer.l"
+#line 85 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return GREATER_EQUAL_OP;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 83 "lexicalAnalyzer.l"
+#line 86 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return LESSER_EQUAL_OP;}
 	YY_BREAK
 /* Comments */
 case 45:
 YY_RULE_SETUP
-#line 87 "lexicalAnalyzer.l"
-{/* ignore  line */}
+#line 90 "lexicalAnalyzer.l"
+{column=column+strlen(yytext);/* ignore  line */}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 88 "lexicalAnalyzer.l"
-{/* ignore lines*/}
+#line 91 "lexicalAnalyzer.l"
+{column=column+strlen(yytext);/* ignore lines*/}
 	YY_BREAK
 /* Built in functions */
 case 47:
 YY_RULE_SETUP
-#line 91 "lexicalAnalyzer.l"
+#line 94 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return PUT; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 92 "lexicalAnalyzer.l"
+#line 95 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return GET; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 93 "lexicalAnalyzer.l"
+#line 96 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return LENGTH; }	/* ' */
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 94 "lexicalAnalyzer.l"
+#line 97 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return NEW_LINE; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 95 "lexicalAnalyzer.l"
+#line 98 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return CONCAT; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 98 "lexicalAnalyzer.l"
-{return IDENTIFIER;}
+#line 101 "lexicalAnalyzer.l"
+{column=column+strlen(yytext);
+	                             strcpy(yylval.string, yytext); 
+	                             return IDENTIFIER;}
 	YY_BREAK
 /* Non printable characters */
+/* Fix column problem: 
+	   - Add another int var which name is increment
+	   - In increment you'll put the size of the token just read
+	   - Before reading the token, add to column the previous increment
+	   - After that, update the increment value to the current token
+	   - Example: [ ] { column+=increment; increment = 1; -*ignore spaces *- }
+	*/
 case 53:
 YY_RULE_SETUP
-#line 101 "lexicalAnalyzer.l"
+#line 113 "lexicalAnalyzer.l"
 {column++;/*ignore spaces*/}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 102 "lexicalAnalyzer.l"
+#line 114 "lexicalAnalyzer.l"
 {column=column+4;/* ignore tabs*/}
 	YY_BREAK
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
-#line 103 "lexicalAnalyzer.l"
+#line 115 "lexicalAnalyzer.l"
 {line++; column=1;/*return  END_LINE;*/}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 104 "lexicalAnalyzer.l"
+#line 116 "lexicalAnalyzer.l"
 {return 0; /* by default */}
 	YY_BREAK
 /* Unknown characters */
 case 56:
 YY_RULE_SETUP
-#line 107 "lexicalAnalyzer.l"
+#line 119 "lexicalAnalyzer.l"
 {error("Unknown character");}
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 109 "lexicalAnalyzer.l"
+#line 121 "lexicalAnalyzer.l"
 ECHO;
 	YY_BREAK
-#line 1192 "lex.yy.c"
+#line 1218 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1372,21 +1398,21 @@ static int yy_get_next_buffer (void)
 
 	else
 		{
-			yy_size_t num_to_read =
+			int num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
 			{ /* Not enough room in the buffer - grow it. */
 
 			/* just a shorter name for the current buffer */
-			YY_BUFFER_STATE b = YY_CURRENT_BUFFER_LVALUE;
+			YY_BUFFER_STATE b = YY_CURRENT_BUFFER;
 
 			int yy_c_buf_p_offset =
 				(int) ((yy_c_buf_p) - b->yy_ch_buf);
 
 			if ( b->yy_is_our_buffer )
 				{
-				yy_size_t new_size = b->yy_buf_size * 2;
+				int new_size = b->yy_buf_size * 2;
 
 				if ( new_size <= 0 )
 					b->yy_buf_size += b->yy_buf_size / 8;
@@ -1417,7 +1443,7 @@ static int yy_get_next_buffer (void)
 
 		/* Read in more data. */
 		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			(yy_n_chars), num_to_read );
+			(yy_n_chars), (size_t) num_to_read );
 
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
 		}
@@ -1512,7 +1538,7 @@ static int yy_get_next_buffer (void)
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 	yy_is_jam = (yy_current_state == 222);
 
-		return yy_is_jam ? 0 : yy_current_state;
+	return yy_is_jam ? 0 : yy_current_state;
 }
 
     static void yyunput (int c, register char * yy_bp )
@@ -1527,7 +1553,7 @@ static int yy_get_next_buffer (void)
 	if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
 		{ /* need to shift things up to make room */
 		/* +2 for EOB chars. */
-		register yy_size_t number_to_move = (yy_n_chars) + 2;
+		register int number_to_move = (yy_n_chars) + 2;
 		register char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
 					YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
 		register char *source =
@@ -1576,7 +1602,7 @@ static int yy_get_next_buffer (void)
 
 		else
 			{ /* need more input */
-			yy_size_t offset = (yy_c_buf_p) - (yytext_ptr);
+			int offset = (yy_c_buf_p) - (yytext_ptr);
 			++(yy_c_buf_p);
 
 			switch ( yy_get_next_buffer(  ) )
@@ -1736,6 +1762,10 @@ static void yy_load_buffer_state  (void)
 	yyfree((void *) b  );
 }
 
+#ifndef __cplusplus
+extern int isatty (int );
+#endif /* __cplusplus */
+    
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
  * such as during a yyrestart() or at EOF.
@@ -1848,7 +1878,7 @@ void yypop_buffer_state (void)
  */
 static void yyensure_buffer_stack (void)
 {
-	yy_size_t num_to_alloc;
+	int num_to_alloc;
     
 	if (!(yy_buffer_stack)) {
 
@@ -1945,7 +1975,7 @@ YY_BUFFER_STATE yy_scan_string (yyconst char * yystr )
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, yy_size_t  _yybytes_len )
+YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
 {
 	YY_BUFFER_STATE b;
 	char *buf;
@@ -2032,7 +2062,7 @@ FILE *yyget_out  (void)
 /** Get the length of the current token.
  * 
  */
-yy_size_t yyget_leng  (void)
+int yyget_leng  (void)
 {
         return yyleng;
 }
@@ -2180,7 +2210,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 109 "lexicalAnalyzer.l"
+#line 121 "lexicalAnalyzer.l"
 
 
 	/* User Code Section */

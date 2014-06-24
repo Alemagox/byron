@@ -17,23 +17,20 @@ procedure main is
    end Error;
 
 
-   procedure Numero(c: in out Character; resultado: out Integer) is
-   begin
-
-      --resultado := 10*resultado + c - '0' ;
-      --resultado :=  1.0 + 1 + 1 + 1;
-      --resultado := 1*1;
-
-      if (c = '(' or c = ')') then
-        null;
-      end if;
-
+  procedure Numero(c: in out Character; resultado: out Integer) is
+    op : Character;
+    aux: Integer;
+  begin
+    aux := 1;
+    aux := 2*aux;
+  
+    case op is                                        -- Byron style, Character is directly considered Integer
+      when '*' => resultado := resultado*aux;         -- Byron style
+      when '/' => resultado := resultado/aux;         -- Byron style
+      when others => null;                            -- Byron style
+    end case; 
     
-
    end Numero;
-
-   
-      
       
   c : Character;
   resultado : Integer;

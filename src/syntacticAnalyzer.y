@@ -29,6 +29,7 @@ int anonymousId = 0;
 char anonymousIdString[500];
 char errorString[500];
 char string1[15], string2[15];
+int nOthers;
 
 
 /////////////////////////////////////////////
@@ -122,24 +123,26 @@ void generateAnonymousId();
 // Non terminals which return a value
 
 // End of non terminals which return a value
-%type <regStruct>	assignment_statement
-%type <regStruct> binary_adding_list
-%type <op>				binary_adding_operator
-%type <regStruct>	expression
-%type <regStruct>	factor
-%type <regStruct>	formal_part
-%type <regStruct>	function_specification
-%type <typeSymbol>	mode
-%type <regStruct>	primary 
-%type <regStruct>	procedure_specification 
-%type <regStruct>	relation
-%type <regStruct>	relation_list
-%type <regStruct>	simple_expression
-%type <regStruct>	subprogram_body
-%type <regStruct>	subprogram_specification
-%type <regStruct>	term
+%type <regStruct>			assignment_statement
+%type <regStruct>		 	binary_adding_list
+%type <op>						binary_adding_operator
+%type <regStruct>			discrete_choice
+%type <regStruct>			discrete_choice_list
+%type <regStruct>			expression
+%type <regStruct>			factor
+%type <regStruct>			formal_part
+%type <regStruct>			function_specification
+%type <typeSymbol>		mode
+%type <regStruct>			primary 
+%type <regStruct>			procedure_specification 
+%type <regStruct>			relation
+%type <regStruct>			relation_list
+%type <regStruct>			simple_expression
+%type <regStruct>			subprogram_body
+%type <regStruct>			subprogram_specification
+%type <regStruct>			term
 %type <typeVariable>	type_definition
-%type <regStruct>	variable
+%type <regStruct>			variable
 
 ///////////////////////////////
 
@@ -214,8 +217,8 @@ assignment_statement :
 
 		getVariableTypeName( string1, $1->typeVariable );
 		getVariableTypeName( string2, $3->typeVariable );
-		printf("Assigning type %s := type %s.\n", string1, string2);
-		// In code genertion, force casting if variable types are different
+		//printf("Assigning type %s := type %s.\n", string1, string2);
+		// In code generation, force casting if variable types are different
 	}
 	;
 
@@ -266,12 +269,37 @@ case_statement :
 	CASE IDENTIFIER IS
 		case_statement_alternative_list
 	END CASE ';'
+	{
+		// Get register of the identifier
+		auxRegister = getSymbol(&sT, $2, sT.currentScope);
+		errorCode = checkIfNumeric(errorString, auxRegister, 5);
+		if(errorCode){
+			yyerror(errorString);
+			YYABORT;
+		}
+		nOthers = 0;
+	}
 	;
 
 
 case_statement_alternative : 
 	WHEN discrete_choice_list ARROW 
 		sequence_of_statements
+	{
+		errorCode = checkIfNumeric(errorString, $2, 5);
+		if(errorCode && $2->typeVariable!=Void){ // others have Void as varaible type
+			yyerror(errorString);
+			YYABORT;
+		}
+		
+		if( $2->typeVariable == Void ){
+			if ( nOthers > 0 ){
+				yyerror("Duplicated others in case statement");
+				YYABORT;
+			}
+			nOthers++;
+		}
+	}
 	;
 
 
@@ -332,16 +360,39 @@ declarative_part	:
 	;
 
 discrete_choice : 
-	expression
-	| INTEGER_TYPE
+	primary
+		{			
+			errorCode = checkIfDiscreteChoice(errorString, $1);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+		}
 	| OTHERS
+		{
+			generateAnonymousId();
+			auxRegister = createRegister( anonymousIdString, 
+																		sT.currentScope, Auxiliar, 
+																		Void
+																	);	
+			$$ = auxRegister;
+		}
 	;
 
 
 discrete_choice_list :
 	discrete_choice_list '|' discrete_choice
-	| discrete_choice
-	| /* emtpy */
+		{
+			errorCode = checkIfOthers(errorString, $1, $3);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+		}
+	| discrete_choice 
+		{
+			$$ = $1;
+		}
 	;
 
 
@@ -359,7 +410,7 @@ else_statement :
 
 
 elsif_statement : 
-	ELSIF expression THEN
+	ELSIF '(' expression ')' THEN
 		sequence_of_statements
 	;
 
@@ -416,18 +467,17 @@ identifier_list :
 
 
 if_statement : 
-	IF expression THEN
+	IF '(' expression ')' THEN
 		sequence_of_statements
 	elsif_list
 	else_statement
 	END IF ';'
 	{
-		errorCode = checkIfNumeric(errorString, $2, 4);
-			if(errorCode){
-				yyerror(errorString);
-				YYABORT;
-			}
-
+		errorCode = checkIfNumeric(errorString, $3, 3);
+		if(errorCode){
+			yyerror(errorString);
+			YYABORT;
+		}
 	}
 	;
 
@@ -444,9 +494,16 @@ logical_operator :
 
 
 loop_statement : 
-	WHILE expression LOOP
+	WHILE '(' expression ')' LOOP
 		sequence_of_statements
 	END LOOP ';'
+	{
+		errorCode = checkIfNumeric(errorString, $3, 4);
+		if(errorCode){
+			yyerror(errorString);
+			YYABORT;
+		}
+	}
 	;
 
 
@@ -527,9 +584,9 @@ primary :
 																										);	
 												$$ = auxRegister;
 											}
-	| variable 					{	$$ = $<regStruct>1;	}
+	| variable 					{	$$ = $1;	}
 	| function_call			{	$$ = $<regStruct>1;	}
-	| '(' expression ')' {	$$ = $<regStruct>2;	}
+	| '(' expression ')' {	$$ = $2;	}
 	;
 
 
@@ -688,7 +745,7 @@ sequence_of_statements :
 simple_expression : 
 	unary_adding_operator term { $<regStruct>$ = $2 ; } binary_adding_list 
 		{ 
-			errorCode = checkIfNumeric(errorString, $<regStruct>2, 1);
+			errorCode = checkIfNumeric(errorString, $2, 1);
 			if(errorCode){
 				yyerror(errorString);
 				YYABORT;
@@ -792,20 +849,22 @@ term :
 		{ 
 			errorCode = checkIfNumeric(errorString, $3, 0);
 			if(errorCode) {
+				printRegister(*$3);
 				yyerror(errorString);
 				YYABORT;
 			}
 
 			errorCode = checkIfNumeric(errorString, $1, 0);
 			if(errorCode){
+				printRegister(*$1);
 				yyerror(errorString);
 				YYABORT;
 			} 
 
 			getVariableTypeName(string1, $1->typeVariable);
   		getVariableTypeName(string2, $3->typeVariable);
-  		printf("4##########\n");
-  		printf("####%s - %s\n", string1, string2);
+  		//printf("4##########\n");
+  		//printf("####%s - %s\n", string1, string2);
 
 			generateAnonymousId();
 			auxRegister = createRegister( anonymousIdString, 
@@ -828,7 +887,19 @@ type_definition :
 	| BOOLEAN_TYPE		{ $$ = Bool; }
 	| array_type_definition		{ $$ = ArrayVariable; }
 	| record_type_definition 	{ $$ = Record; }
-	| IDENTIFIER 	{ $$ = CustomType; } // Custom type, must be defined before
+	| IDENTIFIER
+		{ 
+			auxRegister = getSymbol(&sT, $1, sT.currentScope);
+
+		 	/* check if type really exists */
+			if(auxRegister == NULL){
+				sprintf(errorString, "Type '%s' not found in symbols table", $1);
+				yyerror(errorString);
+				YYABORT; // Serious compiler error
+			}
+
+			$$ = CustomType; 
+		} // Custom type, must be defined before
 	;
 
 
@@ -845,7 +916,7 @@ variable :
 								yyerror(errorString);
 								YYABORT; // Serious compiler error
 							}
-							$<regStruct>$ = auxRegister; }
+							$$ = auxRegister; }
 	| indexed_component   { yyerror("Incomplete!"); $<regStruct>$ = auxRegister; }
 	| selected_component  { yyerror("Incomplete!"); $<regStruct>$ = auxRegister; }
 	;
@@ -860,6 +931,7 @@ void generateAnonymousId(){
 
 int main(int argc, char** argv){
 	auxRegisterList = NULL;
+	nOthers = 0; // Counter for case
 	//nRegisters = 0;
 	stackScope = 1;
 

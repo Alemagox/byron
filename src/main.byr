@@ -23,7 +23,7 @@ procedure main is
       resultado := 0;
       
       if (c < '0' or c > '9') then
-        --Error();        
+        Error();        
       end if;
 
       while (c > '0' and c < '9') loop
