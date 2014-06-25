@@ -176,8 +176,9 @@ actual_parameter_list :
 																		$1->typeSymbol, $1->typeVariable);
 
 			errorCode=addRegisterToList( &auxRegisterList, auxRegister );
+			
 			if(errorCode){
-				printf("Why!\n");
+				yyerror("Error adding actual parameters! ");
 			}
 
 			//$$ = auxRegisterList;
@@ -189,7 +190,7 @@ actual_parameter_list :
 
 			errorCode=addRegisterToList( &auxRegisterList, auxRegister );
 			if(errorCode){
-				printf("Why!\n");
+				yyerror("Error adding actual parameters! ");
 			}
 
 			//addRegisterToList( &auxRegisterList, $3 );
@@ -218,9 +219,9 @@ actual_parameter_list :
 */
 
 actual_parameter_part : 
-	'(' ')' { /*auxRegisterList = NULL;*/ $$ = $<regStruct>-1;  }
+	'(' ')' { $$ = NULL; }
 	//| '(' actual_parameter_list ')' { $$ = auxRegisterList;  }
-	| '(' {auxRegisterList = NULL;} actual_parameter_list ')' { $$ = auxRegisterList;/*$$ = NULL;*/  }
+	| '(' {auxRegisterList = NULL;} actual_parameter_list ')' { $$ = auxRegisterList;  }
 	;
 
 
@@ -679,13 +680,13 @@ procedure_call_statement :
 		// (Same number and type of parameters).
 		auxRegister = getProcedure( &sT, $1, sT.currentScope );
 		
-		printRegisterList(auxRegister->registerList);
-  	//if( checkParametersSubprogramCall( $3, auxRegister ) ) { //Change it for checkActual call
-  	if( checkParametersSubprogramCall( auxRegister, auxRegister ) ) { //Change it for checkActual call
-  	  yyerror("CheckParameterSubprogram is incomplete");
+	
+  	if( checkParametersSubprogramCall( $2, auxRegister ) ) { //Change it for checkActual call
+  	  yyerror("CheckParameterSubprogram error");
+  	  YYABORT;
   	}
   	
-  	//printSymbolsTable(sT);
+  	// It sets auxRegisterList as NULL
 		deleteRegisterList( &auxRegisterList );
 
 		// Generate code		
@@ -693,7 +694,7 @@ procedure_call_statement :
 
 	| PUT '(' STRING_LITERAL ')' ';'
 		{
-
+			// Generate code
 		}
 	| PUT '(' variable ')' ';'
 		{ 
@@ -702,7 +703,8 @@ procedure_call_statement :
 		  	yyerror("Incorrect 'Put' parameter: %s", errorString);
 		  	YYABORT;
 			} 
-			
+
+			// Generate code
 		}
 	| GET '(' variable ')' ';'
 		{ 
@@ -712,6 +714,7 @@ procedure_call_statement :
 		  	YYABORT;
 			} 
 			
+			// Generate code
 		}
 	| NEW_LINE ';'
 	;
