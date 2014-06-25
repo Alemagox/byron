@@ -1,0 +1,1057 @@
+%{								%{
+///////////////////////////////////////////////////		///////////////////////////////////////////////////
+// Instructions of use:						// Instructions of use:
+//  - bison sintacticAnalizer.y 				//  - bison sintacticAnalizer.y 
+//  - bison -d syntacticAnalyzer.y -o compiler.tab.c		//  - bison -d syntacticAnalyzer.y -o compiler.tab.c
+
+/////////////////////////////					/////////////////////////////
+// C declarations						// C declarations
+#include <stdio.h> 						#include <stdio.h> 
+#include "symbolsTable.h" 					#include "symbolsTable.h" 
+
+extern FILE *yyin; 	// Input stream , declared by lexical	extern FILE *yyin; 	// Input stream , declared by lexical
+extern int line;   	// Read line, values are given by lex	extern int line;   	// Read line, values are given by lex
+extern int column;  // Read column, values are given by lexic	extern int column;  // Read column, values are given by lexic
+extern char* yytext;						extern char* yytext;
+extern YYABORT;							extern YYABORT;
+
+//#define  YYDEBUG 1  // Debug mode if -t is passed		//#define  YYDEBUG 1  // Debug mode if -t is passed
+int yydebug=1;							int yydebug=1;
+FILE *yyout;		// Compiled file			FILE *yyout;		// Compiled file
+
+/////////////////////////////////////////////			/////////////////////////////////////////////
+// Variables used to work with symbols table			// Variables used to work with symbols table
+symbolsTable sT;						symbolsTable sT;
+registerStruct *auxRegister, *auxRegisterList;			registerStruct *auxRegister, *auxRegisterList;
+int errorCode, nRegisters;					int errorCode, nRegisters;
+int stackScope;							int stackScope;
+int anonymousId = 0;						int anonymousId = 0;
+char anonymousIdString[500];					char anonymousIdString[500];
+char errorString[500];						char errorString[500];
+char string1[15], string2[15];					char string1[15], string2[15];
+int nOthers;							int nOthers;
+
+
+/////////////////////////////////////////////			/////////////////////////////////////////////
+// Methods							// Methods
+void generateAnonymousId();					void generateAnonymousId();
+
+%}								%}
+///////////////////////////////////////////			///////////////////////////////////////////
+// Bison declarations						// Bison declarations
+
+////////////////////////////////////////////			////////////////////////////////////////////
+// Data returned by token or non terminal 			// Data returned by token or non terminal 
+%union {							%union {
+	int integer; 							int integer; 
+	char op;							char op;
+	char string[50];						char string[50];
+	registerStruct* regStruct;					registerStruct* regStruct;
+	symbolType typeSymbol;						symbolType typeSymbol;
+	symbolsTable symbolsList;					symbolsTable symbolsList;
+	variableType typeVariable;					variableType typeVariable;
+}								}
+
+///////////////////////////					///////////////////////////
+// Tokens declaration						// Tokens declaration
+%token AND							%token AND
+%token ARRAY							%token ARRAY
+%token BEGIN_	// It created conflict with BEGIN from flex :	%token BEGIN_	// It created conflict with BEGIN from flex :
+%token CASE							%token CASE
+%token CONSTANT							%token CONSTANT
+//%token DO							//%token DO
+%token ELSE							%token ELSE
+%token ELSIF							%token ELSIF
+%token END							%token END
+//%token END_LINE  //In byron we can directly ignore new line	//%token END_LINE  //In byron we can directly ignore new line
+%token FUNCTION							%token FUNCTION
+%token IF							%token IF
+%token <string> IDENTIFIER					%token <string> IDENTIFIER
+%token IN							%token IN
+%token IS							%token IS
+%token LOOP							%token LOOP
+%token NOT							%token NOT
+%token NULL_	// It created conflict with NULL from flex :(	%token NULL_	// It created conflict with NULL from flex :(
+%token OF							%token OF
+%token OR							%token OR
+%token OTHERS							%token OTHERS
+%token OUT							%token OUT
+%token PROCEDURE						%token PROCEDURE
+%token RECORD							%token RECORD
+%token RETURN							%token RETURN
+%token THEN							%token THEN
+%token TYPE							%token TYPE
+%token WHEN							%token WHEN
+%token WHILE							%token WHILE
+
+// Operators without precence					// Operators without precence
+%token ARROW       		// =>				%token ARROW       		// =>
+%token ASSIGNMENT_OP	// :=					%token ASSIGNMENT_OP	// :=
+%token NOT_EQUAL_OP		// /=				%token NOT_EQUAL_OP		// /=
+%token GREATER_EQUAL_OP // >=					%token GREATER_EQUAL_OP // >=
+%token LESSER_EQUAL_OP	// <=					%token LESSER_EQUAL_OP	// <=
+
+// Setting operators precedence					// Setting operators precedence
+%left '+'							%left '+'
+%left '-'							%left '-'
+%left '*'							%left '*'
+%left POWER_OP			// **				%left POWER_OP			// **
+%left AND							%left AND
+%left OR							%left OR
+
+// Built in functions						// Built in functions
+%token PUT							%token PUT
+%token GET							%token GET
+%token LENGTH							%token LENGTH
+%token NEW_LINE							%token NEW_LINE
+%token CONCAT							%token CONCAT
+
+// Type tokens							// Type tokens
+%token <integer> INTEGER_TYPE					%token <integer> INTEGER_TYPE
+%token REAL_TYPE						%token REAL_TYPE
+%token CHARACTER_TYPE						%token CHARACTER_TYPE
+%token BOOLEAN_TYPE						%token BOOLEAN_TYPE
+
+// Literal tokens						// Literal tokens
+%token INTEGER_LITERAL						%token INTEGER_LITERAL
+%token FLOAT_LITERAL						%token FLOAT_LITERAL
+%token CHARACTER_LITERAL					%token CHARACTER_LITERAL
+%token STRING_LITERAL						%token STRING_LITERAL
+%token BOOLEAN_LITERAL						%token BOOLEAN_LITERAL
+
+// End of tokens declaration					// End of tokens declaration
+// Non terminals which return a value				// Non terminals which return a value
+
+// End of non terminals which return a value			// End of non terminals which return a value
+%type <regStruct>			actual_parameter_list <
+%type <regStruct>			actual_parameter_part <
+%type <regStruct>			assignment_statement	%type <regStruct>			assignment_statement
+%type <regStruct>		 	binary_adding_list	%type <regStruct>		 	binary_adding_list
+%type <op>						binar	%type <op>						binar
+%type <regStruct>			discrete_choice		%type <regStruct>			discrete_choice
+%type <regStruct>			discrete_choice_list	%type <regStruct>			discrete_choice_list
+%type <regStruct>			expression		%type <regStruct>			expression
+%type <regStruct>			expression_list	      <
+%type <regStruct>			factor			%type <regStruct>			factor
+%type <regStruct>			formal_part		%type <regStruct>			formal_part
+%type <regStruct>			function_specificatio	%type <regStruct>			function_specificatio
+%type <typeSymbol>		mode				%type <typeSymbol>		mode
+%type <regStruct>			primary 		%type <regStruct>			primary 
+%type <regStruct>			procedure_specificati	%type <regStruct>			procedure_specificati
+%type <regStruct>			relation		%type <regStruct>			relation
+%type <regStruct>			relation_list		%type <regStruct>			relation_list
+%type <regStruct>			simple_expression	%type <regStruct>			simple_expression
+%type <regStruct>			subprogram_body		%type <regStruct>			subprogram_body
+%type <regStruct>			subprogram_body_      <
+%type <regStruct>			subprogram_specificat	%type <regStruct>			subprogram_specificat
+%type <regStruct>			term			%type <regStruct>			term
+%type <typeVariable>	type_definition				%type <typeVariable>	type_definition
+%type <regStruct>			variable		%type <regStruct>			variable
+
+///////////////////////////////					///////////////////////////////
+
+%%								%%
+// Grammar rules, after main all non-terminals are ordered al	// Grammar rules, after main all non-terminals are ordered al
+/////////////////////////////////////////////////////////////	/////////////////////////////////////////////////////////////
+//								//
+//								//
+//								//
+//								//
+/////////////////////////////////////////////////////////////	/////////////////////////////////////////////////////////////
+
+
+main :								main :
+	PROCEDURE IDENTIFIER IS						PROCEDURE IDENTIFIER IS
+       	/*declarative_part_*/					       	/*declarative_part_*/
+		declarative_part						declarative_part
+	BEGIN_								BEGIN_
+   	sequence_of_statements					   	sequence_of_statements
+	END IDENTIFIER ';'						END IDENTIFIER ';'
+	; 								; 
+
+actual_parameter_list :					      <
+	expression					      <
+		{					      <
+			addRegisterToList( &auxRegisterList,  <
+			$$ = auxRegisterList;		      <
+		}					      <
+	| actual_parameter_list ',' expression		      <
+		{					      <
+			addRegisterToList( &auxRegisterList,  <
+			$$ = auxRegisterList;		      <
+		}					      <
+	;						      <
+
+/*							      <
+actual_parameter_list : 					actual_parameter_list : 
+	expression expression_list					expression expression_list
+	{ 						      <
+		/*					      <
+		printf("!¡!¡ - actual_parameter_list. Line: % <
+		printSymbolsTable(sT);			      <
+		printf("\n");				      <
+		addRegisterToList( &auxRegisterList, $1 );    <
+		printf("\n");				      <
+		printSymbolsTable(sT);			      <
+		printf("\n");				      <
+							      <
+							      <
+		addRegisterToList( &auxRegisterList, $1 );    <
+		$$ = auxRegisterList;			      <
+	}						      <
+	;								;
+*/							      |
+
+actual_parameter_part : 					actual_parameter_part : 
+	'(' ')' { auxRegisterList = NULL; $$ = auxRegisterLis |		'(' ')' { auxRegisterList = NULL; $<regStruct>$ = aux
+	//| '(' actual_parameter_list ')' { $$ = auxRegisterL |		| '(' actual_parameter_list ')' { $<regStruct>$ = aux
+	| '(' actual_parameter_list ')' { $$ = $2;  }	      <
+	;								;
+
+
+array_type_definition : 					array_type_definition : 
+	ARRAY '(' expression expression_list ')' OF type_defi		ARRAY '(' expression expression_list ')' OF type_defi
+	;								;
+
+
+assign_expression : 						assign_expression : 
+	ASSIGNMENT_OP expression 					ASSIGNMENT_OP expression 
+	| /* empty */							| /* empty */
+	;								;
+
+
+assignment_statement :						assignment_statement :
+	variable ASSIGNMENT_OP expression ';'				variable ASSIGNMENT_OP expression ';'
+	{ 								{ 
+		errorCode = checkAssignmentType($1, $3);			errorCode = checkAssignmentType($1, $3);
+
+		if (errorCode == -1){						if (errorCode == -1){
+			getSymbolTypeName( string1, $1->typeS				getSymbolTypeName( string1, $1->typeS
+
+			sprintf(errorString,"Left side assign				sprintf(errorString,"Left side assign
+			yyerror(errorString);						yyerror(errorString);
+										
+		} else if(errorCode == -2){					} else if(errorCode == -2){
+			getSymbolTypeName( string1, $1->typeS				getSymbolTypeName( string1, $1->typeS
+			getSymbolTypeName( string2, $3->typeS				getSymbolTypeName( string2, $3->typeS
+
+			sprintf(errorString,"Cannot assign ri				sprintf(errorString,"Cannot assign ri
+			yyerror(errorString);						yyerror(errorString);
+		} else if(errorCode == -3){					} else if(errorCode == -3){
+			getVariableTypeName( string1, $1->typ				getVariableTypeName( string1, $1->typ
+			getVariableTypeName( string2, $3->typ				getVariableTypeName( string2, $3->typ
+
+			sprintf(errorString,"Cannot assign ri				sprintf(errorString,"Cannot assign ri
+			yyerror(errorString);						yyerror(errorString);
+		} 								} 
+
+		if(errorCode) YYABORT;						if(errorCode) YYABORT;
+
+		getVariableTypeName( string1, $1->typeVariabl			getVariableTypeName( string1, $1->typeVariabl
+		getVariableTypeName( string2, $3->typeVariabl			getVariableTypeName( string2, $3->typeVariabl
+		//printf("Assigning type %s := type %s.\n", s			//printf("Assigning type %s := type %s.\n", s
+		// In code generation, force casting if varia			// In code generation, force casting if varia
+	}								}
+	;								;
+
+
+binary_adding_list : 						binary_adding_list : 
+	binary_adding_operator term					binary_adding_operator term
+		{								{
+			errorCode = checkIfNumeric(errorStrin				errorCode = checkIfNumeric(errorStrin
+			if(errorCode){							if(errorCode){
+				yyerror(errorString);						yyerror(errorString);
+				YYABORT;							YYABORT;
+			}								}
+
+			/* Generate code for addition */				/* Generate code for addition */
+			generateAnonymousId();						generateAnonymousId();
+			auxRegister = createRegister( anonymo				auxRegister = createRegister( anonymo
+															
+															
+															
+			$$ = auxRegister;						$$ = auxRegister;
+		}								}
+	| binary_adding_operator term { $<regStruct>$ = $2 ; 		| binary_adding_operator term { $<regStruct>$ = $2 ; 
+		{								{
+			errorCode = checkIfNumeric(errorStrin				errorCode = checkIfNumeric(errorStrin
+			if(errorCode){							if(errorCode){
+				yyerror(errorString);						yyerror(errorString);
+				YYABORT;							YYABORT;
+			}								}
+
+			/* Generate code for addition */				/* Generate code for addition */
+			generateAnonymousId();						generateAnonymousId();
+
+			auxRegister = createRegister( anonymo				auxRegister = createRegister( anonymo
+															
+															
+															
+			$$ = auxRegister;						$$ = auxRegister;
+		}								}
+	;								;
+
+binary_adding_operator : 					binary_adding_operator : 
+	'+' 	{	$<op>$ = '+'; }					'+' 	{	$<op>$ = '+'; }
+	| '-'	{	$<op>$ = '-'; }					| '-'	{	$<op>$ = '-'; }
+	;								;
+
+
+case_statement : 						case_statement : 
+	CASE IDENTIFIER IS						CASE IDENTIFIER IS
+		case_statement_alternative_list					case_statement_alternative_list
+	END CASE ';'							END CASE ';'
+	{								{
+		// Get register of the identifier				// Get register of the identifier
+		auxRegister = getSymbol(&sT, $2, sT.currentSc			auxRegister = getSymbol(&sT, $2, sT.currentSc
+		errorCode = checkIfNumeric(errorString, auxRe			errorCode = checkIfNumeric(errorString, auxRe
+		if(errorCode){							if(errorCode){
+			yyerror(errorString);						yyerror(errorString);
+			YYABORT;							YYABORT;
+		}								}
+		nOthers = 0;							nOthers = 0;
+	}								}
+	;								;
+
+
+case_statement_alternative : 					case_statement_alternative : 
+	WHEN discrete_choice_list ARROW 				WHEN discrete_choice_list ARROW 
+		sequence_of_statements						sequence_of_statements
+	{								{
+		errorCode = checkIfNumeric(errorString, $2, 5			errorCode = checkIfNumeric(errorString, $2, 5
+		if(errorCode && $2->typeVariable!=Void){ // o			if(errorCode && $2->typeVariable!=Void){ // o
+			yyerror(errorString);						yyerror(errorString);
+			YYABORT;							YYABORT;
+		}								}
+										
+		if( $2->typeVariable == Void ){					if( $2->typeVariable == Void ){
+			if ( nOthers > 0 ){						if ( nOthers > 0 ){
+				yyerror("Duplicated others in					yyerror("Duplicated others in
+				YYABORT;							YYABORT;
+			}								}
+			nOthers++;							nOthers++;
+		}								}
+	}								}
+	;								;
+
+
+case_statement_alternative_list : 				case_statement_alternative_list : 
+	case_statement_alternative_list case_statement_altern		case_statement_alternative_list case_statement_altern
+	| /* empty */							| /* empty */
+	;								;
+
+
+component_item : 						component_item : 
+	IDENTIFIER identifier_list ':' type_definition assign		IDENTIFIER identifier_list ':' type_definition assign
+	;								;
+
+
+component_list : 						component_list : 
+	component_list component_item					component_list component_item
+	| /* empty */							| /* empty */
+	;								;
+
+
+compound_statement : 						compound_statement : 
+	if_statement							if_statement
+	| loop_statement						| loop_statement
+	| case_statement						| case_statement
+	| assignment_statement						| assignment_statement
+	;								;
+
+
+constant : 							constant : 
+	CONSTANT							CONSTANT
+	| /* empty */							| /* empty */
+	;								;
+
+
+declarative_item :  						declarative_item :  
+	type_declaration						type_declaration
+	| object_declaration						| object_declaration
+	| subprogram_specification ';' { /*destroyRegister( $		| subprogram_specification ';' { /*destroyRegister( $
+	| subprogram_body 						| subprogram_body 
+	  { markSubprogramAsDefined( $1 );				  { markSubprogramAsDefined( $1 );
+		//destroyRegister( $1 ); 					//destroyRegister( $1 ); 
+	  }								  }
+	; 								; 
+
+/*								/*
+declarative_part : 						declarative_part : 
+	{ enterScope ( &sT ); } declarative_part_			{ enterScope ( &sT ); } declarative_part_
+
+
+declarative_part_	:					declarative_part_	:
+	 declarative_item declarative_part_				 declarative_item declarative_part_
+	| /* empty */ /*						| /* empty */ /*
+	;								;
+*/								*/
+declarative_part	:					declarative_part	:
+	 declarative_item declarative_part				 declarative_item declarative_part
+	| /* empty */ 							| /* empty */ 
+	;								;
+
+discrete_choice : 						discrete_choice : 
+	primary								primary
+		{								{			
+			errorCode = checkIfDiscreteChoice(err				errorCode = checkIfDiscreteChoice(err
+			if(errorCode){							if(errorCode){
+				yyerror(errorString);						yyerror(errorString);
+				YYABORT;							YYABORT;
+			}								}
+		}								}
+	| OTHERS							| OTHERS
+		{								{
+			generateAnonymousId();						generateAnonymousId();
+			auxRegister = createRegister( anonymo				auxRegister = createRegister( anonymo
+															
+															
+															
+			$$ = auxRegister;						$$ = auxRegister;
+		}								}
+	;								;
+
+
+discrete_choice_list :						discrete_choice_list :
+	discrete_choice_list '|' discrete_choice			discrete_choice_list '|' discrete_choice
+		{								{
+			errorCode = checkIfOthers(errorString				errorCode = checkIfOthers(errorString
+			if(errorCode){							if(errorCode){
+				yyerror(errorString);						yyerror(errorString);
+				YYABORT;							YYABORT;
+			}								}
+		}								}
+	| discrete_choice 						| discrete_choice 
+		{								{
+			$$ = $1;							$$ = $1;
+		}								}
+	;								;
+
+
+elsif_list : 							elsif_list : 
+	elsif_list elsif_statement					elsif_list elsif_statement
+	| /* empty */							| /* empty */
+	;								;
+
+
+else_statement : 						else_statement : 
+	ELSE								ELSE
+		sequence_of_statements						sequence_of_statements
+	| /* empty */							| /* empty */
+	;								;
+
+
+elsif_statement : 						elsif_statement : 
+	ELSIF '(' expression ')' THEN					ELSIF '(' expression ')' THEN
+		sequence_of_statements						sequence_of_statements
+	;								;
+
+
+expression : 							expression : 
+	relation { $<regStruct>$ = $1; } relation_list {		relation { $<regStruct>$ = $1; } relation_list {
+
+		if($3->typeVariable == Void ){ // There's no 			if($3->typeVariable == Void ){ // There's no 
+			$$ = $1;							$$ = $1;
+			destroyRegister($3);						destroyRegister($3);
+		}else {								}else {
+			$$ = $3;							$$ = $3;
+		}								}
+	}								}
+	;								;
+
+expression_list : 						expression_list : 
+	',' expression expression_list					',' expression expression_list
+	{						      <
+		addRegisterToList( &auxRegisterList, $2 );    <
+		$$ = auxRegisterList;			      <
+	}						      <
+	| /* empty */							| /* empty */
+	{						      <
+		$$ = NULL;				      <
+	}						      <
+	;								;
+
+
+factor : 							factor : 
+	primary { $<regStruct>$ = $<regStruct>1; }			primary { $<regStruct>$ = $<regStruct>1; }
+	| primary POWER_OP primary { yyerror("Incomplete fact		| primary POWER_OP primary { yyerror("Incomplete fact
+	| NOT primary { yyerror("Incomplete factor"); $<regSt		| NOT primary { yyerror("Incomplete factor"); $<regSt
+	;								;
+
+
+formal_part : 							formal_part : 
+	'(' parameter_specification parameter_specification_l |		'(' parameter_specification parameter_specification_l
+	{ 						      |		| /* empty */ { $$ = auxRegisterList; }
+		$$ = auxRegisterList; 			      <
+	}						      <
+	| /* empty */ { $$ = NULL; }			      <
+	;								;
+
+
+function_call : 						function_call : 
+	IDENTIFIER actual_parameter_part 				IDENTIFIER actual_parameter_part 
+	| IDENTIFIER LENGTH // Identifier is an array variabl		| IDENTIFIER LENGTH // Identifier is an array variabl
+	;								;
+
+
+function_specification : 					function_specification : 
+	FUNCTION IDENTIFIER formal_part RETURN type_definitio		FUNCTION IDENTIFIER formal_part RETURN type_definitio
+	{ auxRegister = createRegister( $2, sT.currentScope, 		{ auxRegister = createRegister( $2, sT.currentScope, 
+	  addRegister( &sT, auxRegister );				  addRegister( &sT, auxRegister );
+	  $<regStruct>$ = auxRegister; }				  $<regStruct>$ = auxRegister; }
+	;								;
+
+
+identifier_list :						identifier_list :
+	',' IDENTIFIER identifier_list					',' IDENTIFIER identifier_list
+	| /* empty */							| /* empty */
+	;								;
+
+
+if_statement : 							if_statement : 
+	IF '(' expression ')' THEN					IF '(' expression ')' THEN
+		sequence_of_statements						sequence_of_statements
+	elsif_list							elsif_list
+	else_statement							else_statement
+	END IF ';'							END IF ';'
+	{								{
+		errorCode = checkIfNumeric(errorString, $3, 3			errorCode = checkIfNumeric(errorString, $3, 3
+		if(errorCode){							if(errorCode){
+			yyerror(errorString);						yyerror(errorString);
+			YYABORT;							YYABORT;
+		}								}
+	}								}
+	;								;
+
+
+indexed_component : 						indexed_component : 
+	IDENTIFIER '[' expression expression_list ']'			IDENTIFIER '[' expression expression_list ']'
+	;								;
+
+
+logical_operator : 						logical_operator : 
+	AND								AND
+	| OR								| OR
+	;								;
+
+
+loop_statement : 						loop_statement : 
+	WHILE '(' expression ')' LOOP					WHILE '(' expression ')' LOOP
+		sequence_of_statements						sequence_of_statements
+	END LOOP ';'							END LOOP ';'
+	{								{
+		errorCode = checkIfNumeric(errorString, $3, 4			errorCode = checkIfNumeric(errorString, $3, 4
+		if(errorCode){							if(errorCode){
+			yyerror(errorString);						yyerror(errorString);
+			YYABORT;							YYABORT;
+		}								}
+	}								}
+	;								;
+
+
+mode : 								mode : 
+	OUT { $$ = Out; }						OUT { $$ = Out; }
+	| IN OUT { $$ = InOut; }					| IN OUT { $$ = InOut; }
+	| IN { $$ = In; }						| IN { $$ = In; }
+	| /* empty */ { $$ = In; }					| /* empty */ { $$ = In; }
+	;								;
+
+
+multiplying_operator : 						multiplying_operator : 
+	'*'								'*'
+	| '/'								| '/'
+	;								;
+
+
+null_statement : 						null_statement : 
+	NULL_ ';'							NULL_ ';'
+	;								;
+
+
+object_declaration : 						object_declaration : 
+	IDENTIFIER identifier_list ':' constant type_definiti		IDENTIFIER identifier_list ':' constant type_definiti
+	{ auxRegister = createRegister( $1, sT.currentScope, 		{ auxRegister = createRegister( $1, sT.currentScope, 
+	  addRegister( &sT, auxRegister ); }				  addRegister( &sT, auxRegister ); }
+	;								;
+
+
+parameter_specification : 					parameter_specification : 
+	IDENTIFIER identifier_list ':' mode type_definition a		IDENTIFIER identifier_list ':' mode type_definition a
+	{ auxRegister = createRegister( $1, sT.currentScope, 		{ auxRegister = createRegister( $1, sT.currentScope, 
+	  addRegisterToList( &auxRegisterList, auxRegister );		  addRegisterToList( &auxRegisterList, auxRegister );
+	;								;
+
+
+parameter_specification_list :					parameter_specification_list :
+	';' parameter_specification parameter_specification_l		';' parameter_specification parameter_specification_l
+	| /* empty */ 							| /* empty */ 
+	;								;
+
+
+primary : 							primary : 
+	INTEGER_LITERAL { generateAnonymousId();			INTEGER_LITERAL { generateAnonymousId();
+
+															
+															
+															
+															
+															
+															
+	| FLOAT_LITERAL			{ generateAnonymousId		| FLOAT_LITERAL			{ generateAnonymousId
+
+															
+															
+															
+															
+															
+															
+	| CHARACTER_LITERAL { auxRegister = createRegister( a		| CHARACTER_LITERAL { auxRegister = createRegister( a
+															
+															
+															
+															
+															
+	| BOOLEAN_LITERAL		{ generateAnonymousId		| BOOLEAN_LITERAL		{ generateAnonymousId
+															
+															
+															
+															
+															
+															
+	| NULL_ 							| NULL_ 					
+	| STRING_LITERAL		{ generateAnonymousId		| STRING_LITERAL		{ generateAnonymousId
+															
+															
+															
+															
+															
+															
+	| variable 					{		| variable 					{
+	| function_call			{	$$ = $<regStr		| function_call			{	$$ = $<regStr
+	| '(' expression ')' {	$$ = $2;	}			| '(' expression ')' {	$$ = $2;	}
+	;								;
+
+
+procedure_call_statement : 					procedure_call_statement : 
+	IDENTIFIER actual_parameter_part ';'				IDENTIFIER actual_parameter_part ';'
+	{ 						      |		{ errorCode = searchProcedure( &sT, $1, sT.currentSco
+		printf( "line %d -- id '%s' -- scope %d\n", l <
+							      <
+		errorCode = searchProcedure( &sT, $1, sT.curr <
+	  if ( errorCode!=0 ){						  if ( errorCode!=0 ){
+	  	yyerror("Procedure call error: %s", $1);		  	yyerror("Procedure call error: %s", $1);
+	  	YYABORT;						  	YYABORT;
+		} 								} 
+    							      <
+		// Check actual parameters against defined ar <
+		// (Same number and type of parameters).      <
+							      <
+		//auxRegister = getProcedure( &sT, $1, sT.cur <
+							      <
+		//printSymbolsTable(sT);		      <
+  	//if( checkParametersSubprogramCall( $2, auxRegister  <
+  	//  yyerror("CheckParameterSubprogram is incomplete") <
+  	//}						      <
+  							      <
+  	//printSymbolsTable(sT);			      <
+		//deleteRegisterList( &auxRegisterList );     <
+							      <
+							      <
+							      <
+		//auxRegisterList = NULL;		      <
+
+		// Generate code			      |			// Check actual parameters against defined ar
+	}								}
+
+	| PUT '(' STRING_LITERAL ')' ';'				| PUT '(' STRING_LITERAL ')' ';'
+		{								{
+
+		}								}
+	| PUT '(' variable ')' ';'					| PUT '(' variable ')' ';'
+		{ 					      |			{
+			errorCode = checkPutGet( errorString, |
+		  if ( errorCode!=0 ){			      <
+		  	yyerror("Incorrect 'Put' parameter: % <
+		  	YYABORT;			      <
+			} 				      <
+							      <
+		}								}
+	| GET '(' variable ')' ';'					| GET '(' variable ')' ';'
+		{ 					      |			{
+			errorCode = checkPutGet( errorString, <
+		  if ( errorCode!=0 ){			      <
+		  	yyerror("Incorrect 'Get' parameter: % <
+		  	YYABORT;			      <
+			} 				      <
+											
+		}								}
+	| NEW_LINE ';'							| NEW_LINE ';'
+	;								;
+
+
+procedure_specification : 					procedure_specification : 
+	PROCEDURE IDENTIFIER formal_part 				PROCEDURE IDENTIFIER formal_part 
+	{ auxRegister = createRegister( $2, sT.currentScope, 		{ auxRegister = createRegister( $2, sT.currentScope, 
+	  if ( addRegister( &sT, auxRegister ) ) { // Procedu		  if ( addRegister( &sT, auxRegister ) ) { // Procedu
+	  	free(auxRegister);					  	free(auxRegister);
+	  	auxRegister = getProcedure( &sT, $2, sT.curre		  	auxRegister = getProcedure( &sT, $2, sT.curre
+
+	  	if( auxRegister->defined == 1 ) { // Defined 		  	if( auxRegister->defined == 1 ) { // Defined 
+	      sprintf(errorString, "!! - Double definition of		      sprintf(errorString, "!! - Double definition of
+	      yyerror(errorString);					      yyerror(errorString);
+	  	}							  	}
+
+	  	// Check that specification and definition ha		  	// Check that specification and definition ha
+	  	// and type of parameters,				  	// and type of parameters,
+	  	if( checkParametersSubprogram( $3, auxRegiste		  	if( checkParametersSubprogram( $3, auxRegiste
+	  	  yyerror("CheckParameterSubprogram is incomp		  	  yyerror("CheckParameterSubprogram is incomp
+	  	}							  	}
+
+	  	//addParametersToSubprogram( &sT, $3, auxRegi |		  	addParametersToSubprogram( &sT, $3, auxRegist
+	  }								  }
+	  else{ // Adding the list of parameters			  else{ // Adding the list of parameters
+	  	//sT.currentScope = stackScope;				  	//sT.currentScope = stackScope;
+	  	auxRegister = getProcedure( &sT, $2, sT.curre		  	auxRegister = getProcedure( &sT, $2, sT.curre
+
+	  	//addParametersToSubprogram( &sT, $3, auxRegi |		  	addParametersToSubprogram( &sT, $3, auxRegist
+	  	//auxRegisterList = NULL;		      <
+
+	  }						      |		  	//enterScope ( &sT );
+
+	  addParametersToSubprogram( &sT, $3, auxRegister );  |		  	auxRegisterList = NULL;
+	  auxRegisterList = NULL;			      |		  	//destroySymbolsTable( &auxRegisterList );
+							      >		  	//sT.currentScope = 0;
+							      >		  	//stackScope++;
+							      >		  }
+
+	  $<regStruct>$ = auxRegister; 			      |		  $<regStruct>$ = auxRegister; }
+	}						      <
+	;								;
+
+
+record_type_definition : 					record_type_definition : 
+	RECORD								RECORD
+		component_list							component_list
+	END RECORD							END RECORD
+	;								;
+
+
+relation :							relation :
+	simple_expression { $<regStruct>$ = $<regStruct>1; }		simple_expression { $<regStruct>$ = $<regStruct>1; }
+	|  simple_expression relational_operator simple_expre		|  simple_expression relational_operator simple_expre
+		{	//yyerror("Incomple simple expression			{	//yyerror("Incomple simple expression
+			errorCode = checkIfNumeric(errorStrin				errorCode = checkIfNumeric(errorStrin
+			if(errorCode){							if(errorCode){
+				yyerror(errorString);						yyerror(errorString);
+				YYABORT;							YYABORT;
+			}								}
+
+			errorCode = checkIfNumeric(errorStrin				errorCode = checkIfNumeric(errorStrin
+			if(errorCode){							if(errorCode){
+				yyerror(errorString);						yyerror(errorString);
+				YYABORT;							YYABORT;
+			}								}
+
+			/* Generate code for relation */				/* Generate code for relation */
+
+
+			generateAnonymousId();						generateAnonymousId();
+			auxRegister = createRegister( anonymo				auxRegister = createRegister( anonymo
+															
+															
+															
+			$$ = auxRegister;						$$ = auxRegister;
+		}								}
+	;								;
+
+
+relation_list :							relation_list :
+	logical_operator relation { $<regStruct>$ = $2; } rel		logical_operator relation { $<regStruct>$ = $2; } rel
+	{								{
+		errorCode = checkIfNumeric(errorString, $<reg			errorCode = checkIfNumeric(errorString, $<reg
+		if(errorCode){							if(errorCode){
+			yyerror(errorString);						yyerror(errorString);
+			YYABORT;							YYABORT;
+		}								}
+
+		/* Generate code for relation */				/* Generate code for relation */
+
+		generateAnonymousId();						generateAnonymousId();
+
+		auxRegister = createRegister( anonymousIdStri			auxRegister = createRegister( anonymousIdStri
+															
+															
+															
+		$$ = auxRegister;						$$ = auxRegister;
+	}								}
+	| /* empty */ 							| /* empty */ 
+		{								{
+			generateAnonymousId();						generateAnonymousId();
+			auxRegister = createRegister( anonymo				auxRegister = createRegister( anonymo
+															
+															
+															
+			$$ = auxRegister; 						$$ = auxRegister; 
+		}								}
+	;								;
+
+
+relational_operator : 						relational_operator : 
+	'='								'='
+	| '<' 								| '<' 
+	| '>'								| '>'
+	| NOT_EQUAL_OP							| NOT_EQUAL_OP
+	| LESSER_EQUAL_OP						| LESSER_EQUAL_OP
+	| GREATER_EQUAL_OP						| GREATER_EQUAL_OP
+	;								;
+
+
+return_statement : 						return_statement : 
+	RETURN ';'							RETURN ';'
+	| RETURN simple_expression ';'					| RETURN simple_expression ';'
+	;								;
+
+
+selected_component : 						selected_component : 
+	variable '.' IDENTIFIER // Original rule was 			variable '.' IDENTIFIER // Original rule was 
+						// name '.' I							// name '.' I
+						// which allo							// which allo
+	;								;
+
+
+sequence_of_statements : 					sequence_of_statements : 
+	statement 							statement 
+	| statement sequence_of_statements				| statement sequence_of_statements
+	;								;
+
+
+simple_expression : 						simple_expression : 
+	unary_adding_operator term { $<regStruct>$ = $2 ; } b		unary_adding_operator term { $<regStruct>$ = $2 ; } b
+		{ 								{ 
+			errorCode = checkIfNumeric(errorStrin				errorCode = checkIfNumeric(errorStrin
+			if(errorCode){							if(errorCode){
+				yyerror(errorString);						yyerror(errorString);
+				YYABORT;							YYABORT;
+			}								}
+			/* Generate code for addition */				/* Generate code for addition */
+
+			generateAnonymousId();						generateAnonymousId();
+			auxRegister = createRegister( anonymo				auxRegister = createRegister( anonymo
+															
+															
+															
+			$$ = auxRegister;						$$ = auxRegister;
+		}								}
+	| unary_adding_operator term 					| unary_adding_operator term 
+			{ 								{ 
+				errorCode = checkIfNumeric(er					errorCode = checkIfNumeric(er
+				if(errorCode){							if(errorCode){
+					yyerror(errorString);						yyerror(errorString);
+					YYABORT;							YYABORT;
+				}								}
+
+				/* Generate code for addition					/* Generate code for addition
+
+				generateAnonymousId();						generateAnonymousId();
+				auxRegister = createRegister(					auxRegister = createRegister(
+															
+															
+															
+				$$ = auxRegister;						$$ = auxRegister;
+		 	}							 	}
+	| term { $<regStruct>$ = $1 ; } binary_adding_list 		| term { $<regStruct>$ = $1 ; } binary_adding_list 
+			{ 								{ 	
+				errorCode = checkIfNumeric(er					errorCode = checkIfNumeric(er
+				if(errorCode){							if(errorCode){
+					yyerror(errorString);						yyerror(errorString);
+					YYABORT;							YYABORT;
+				}								}
+
+				/* Generate code for addition					/* Generate code for addition
+
+				generateAnonymousId();						generateAnonymousId();
+				auxRegister = createRegister(					auxRegister = createRegister(
+															
+															
+															
+				$$ = auxRegister;						$$ = auxRegister;
+			}								}
+	| term { $$ = $1; }						| term { $$ = $1; }
+	;								;
+
+
+simple_statement : 						simple_statement : 
+	null_statement							null_statement
+	| return_statement						| return_statement
+	| procedure_call_statement					| procedure_call_statement
+	;								;
+
+
+statement : 							statement : 
+	simple_statement						simple_statement
+	| compound_statement						| compound_statement
+	;								;
+
+										
+subprogram_body_ :						subprogram_body_ :
+	subprogram_specification IS 			      |		subprogram_specification IS {
+	{						      <
+		enterScope ( &sT );						enterScope ( &sT );
+
+		errorCode = addParametersToSymbolsTable(&sT, 			errorCode = addParametersToSymbolsTable(&sT, 
+		if ( errorCode!=0 ){						if ( errorCode!=0 ){
+	  	yyerror("Error adding parameters of subprogra		  	yyerror("Error adding parameters of subprogra
+	  	YYABORT;						  	YYABORT;
+		}								}
+							      <
+		$$ = $1;				      <
+	}								}
+	;								;
+
+
+subprogram_body : 						subprogram_body : 
+	subprogram_body_						subprogram_body_
+		declarative_part						declarative_part
+	BEGIN_								BEGIN_
+		sequence_of_statements						sequence_of_statements
+	END IDENTIFIER';' { exitScope ( &sT ); $$ = $1; }     |		END IDENTIFIER';' { exitScope ( &sT ); $<regStruct>$ 
+|	subprogram_body_					|	subprogram_body_
+		declarative_part						declarative_part
+	BEGIN_								BEGIN_
+		sequence_of_statements						sequence_of_statements
+	END ';' { exitScope ( &sT ); $$ = $1; }		      |		END ';' { exitScope ( &sT ); $<regStruct>$ = $<regStr
+;								;
+
+
+subprogram_specification : 					subprogram_specification : 
+	procedure_specification { $<regStruct>$ = $1; }			procedure_specification { $<regStruct>$ = $1; }
+	| function_specification { $<regStruct>$ = $1; }		| function_specification { $<regStruct>$ = $1; }
+	;								;
+
+
+term : 								term : 
+	factor { $$ = $<regStruct>1; }					factor { $$ = $<regStruct>1; }
+	| term multiplying_operator factor 				| term multiplying_operator factor 
+		{ 								{ 
+			errorCode = checkIfNumeric(errorStrin				errorCode = checkIfNumeric(errorStrin
+			if(errorCode) {							if(errorCode) {
+				printRegister(*$3);						printRegister(*$3);
+				yyerror(errorString);						yyerror(errorString);
+				YYABORT;							YYABORT;
+			}								}
+
+			errorCode = checkIfNumeric(errorStrin				errorCode = checkIfNumeric(errorStrin
+			if(errorCode){							if(errorCode){
+				printRegister(*$1);						printRegister(*$1);
+				yyerror(errorString);						yyerror(errorString);
+				YYABORT;							YYABORT;
+			} 								} 
+
+			getVariableTypeName(string1, $1->type				getVariableTypeName(string1, $1->type
+  		getVariableTypeName(string2, $3->typeVariable	  		getVariableTypeName(string2, $3->typeVariable
+  		//printf("4##########\n");			  		//printf("4##########\n");
+  		//printf("####%s - %s\n", string1, string2);	  		//printf("####%s - %s\n", string1, string2);
+
+			generateAnonymousId();						generateAnonymousId();
+			auxRegister = createRegister( anonymo				auxRegister = createRegister( anonymo
+															
+															
+															
+			$$ = auxRegister;						$$ = auxRegister;
+		}								}		
+	;								;
+
+type_declaration : 						type_declaration : 
+	TYPE IDENTIFIER IS type_definition ';'				TYPE IDENTIFIER IS type_definition ';'
+	;								;
+
+
+type_definition : 						type_definition : 
+	INTEGER_TYPE 	{ $$ = Integer; }				INTEGER_TYPE 	{ $$ = Integer; }
+	| REAL_TYPE		{ $$ = Real; }				| REAL_TYPE		{ $$ = Real; }
+	| CHARACTER_TYPE	{ $$ = Character; }			| CHARACTER_TYPE	{ $$ = Character; }
+	| BOOLEAN_TYPE		{ $$ = Bool; }				| BOOLEAN_TYPE		{ $$ = Bool; }
+	| array_type_definition		{ $$ = ArrayVariable;		| array_type_definition		{ $$ = ArrayVariable;
+	| record_type_definition 	{ $$ = Record; }		| record_type_definition 	{ $$ = Record; }
+	| IDENTIFIER							| IDENTIFIER
+		{ 								{ 
+			auxRegister = getSymbol(&sT, $1, sT.c				auxRegister = getSymbol(&sT, $1, sT.c
+
+		 	/* check if type really exists */			 	/* check if type really exists */
+			if(auxRegister == NULL){					if(auxRegister == NULL){
+				sprintf(errorString, "Type '%					sprintf(errorString, "Type '%
+				yyerror(errorString);						yyerror(errorString);
+				YYABORT; // Serious compiler 					YYABORT; // Serious compiler 
+			}								}
+
+			$$ = CustomType; 						$$ = CustomType; 
+		} // Custom type, must be defined before			} // Custom type, must be defined before
+	;								;
+
+
+unary_adding_operator : 					unary_adding_operator : 
+	'+'								'+'
+	| '-'								| '-'
+	;								;
+
+variable :  							variable :  
+	IDENTIFIER { auxRegister = getSymbol(&sT, $1, sT.curr		IDENTIFIER { auxRegister = getSymbol(&sT, $1, sT.curr
+							 /* c								 /* c
+							if(au								if(au
+															
+															
+															
+							}								}
+							$$ = 								$$ = 
+	| indexed_component   { yyerror("Incomplete! -> index |		| indexed_component   { yyerror("Incomplete!"); $<reg
+	| selected_component  { yyerror("Incomplete! -> selec |		| selected_component  { yyerror("Incomplete!"); $<reg
+	;								;
+
+%%								%%
+
+//Codigo C adicional						//Codigo C adicional
+
+void generateAnonymousId(){					void generateAnonymousId(){
+  sprintf(anonymousIdString, "%d", anonymousId++);		  sprintf(anonymousIdString, "%d", anonymousId++);
+}								}
+
+int main(int argc, char** argv){				int main(int argc, char** argv){
+	auxRegisterList = NULL;						auxRegisterList = NULL;
+	nOthers = 0; // Counter for case				nOthers = 0; // Counter for case
+	//nRegisters = 0;						//nRegisters = 0;
+	stackScope = 1;							stackScope = 1;
+
+	printf("-- Initializing symbols table\n\n");			printf("-- Initializing symbols table\n\n");
+    								    
+  symbolsTableInit( &sT );					  symbolsTableInit( &sT );
+
+	if (argc>1){							if (argc>1){
+		yyin=fopen(argv[1], "r");					yyin=fopen(argv[1], "r");
+
+		printf("-- Starting parsing.\n");				printf("-- Starting parsing.\n");
+
+		yyparse();							yyparse();
+
+		printf("-- Parsing finished.\n\n");				printf("-- Parsing finished.\n\n");
+	}								}
+	else printf("-- Please specify a file to compile\n\n"		else printf("-- Please specify a file to compile\n\n"
+
+///////								///////
+									
+  printf("Starting hash table tests\n\n");			  printf("Starting hash table tests\n\n");
+
+	printSymbolsTable( sT );					printSymbolsTable( sT );
+	printf("\n");							printf("\n");
+									
+	destroySymbolsTable( &sT );					destroySymbolsTable( &sT );
+	printSymbolsTable( sT );					printSymbolsTable( sT );
+	printf("\n");							printf("\n");
+									
+}								}
+
+int yyerror(char* message){					int yyerror(char* message){
+	printf("-- Error ocurred in line %i, column %i: %s. L		printf("-- Error ocurred in line %i, column %i: %s. L
+
+	//sprintf(errorString,"");					//sprintf(errorString,"");
+	return 0;							return 0;
+}								}

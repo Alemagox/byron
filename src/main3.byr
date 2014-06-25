@@ -6,37 +6,15 @@
 procedure main is
 
    --Use Ada.Text_IO;     -- To compile in Ada
-
-   procedure Expresion(c: in out Character; resultado: out Integer);
-
-   procedure Error is
-   begin   
-
-      Put("Expresion erronea");  
-
-   end Error;
-
-
-  procedure Numero(c: in out Character; resultado: out Integer) is
-    op : Character;
-    aux: Integer;
-  begin
-    aux := 1;
-    aux := 2*aux;
-  
-    case op is                                        -- Byron style, Character is directly considered Integer
-      when '*' => resultado := resultado*aux;         -- Byron style
-      when '/' => resultado := resultado/aux;         -- Byron style
-      when others => null;                            -- Byron style
-    end case; 
-    
-   end Numero;
-      
-  c : Character;
+  procedure Expresion(c: in out Character; resultado: out Integer) is 
+  begin       
+   null;           
+  end Expresion;
+         
+  c         : Character;
   resultado : Integer;
-
 begin
 
+  Expresion(c, resultado);
   null;
-
 end main;

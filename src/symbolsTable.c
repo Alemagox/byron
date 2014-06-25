@@ -119,6 +119,7 @@ void printRegister(registerStruct r);
 
 int addParametersToSubprogram( symbolsTable *sT, registerStruct *parametersList, registerStruct *r ){
   
+  destroyRegisterList( &(r->registerList) );
   r->nRegisters   = HASH_COUNT( parametersList );
   r->registerList = parametersList;
 
@@ -136,8 +137,7 @@ int addParametersToSymbolsTable( symbolsTable *sT, registerStruct *r ){
                                currentRegister->typeVariable );
 
     errorCode = addRegister( sT, toInsert );
-    if(errorCode != 0) return errorCode;
-    
+    if(errorCode != 0) return errorCode; 
   }
 
   return 0;
@@ -153,11 +153,14 @@ void destroyRegister(registerStruct *r){
 void deleteRegisterList( registerStruct **registerList ) {
   registerStruct *currentRegister, *tmp;
 
-  HASH_ITER( hh, *registerList, currentRegister, tmp ) {
-    HASH_DEL( *registerList, currentRegister );  /* delete; registers advances to next */
-  }
+  if(*registerList != NULL){
 
-  registerList = NULL;
+    HASH_ITER( hh, *registerList, currentRegister, tmp ) {
+      HASH_DEL( *registerList, currentRegister );  /* delete; registers advances to next */
+    }
+
+    *registerList = NULL;
+  }
   //registerList->table = NULL;
   //registerList->currentScope = -1;
 }
@@ -285,6 +288,94 @@ int checkParametersSubprogram( registerStruct *defParamList, registerStruct *r )
   return 0;
 }
 
+int checkParametersSubprogramCall( registerStruct *callParamList, registerStruct *r ){
+  char nameSpec[15], nameCall[15];
+  char errorString[50];
+  int errorCodeSpec, errorCodeCall;
+
+  registerStruct *iteratorCallList   = callParamList;
+  registerStruct *iteratorSpecList  = r->registerList;
+
+  int countCall    = HASH_COUNT(iteratorCallList);
+  int countSpecified  = HASH_COUNT(iteratorSpecList);
+  // Parameters in specification are different number than parameters in definition
+  if( countCall != countSpecified ){
+    if(verboseLevel>0)
+      printf("!! - Register '%s': expected %i parameters but %i were found\n", 
+             r->key.id, countSpecified, countCall);
+    return -1;
+  }
+  
+  int posParameter;
+  while(countCall>0){
+    posParameter = countSpecified - countCall+1; 
+    bool error = false;
+
+    // Comparing parameters
+
+    if(iteratorCallList->typeSymbol != iteratorSpecList->typeSymbol ){
+      error = true;
+
+      switch( iteratorSpecList->typeSymbol ){
+      // In parameters can be variables, literals and auxiliar values
+      case In:
+        if( iteratorCallList->typeSymbol == Variable ||
+            iteratorCallList->typeSymbol == Literal  ||
+            iteratorCallList->typeSymbol == Auxiliar
+          )
+        {
+          error = false;
+        }
+        break;
+       // Out and InOut parameters can be variables, literals and auxiliar values
+      case Out:
+      case InOut:
+        if( iteratorCallList->typeSymbol == Variable )
+        {
+          error = false;
+        }
+        break;
+      }
+  
+      if(verboseLevel>0 && error){
+
+        getSymbolTypeName(nameSpec, iteratorSpecList->typeSymbol);
+        getSymbolTypeName(nameCall,  iteratorCallList->typeSymbol);
+
+        printf("!! - Register '%s' symbolType error in pos %i: Type is %s, expected type was %s\n", 
+                r->key.id, posParameter, nameSpec, nameCall);
+      }
+    } 
+    if(iteratorCallList->typeVariable != iteratorSpecList->typeVariable ){
+      error = true;
+
+      errorCodeSpec = checkIfNumeric(errorString, iteratorSpecList, 0);
+      errorCodeCall = checkIfNumeric(errorString, iteratorCallList, 0);
+
+      // If both are numeric type, conversion can be applied
+      if(errorCodeSpec == 0 && errorCodeCall == 0){
+        error = false;
+      }
+
+      if(verboseLevel>0 && error){
+
+        getVariableTypeName(nameSpec, iteratorSpecList->typeVariable);
+        getVariableTypeName(nameCall,  iteratorCallList->typeVariable);
+
+        printf("!! - Register '%s' variableType error in pos %i: Type is %s, expected type was %s\n", 
+                r->key.id, posParameter, nameCall, nameSpec);
+      }
+    } 
+ 
+    if(error ) return -2;
+
+    iteratorCallList   = iteratorCallList->hh.next;
+    iteratorSpecList  = iteratorSpecList->hh.next;
+    countCall--;
+  }
+  return 0;
+}
+
 int checkAssignmentType( registerStruct *r1, registerStruct *r2 ){
   char name1[15], name2[15];
 
@@ -386,6 +477,22 @@ int checkIfDiscreteChoice( char *errorString, registerStruct *r ){
               string1
            ); 
     return -2;
+  }
+  
+  return 0;
+}
+
+int checkPutGet( char *errorString, registerStruct *r ){
+  char string[15];
+
+  if( r->typeVariable == ArrayVariable  &&  r->typeVariable == Record  && 
+      r->typeVariable == CustomType     &&  r->typeVariable == Void     
+    )
+  {
+    getVariableTypeName(string, r->typeSymbol);
+    sprintf(  errorString, "typeVariable is %s", string );
+
+    return -1;
   }
   
   return 0;
@@ -499,6 +606,24 @@ void printRegister(registerStruct r){
 
   printf(" Register: id -> %s; scope -> %i; symbolType -> %s; variableType -> %s\n", 
           r.key.id, r.key.scope, name, nameVar);
+}
+
+void printRegisterList(registerStruct *list){
+  registerStruct *iterator;
+  char name[15], nameVar[15];
+  unsigned counter = 1;
+  
+  for ( iterator=list; iterator != NULL; 
+        iterator=iterator->hh.next )
+  {
+    getSymbolTypeName( name, iterator->typeSymbol );
+    getVariableTypeName( nameVar, iterator->typeVariable );
+
+    printf("    + Element(%u): id -> %s; symbolType -> %s; variableType -> %s\n", 
+            counter, iterator->key.id, name, nameVar);
+
+    counter++;
+  }
 }
 
 void printSubprogramRegisterList( registerStruct *subprogram ){
@@ -617,21 +742,33 @@ int searchProcedure( symbolsTable *sT, char *id, int scope ){
     
   destroyRegister(r);
 
+/*
+  if ( auxR == NULL ){
+    printf("!!!!!!! NOT found -> ID '%s', scope %d\n\n", id, scope );
+    printSymbolsTable(*sT);
+    printf("#######################3\n");
+
+  }else {
+    printf("!!!!!!! found -> ID '%s', scope %d\n", id, scope );
+  }
+*/
   if (auxR==NULL && scope == 0) { // If is null the ID isn't already in the hash
     if(verboseLevel>0 ){
       printf("!! - Error calling procedure in scope %d: ID '%s' inexistent in symbols table\n", scope, id);    
-      printSymbolsTable ( *sT );
+      //printSymbolsTable ( *sT );
     }
     return -1;
-  }else
-    if (auxR != NULL)
+  }else{
+    if (auxR != NULL){
       if (auxR->typeSymbol != Procedure && scope == 0) { // If symbolType ins't Procedure type, the ID means another thing
         getSymbolTypeName( name, auxR->typeSymbol );
         if(verboseLevel>0) printf("!! - Error calling procedure in scope %d: ID '%s' of type %s\n", scope, id, name);    
         return -2;
       }
+    }
+  }
 
-  if ( scope > 0) searchProcedure( sT, id, scope-1 );
+  if ( scope > 0 && auxR == NULL) searchProcedure( sT, id, scope-1 );
 
   return 0; // Procedure exists in the symbol table
 }

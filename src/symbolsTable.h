@@ -133,6 +133,8 @@ void destroyRegister( registerStruct *r );
 
 void deleteRegisterList( registerStruct **registerList );
 
+void destroyRegisterList( registerStruct **registerList );
+
 void destroySymbolsTable( symbolsTable *sT );
 
 /***********************
@@ -145,6 +147,8 @@ void markSubprogramAsDefined( registerStruct *r );
 
 int checkParametersSubprogram( registerStruct *defParamList, registerStruct *r );
 
+int checkParametersSubprogramCall( registerStruct *callParamList, registerStruct *r );
+
 int checkAssignmentType( registerStruct *r1, registerStruct *r2 );
 
 int checkIfNumeric( char *errorString, registerStruct *r, int operationType );
@@ -152,6 +156,8 @@ int checkIfNumeric( char *errorString, registerStruct *r, int operationType );
 int checkIfOthers( char *errorString, registerStruct *r1, registerStruct *r2 );
 
 int checkIfDiscreteChoice( char *errorString, registerStruct *r );
+
+int checkPutGet( char *errorString, registerStruct *r );
 
 variableType getFactorVariableType( registerStruct *r1, registerStruct *r2 );
 
@@ -164,6 +170,7 @@ void getSymbolTypeName( char *name, symbolType sType );
 void getVariableTypeName( char *name, variableType vType );
 
 void printRegister(registerStruct r);
+void printRegisterList(registerStruct *r);
 void printSymbolsTable( symbolsTable sT );
 
 /**********************
