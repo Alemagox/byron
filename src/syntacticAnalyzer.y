@@ -172,18 +172,22 @@ main :
 actual_parameter_list :
 	expression
 		{
+/*
 			errorCode=addRegisterToList( &auxRegisterList, $1 );
 			if(errorCode){
 				printf("Why!\n");
 			}
+*/
 			//$$ = auxRegisterList;
 		}
 	| actual_parameter_list ',' expression
 		{
+/*	
 			errorCode=addRegisterToList( &auxRegisterList, $1 );
 			if(errorCode){
 				printf("Why!\n");
 			}
+*/
 			//addRegisterToList( &auxRegisterList, $3 );
 			//$$ = auxRegisterList;
 		}
@@ -277,6 +281,7 @@ binary_adding_list :
 																		sT.currentScope, Auxiliar, 
 																		getFactorVariableType($<regStruct>-1, $2)
 																	);	
+			if($2->typeSymbol==Auxiliar) destroyRegister($2);
 			$$ = auxRegister;
 		}
 	| binary_adding_operator term { $<regStruct>$ = $2 ; } binary_adding_list
@@ -294,6 +299,10 @@ binary_adding_list :
 																		sT.currentScope, Auxiliar, 
 																		getFactorVariableType($<regStruct>-1, $4)
 																	);	
+
+			if($2->typeSymbol==Auxiliar) destroyRegister($2);
+			if($4->typeSymbol==Auxiliar) destroyRegister($4);
+			//destroyRegister($4);
 			$$ = auxRegister;
 		}
 	;
@@ -503,9 +512,11 @@ function_call :
 
 function_specification : 
 	FUNCTION IDENTIFIER formal_part RETURN type_definition
-	{ auxRegister = createRegister( $2, sT.currentScope,  Function, $5 ); 
+	{ 
+		auxRegister = createRegister( $2, sT.currentScope,  Function, $5 ); 
 	  addRegister( &sT, auxRegister );
-	  $<regStruct>$ = auxRegister; }
+	  $$ = auxRegister; 
+	}
 	;
 
 
@@ -577,15 +588,19 @@ null_statement :
 
 object_declaration : 
 	IDENTIFIER identifier_list ':' constant type_definition assign_expression ';' 
-	{ auxRegister = createRegister( $1, sT.currentScope,  Variable, $5 ); 
-	  addRegister( &sT, auxRegister ); }
+	{ 
+		auxRegister = createRegister( $1, sT.currentScope,  Variable, $5 ); 
+	  addRegister( &sT, auxRegister ); 
+	}
 	;
 
 
 parameter_specification : 
 	IDENTIFIER identifier_list ':' mode type_definition assign_expression
-	{ auxRegister = createRegister( $1, sT.currentScope,  $4, $5 ); 
-	  addRegisterToList( &auxRegisterList, auxRegister ); }
+	{ 
+		auxRegister = createRegister( $1, sT.currentScope,  $4, $5 ); 
+	  addRegisterToList( &auxRegisterList, auxRegister ); 
+	}
 	;
 
 
@@ -601,7 +616,7 @@ primary :
 										auxRegister = createRegister( anonymousIdString, 
 																									sT.currentScope, Literal, 
 																									Integer
-																								);	
+																								);
 										$$ = auxRegister;
 									}
 	| FLOAT_LITERAL			{ generateAnonymousId();
@@ -625,7 +640,13 @@ primary :
 																										);	
 												$$ = auxRegister;
 											}
-	| NULL_ 						{	auxRegister = NULL; $$ = auxRegister;	}
+	| NULL_ 						{	
+												auxRegister = createRegister( anonymousIdString, 
+																											sT.currentScope, Literal, 
+																											Void
+																										);	
+												$$ = auxRegister;	
+											}
 	| STRING_LITERAL		{ generateAnonymousId();
 												auxRegister = createRegister( anonymousIdString, 
 																											sT.currentScope, Literal, 
@@ -655,7 +676,8 @@ procedure_call_statement :
 		auxRegister = getProcedure( &sT, $1, sT.currentScope );
 		
 		//printSymbolsTable(sT);
-  	if( checkParametersSubprogramCall( $3, auxRegister ) ) { //Change it for checkActual call
+  	//if( checkParametersSubprogramCall( $3, auxRegister ) ) { //Change it for checkActual call
+  	if( checkParametersSubprogramCall( auxRegister, auxRegister ) ) { //Change it for checkActual call
   	  yyerror("CheckParameterSubprogram is incomplete");
   	}
   	
@@ -758,7 +780,7 @@ relation :
 
 			generateAnonymousId();
 			auxRegister = createRegister( anonymousIdString, 
-																		sT.currentScope, Literal, 
+																		sT.currentScope, Auxiliar, 
 																		Bool
 																	);	
 			$$ = auxRegister;
@@ -783,6 +805,7 @@ relation_list :
 																	sT.currentScope, Auxiliar, 
 																	getFactorVariableType($<regStruct>-1, $2)
 																);	
+		if($2->typeSymbol==Auxiliar)destroyRegister($2);
 		$$ = auxRegister;
 	}
 	| /* empty */ 
@@ -841,6 +864,9 @@ simple_expression :
 																		sT.currentScope, Auxiliar, 
 																		getFactorVariableType($2, $4)
 																	);	
+			if($2->typeSymbol==Auxiliar) destroyRegister($2);
+			if($4->typeSymbol==Auxiliar) destroyRegister($4);
+			
 			$$ = auxRegister;
 		}
 	| unary_adding_operator term 
@@ -853,14 +879,15 @@ simple_expression :
 
 				/* Generate code for addition */
 
-				
+				/*
 				generateAnonymousId();
 				auxRegister = createRegister( anonymousIdString, 
 																			sT.currentScope, Auxiliar, 
 																			$2->typeVariable
 																		);	
+				*/
 				
-				$$ = auxRegister;
+				$$ = $2;
 		 	}
 	| term { $<regStruct>$ = $1 ; } binary_adding_list 
 			{ 	
@@ -877,8 +904,10 @@ simple_expression :
 																			sT.currentScope, Auxiliar, 
 																			getFactorVariableType($1, $3)
 																		);
-				//destroyRegister($1);
-				//destroyRegister($3);	
+
+				if($1->typeSymbol==Auxiliar) destroyRegister($1);
+				if($3->typeSymbol==Auxiliar) destroyRegister($3);
+	
 				$$ = auxRegister;
 			}
 	| term { $$ = $1; }
@@ -962,6 +991,9 @@ term :
 																		sT.currentScope, Auxiliar, 
 																		getFactorVariableType($1, $3)
 																	);	
+			if($1->typeSymbol==Auxiliar) destroyRegister($1);
+			if($3->typeSymbol==Auxiliar) destroyRegister($3);
+			
 			$$ = auxRegister;
 		}		
 	;
