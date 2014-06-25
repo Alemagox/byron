@@ -172,22 +172,26 @@ main :
 actual_parameter_list :
 	expression
 		{
-/*
-			errorCode=addRegisterToList( &auxRegisterList, $1 );
+			auxRegister = createRegister(	$1->key.id, $1->key.scope, 
+																		$1->typeSymbol, $1->typeVariable);
+
+			errorCode=addRegisterToList( &auxRegisterList, auxRegister );
 			if(errorCode){
 				printf("Why!\n");
 			}
-*/
+
 			//$$ = auxRegisterList;
 		}
 	| actual_parameter_list ',' expression
 		{
-/*	
-			errorCode=addRegisterToList( &auxRegisterList, $1 );
+			auxRegister = createRegister(	$3->key.id, $3->key.scope, 
+																		$3->typeSymbol, $3->typeVariable);
+
+			errorCode=addRegisterToList( &auxRegisterList, auxRegister );
 			if(errorCode){
 				printf("Why!\n");
 			}
-*/
+
 			//addRegisterToList( &auxRegisterList, $3 );
 			//$$ = auxRegisterList;
 		}
@@ -214,9 +218,9 @@ actual_parameter_list :
 */
 
 actual_parameter_part : 
-	'(' ')' { /*auxRegisterList = NULL;*/ $$ = auxRegisterList;  }
+	'(' ')' { /*auxRegisterList = NULL;*/ $$ = $<regStruct>-1;  }
 	//| '(' actual_parameter_list ')' { $$ = auxRegisterList;  }
-	| '(' actual_parameter_list ')' { $$ = auxRegisterList;;/*$$ = NULL;*/  }
+	| '(' {auxRegisterList = NULL;} actual_parameter_list ')' { $$ = auxRegisterList;/*$$ = NULL;*/  }
 	;
 
 
@@ -661,7 +665,7 @@ primary :
 
 
 procedure_call_statement : 
-	IDENTIFIER {auxRegisterList = NULL;} actual_parameter_part ';'
+	IDENTIFIER actual_parameter_part ';'
 	{ 
 		//printf( "line %d -- id '%s' -- scope %d\n", line, $1, sT.currentScope );
 		
@@ -675,16 +679,14 @@ procedure_call_statement :
 		// (Same number and type of parameters).
 		auxRegister = getProcedure( &sT, $1, sT.currentScope );
 		
-		//printSymbolsTable(sT);
+		printRegisterList(auxRegister->registerList);
   	//if( checkParametersSubprogramCall( $3, auxRegister ) ) { //Change it for checkActual call
   	if( checkParametersSubprogramCall( auxRegister, auxRegister ) ) { //Change it for checkActual call
   	  yyerror("CheckParameterSubprogram is incomplete");
   	}
   	
   	//printSymbolsTable(sT);
-		//deleteRegisterList( &auxRegisterList );
-
-		auxRegisterList = NULL;
+		deleteRegisterList( &auxRegisterList );
 
 		// Generate code		
 	}
@@ -993,7 +995,7 @@ term :
 																	);	
 			if($1->typeSymbol==Auxiliar) destroyRegister($1);
 			if($3->typeSymbol==Auxiliar) destroyRegister($3);
-			
+
 			$$ = auxRegister;
 		}		
 	;
