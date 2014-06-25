@@ -123,12 +123,15 @@ void generateAnonymousId();
 // Non terminals which return a value
 
 // End of non terminals which return a value
+%type <regStruct>			actual_parameter_list
+%type <regStruct>			actual_parameter_part
 %type <regStruct>			assignment_statement
 %type <regStruct>		 	binary_adding_list
 %type <op>						binary_adding_operator
 %type <regStruct>			discrete_choice
 %type <regStruct>			discrete_choice_list
 %type <regStruct>			expression
+%type <regStruct>			expression_list
 %type <regStruct>			factor
 %type <regStruct>			formal_part
 %type <regStruct>			function_specification
@@ -139,6 +142,7 @@ void generateAnonymousId();
 %type <regStruct>			relation_list
 %type <regStruct>			simple_expression
 %type <regStruct>			subprogram_body
+%type <regStruct>			subprogram_body_
 %type <regStruct>			subprogram_specification
 %type <regStruct>			term
 %type <typeVariable>	type_definition
@@ -165,15 +169,50 @@ main :
 	END IDENTIFIER ';'
 	; 
 
-
-actual_parameter_list : 
-	expression expression_list
+actual_parameter_list :
+	expression
+		{
+			errorCode=addRegisterToList( &auxRegisterList, $1 );
+			if(errorCode){
+				printf("Why!\n");
+			}
+			//$$ = auxRegisterList;
+		}
+	| actual_parameter_list ',' expression
+		{
+			errorCode=addRegisterToList( &auxRegisterList, $1 );
+			if(errorCode){
+				printf("Why!\n");
+			}
+			//addRegisterToList( &auxRegisterList, $3 );
+			//$$ = auxRegisterList;
+		}
 	;
 
+/*
+actual_parameter_list : 
+	expression expression_list
+	{ 
+		/*
+		printf("!¡!¡ - actual_parameter_list. Line: %d\n", line);
+		printSymbolsTable(sT);
+		printf("\n");
+		addRegisterToList( &auxRegisterList, $1 );
+		printf("\n");
+		printSymbolsTable(sT);
+		printf("\n");
+		
+
+		addRegisterToList( &auxRegisterList, $1 );
+		$$ = auxRegisterList;
+	}
+	;
+*/
 
 actual_parameter_part : 
-	'(' ')' { auxRegisterList = NULL; $<regStruct>$ = auxRegisterList;  }
-	| '(' actual_parameter_list ')' { $<regStruct>$ = auxRegisterList;  }
+	'(' ')' { /*auxRegisterList = NULL;*/ $$ = auxRegisterList;  }
+	//| '(' actual_parameter_list ')' { $$ = auxRegisterList;  }
+	| '(' actual_parameter_list ')' { $$ = auxRegisterList;;/*$$ = NULL;*/  }
 	;
 
 
@@ -429,7 +468,14 @@ expression :
 
 expression_list : 
 	',' expression expression_list
+	{
+		addRegisterToList( &auxRegisterList, $2 );
+		$$ = auxRegisterList;
+	}
 	| /* empty */
+	{
+		$$ = NULL;
+	}
 	;
 
 
@@ -441,8 +487,11 @@ factor :
 
 
 formal_part : 
-	'(' parameter_specification parameter_specification_list ')' { $$ = auxRegisterList; }
-	| /* empty */ { $$ = auxRegisterList; }
+	'(' parameter_specification parameter_specification_list ')' 
+	{ 
+		$$ = auxRegisterList; 
+	}
+	| /* empty */ { $$ = NULL; }
 	;
 
 
@@ -591,14 +640,31 @@ primary :
 
 
 procedure_call_statement : 
-	IDENTIFIER actual_parameter_part ';'
-	{ errorCode = searchProcedure( &sT, $1, sT.currentScope );
+	IDENTIFIER {auxRegisterList = NULL;} actual_parameter_part ';'
+	{ 
+		//printf( "line %d -- id '%s' -- scope %d\n", line, $1, sT.currentScope );
+		
+		errorCode = searchProcedure( &sT, $1, sT.currentScope );
 	  if ( errorCode!=0 ){
 	  	yyerror("Procedure call error: %s", $1);
 	  	YYABORT;
 		} 
-
+    
 		// Check actual parameters against defined arguments
+		// (Same number and type of parameters).
+		auxRegister = getProcedure( &sT, $1, sT.currentScope );
+		
+		//printSymbolsTable(sT);
+  	if( checkParametersSubprogramCall( $3, auxRegister ) ) { //Change it for checkActual call
+  	  yyerror("CheckParameterSubprogram is incomplete");
+  	}
+  	
+  	//printSymbolsTable(sT);
+		//deleteRegisterList( &auxRegisterList );
+
+		auxRegisterList = NULL;
+
+		// Generate code		
 	}
 
 	| PUT '(' STRING_LITERAL ')' ';'
@@ -606,11 +672,21 @@ procedure_call_statement :
 
 		}
 	| PUT '(' variable ')' ';'
-		{
-
+		{ 
+			errorCode = checkPutGet( errorString, $3 );
+		  if ( errorCode!=0 ){
+		  	yyerror("Incorrect 'Put' parameter: %s", errorString);
+		  	YYABORT;
+			} 
+			
 		}
 	| GET '(' variable ')' ';'
-		{
+		{ 
+			errorCode = checkPutGet( errorString, $3 );
+		  if ( errorCode!=0 ){
+		  	yyerror("Incorrect 'Get' parameter: %s", errorString);
+		  	YYABORT;
+			} 
 			
 		}
 	| NEW_LINE ';'
@@ -635,23 +711,22 @@ procedure_specification :
 	  	  yyerror("CheckParameterSubprogram is incomplete");
 	  	}
 
-	  	addParametersToSubprogram( &sT, $3, auxRegister );
+	  	//addParametersToSubprogram( &sT, $3, auxRegister );
 	  }
 	  else{ // Adding the list of parameters
 	  	//sT.currentScope = stackScope;
 	  	auxRegister = getProcedure( &sT, $2, sT.currentScope );
 
-	  	addParametersToSubprogram( &sT, $3, auxRegister );
+	  	//addParametersToSubprogram( &sT, $3, auxRegister );
+	  	//auxRegisterList = NULL;
 
-	  	//enterScope ( &sT );
-
-	  	auxRegisterList = NULL;
-	  	//destroySymbolsTable( &auxRegisterList );
-	  	//sT.currentScope = 0;
-	  	//stackScope++;
 	  }
 
-	  $<regStruct>$ = auxRegister; }
+	  addParametersToSubprogram( &sT, $3, auxRegister );
+	  auxRegisterList = NULL;
+
+	  $<regStruct>$ = auxRegister; 
+	}
 	;
 
 
@@ -778,11 +853,13 @@ simple_expression :
 
 				/* Generate code for addition */
 
+				
 				generateAnonymousId();
 				auxRegister = createRegister( anonymousIdString, 
 																			sT.currentScope, Auxiliar, 
 																			$2->typeVariable
 																		);	
+				
 				$$ = auxRegister;
 		 	}
 	| term { $<regStruct>$ = $1 ; } binary_adding_list 
@@ -799,7 +876,9 @@ simple_expression :
 				auxRegister = createRegister( anonymousIdString, 
 																			sT.currentScope, Auxiliar, 
 																			getFactorVariableType($1, $3)
-																		);	
+																		);
+				//destroyRegister($1);
+				//destroyRegister($3);	
 				$$ = auxRegister;
 			}
 	| term { $$ = $1; }
@@ -820,7 +899,8 @@ statement :
 
 		
 subprogram_body_ :
-	subprogram_specification IS {
+	subprogram_specification IS 
+	{
 		enterScope ( &sT );
 
 		errorCode = addParametersToSymbolsTable(&sT, $<regStruct>1);
@@ -828,6 +908,8 @@ subprogram_body_ :
 	  	yyerror("Error adding parameters of subprogram %s", $<regStruct>1->key.id);
 	  	YYABORT;
 		}
+
+		$$ = $1;
 	}
 	;
 
@@ -837,12 +919,12 @@ subprogram_body :
 		declarative_part
 	BEGIN_
 		sequence_of_statements
-	END IDENTIFIER';' { exitScope ( &sT ); $<regStruct>$ = $<regStruct>1; }
+	END IDENTIFIER';' { exitScope ( &sT ); $$ = $1; }
 |	subprogram_body_
 		declarative_part
 	BEGIN_
 		sequence_of_statements
-	END ';' { exitScope ( &sT ); $<regStruct>$ = $<regStruct>1; }
+	END ';' { exitScope ( &sT ); $$ = $1; }
 ;
 
 
@@ -926,8 +1008,8 @@ variable :
 								YYABORT; // Serious compiler error
 							}
 							$$ = auxRegister; }
-	| indexed_component   { yyerror("Incomplete!"); $<regStruct>$ = auxRegister; }
-	| selected_component  { yyerror("Incomplete!"); $<regStruct>$ = auxRegister; }
+	| indexed_component   { yyerror("Incomplete! -> indexed_componenti in variable"); YYABORT; $$ = NULL; }
+	| selected_component  { yyerror("Incomplete! -> selected_componenti in variable"); YYABORT; $$ = NULL; }
 	;
 
 %%
