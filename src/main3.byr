@@ -5,16 +5,7 @@
 
 procedure main is
 
-   --Use Ada.Text_IO;     -- To compile in Ada
-  procedure Expresion(c: in out Character; resultado: out Integer) is 
-  begin       
-   null;           
-  end Expresion;
-         
-  c         : Character;
-  resultado : Integer;
 begin
-
-  Expresion(c, resultado);
+  
   null;
 end main;

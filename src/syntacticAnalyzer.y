@@ -8,8 +8,9 @@
 // C declarations
 #include <stdio.h> 
 #include "symbolsTable.h" 
+#include "codeGenerationQ.h" 
 
-extern FILE *yyin; 	// Input stream , declared by lexical analyzer
+extern FILE *yyin, *yyout; 	// Input stream , declared by lexical analyzer
 extern int line;   	// Read line, values are given by lexical analyzer
 extern int column;  // Read column, values are given by lexical analyzer
 extern char* yytext;
@@ -30,6 +31,7 @@ char anonymousIdString[500];
 char errorString[500];
 char string1[15], string2[15];
 int nOthers;
+int errorCompiling;
 
 
 /////////////////////////////////////////////
@@ -364,12 +366,16 @@ case_statement_alternative_list :
 
 component_item : 
 	IDENTIFIER identifier_list ':' type_definition assign_expression ';'
+	{
+		auxRegister = createRegister( $1, sT.currentScope,  Field, $4 ); 
+	  addRegisterToList( &auxRegisterList, auxRegister );
+	}
 	;
 
 
 component_list : 
-	component_list component_item
-	| /* empty */
+	component_item component_list
+	| component_item 
 	;
 
 
@@ -1045,8 +1051,8 @@ variable :
 								YYABORT; // Serious compiler error
 							}
 							$$ = auxRegister; }
-	| indexed_component   { yyerror("Incomplete! -> indexed_componenti in variable"); YYABORT; $$ = NULL; }
-	| selected_component  { yyerror("Incomplete! -> selected_componenti in variable"); YYABORT; $$ = NULL; }
+	| indexed_component   { yyerror("Incomplete! -> indexed_component in variable"); YYABORT; $$ = NULL; }
+	| selected_component  { yyerror("Incomplete! -> selected_component in variable"); YYABORT; $$ = NULL; }
 	;
 
 %%
@@ -1058,6 +1064,8 @@ void generateAnonymousId(){
 }
 
 int main(int argc, char** argv){
+	errorCompiling = 0;
+
 	auxRegisterList = NULL;
 	nOthers = 0; // Counter for case
 	//nRegisters = 0;
@@ -1070,11 +1078,23 @@ int main(int argc, char** argv){
 	if (argc>1){
 		yyin=fopen(argv[1], "r");
 
+		//Out file
+		memcpy( anonymousIdString, argv[1], strlen(argv[1])-4);
+		sprintf( anonymousIdString, "%s.q.c", anonymousIdString );
+		yyout=fopen(anonymousIdString, "w");
+
+		generateCodeStart( yyout );
+
 		printf("-- Starting parsing.\n");
 
 		yyparse();
 
 		printf("-- Parsing finished.\n\n");
+
+		generateCodeEnd( yyout );
+
+		fclose(yyin);
+		fclose(yyout);
 	}
 	else printf("-- Please specify a file to compile\n\n");
 
@@ -1088,12 +1108,13 @@ int main(int argc, char** argv){
 	destroySymbolsTable( &sT );
 	printSymbolsTable( sT );
 	printf("\n");
-	
+
 }
 
 int yyerror(char* message){
 	printf("-- Error ocurred in line %i, column %i: %s. Last read token is '%s'\n", line, column, message, yytext);
 
+	errorCompiling = 1;
 	//sprintf(errorString,"");
 	return 0;
 }

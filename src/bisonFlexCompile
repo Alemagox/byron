@@ -7,4 +7,4 @@ bison --debug --report=all -d syntacticAnalyzer.y -o compiler.tab.c
 
 flex lexicalAnalyzer.l 
 
-gcc lex.yy.c compiler.tab.c symbolsTable.c -lfl -o compiler
+gcc lex.yy.c compiler.tab.c symbolsTable.c codeGenerationQ.c -lfl -o compiler
