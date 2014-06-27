@@ -1,0 +1,10 @@
+-- 01_mainEmptyProgram.byr: procedure main empty
+
+-- Syntax of Ada for Sublime: https://github.com/mulander/ada.tmbundle
+-- Adding association with .byr: View -> Syntax -> Open all with current extension as ...
+
+procedure main is
+	
+begin
+	null;
+end main;

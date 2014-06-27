@@ -1,0 +1,14 @@
+-- 03_mainEmptyFunctionBoolean.byr: procedure main empty
+
+procedure main is
+	-- Declaración de función
+	function emptyFunc return Boolean is
+	
+	begin
+	   return True;
+	end emptyFunc;
+
+
+begin
+	null;
+end main;

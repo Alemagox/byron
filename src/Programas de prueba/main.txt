@@ -1,0 +1,213 @@
+With
+
+Ada.Text_IO;
+
+procedure main is
+
+   Use Ada.Text_IO;
+
+   procedure expresion(C: in out Character; resultado: out Integer);
+
+   procedure error is
+   begin   
+
+      Put("Expresión errónea");  
+
+   end error;
+
+
+   procedure numero(C: in out Character; resultado: out Integer) is
+   begin
+
+      resultado := 0;
+      
+      if (C < '0' or C > '9') then
+         error;        
+      end if;
+
+      while (C > '0' and C < '9') loop
+         resultado := 10*resultado+Character'Pos(C)-Character'Pos('0');
+         Get (C);
+      end loop; 
+
+   end numero;
+
+--int factor() {
+   --int resultado;
+
+  --if (c=='(') {
+
+    --c=getchar();
+
+    --resultado=expresion();
+
+    --if (c==')') c=getchar();
+
+    --else error();
+
+    --return resultado;
+
+  --} else return numero();
+
+--}
+
+   procedure factor(C: in out Character; resultado: out Integer) is
+   begin
+
+      resultado := 0;
+      
+      if (C = '(') then
+         Get (C);
+         
+         expresion(C,resultado);
+         
+         if (C = ')') then
+            Get (C);
+         else
+            Put("1");
+            error;
+         end if;
+         
+      else
+      	numero(C, resultado);   
+      end if;
+
+   end factor;
+   
+--int termino() {
+
+  --int resultado, aux;
+  --char op;
+  --resultado=factor();
+
+  --while (c=='*' || c=='/') {
+    --op=c;
+    --c=getchar();
+    --aux=factor();
+   
+    --switch (op) {
+      --case '*': resultado*=aux; break;
+      --case '/': resultado/=aux; break;
+    --}
+  --}
+  --return resultado;
+    --}
+    
+   procedure termino(C: in out Character; resultado: out Integer) is
+      aux : Integer;
+      op : Character;
+   begin
+      factor(C, resultado);
+      
+      while (C = '*' or C = '/') loop
+         op:=C;
+         Get(C);
+         factor(C, aux);
+         
+         case Character'Pos(op) is
+            when Character'Pos('*') => resultado := resultado*aux;
+            when Character'Pos('/') => resultado := resultado/aux;
+            when others => null;              
+         end case;
+      end loop;
+            
+   end termino;
+   
+--int expresion() {
+
+  --int resultado, aux;
+  --char op='+';
+
+  --if (c=='+' || c=='-') {
+    --op=c;
+    --c=getchar();
+  --}
+
+  --resultado=termino();
+
+  --if (op=='-') resultado=-resultado;
+
+  --while (c=='+' || c=='-') {
+    --op=c;
+    --c=getchar();
+    --aux=termino();
+
+    --switch (op) {
+      --case '+': resultado+=aux; break;
+      --case '-': resultado-=aux; break;
+    --}
+  --}
+  --return resultado;
+--}
+
+  procedure expresion(C: in out Character; resultado: out Integer) is 
+      aux : Integer;
+      op : Character;
+  begin
+         
+      --factor(C, resultado);
+      if(C='+' or C='-')then
+         op := C;
+         Get(C);
+      end if;
+      
+      termino(C, resultado);
+      
+      if (op = '-') then
+         resultado := -resultado;
+      end if;
+      
+      
+      while (C = '+' or C = '-') loop
+         op:=C;
+         Get(C);
+         termino(C, aux);
+         
+         case Character'Pos(op) is
+            when Character'Pos('+') => resultado := resultado+aux;
+            when Character'Pos('-') => resultado := resultado-aux;
+            when others => null;              
+         end case;
+      end loop;
+            
+   end expresion;
+      
+      
+   C : Character;
+   resultado : Integer;
+
+begin
+
+   
+
+   Get (C);
+
+   while (C)
+
+   numero(C, aux);
+
+   
+
+   Put(Integer'Image(aux));
+
+   Put ("\n");
+   
+   factor(C, aux);
+
+   Put ("\n");
+
+   
+
+   --Put (C);
+
+   
+
+   Put ("\n");
+
+   
+
+   null;
+
+   
+
+end main;

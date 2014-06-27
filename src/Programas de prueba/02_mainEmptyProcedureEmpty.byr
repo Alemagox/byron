@@ -1,0 +1,14 @@
+-- 02_mainEmptyProcedureEmpty.byr: procedure main empty
+
+procedure main is
+	-- Declaración de procedimiento
+	procedure emptyProc is
+	
+	begin
+	   null;
+	end emptyProc;
+
+
+begin
+	null;
+end main;

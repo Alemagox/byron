@@ -1,0 +1,149 @@
+-- arithmeticInterpreter.byr
+
+--With										-- To compile in Ada
+--Ada.Text_IO;  					-- To compile in Ada
+
+procedure main is
+
+   --Use Ada.Text_IO; 		-- To compile in Ada
+
+   procedure Expresion(c: in out Character; resultado: out Integer);
+
+   procedure Error is
+   begin   
+
+      Put("Expresion erronea");  
+
+   end Error;
+
+
+   procedure Numero(c: in out Character; resultado: out Integer) is
+   begin
+
+      resultado := 0;
+      
+      if (c < '0' or c > '9') then
+         error();        
+      end if;
+
+      while (c > '0' and c < '9') loop
+         --resultado := 10*resultado+Character'Pos(c)-Character'Pos('0');	-- To compile in Ada
+         resultado := 10*resultado + c - '0' ; 														-- Byron style, explicit casting.
+         Get (c);
+      end loop; 
+
+   end Numero;
+
+   procedure Factor(c: in out Character; resultado: out Integer) is
+   begin
+
+      resultado := 0;
+      
+      if (c = '(') then
+         Get (c);
+         
+         Expresion(c,resultado);
+         
+         if (c = ')') then
+            Get (c);
+         else
+            Put("1");
+            Error();
+         end if;
+         
+      else
+      	Numero(c, resultado);   
+      end if;
+
+   end factor;
+       
+   procedure Termino(c: in out Character; resultado: out Integer) is
+      aux : Integer;
+      op : Character;
+   begin
+      Factor(c, resultado);
+      
+      while (c = '*' or c = '/') loop
+         op:=c;
+         Get(c);
+         Factor(c, aux);
+         
+      --   case Character'Pos(op) is
+      --      when Character'Pos('*') => resultado := resultado*aux;
+      --      when Character'Pos('/') => resultado := resultado/aux;
+      --      when others => null;              
+      --   end case;
+
+         case op is                                                        -- Byron style, Character is directly considered Integer
+            when '*' => resultado := resultado*aux;         -- Byron style
+            when '/' => resultado := resultado/aux;         -- Byron style
+            when others => null;                            -- Byron style
+         end case;                                                         -- Byron style
+
+      end loop;
+            
+   end Termino;
+
+  procedure Expresion(c: in out Character; resultado: out Integer) is 
+      aux : Integer;
+      op : Character;
+  begin
+         
+      if(c='+' or c='-')then
+         op := c;
+         Get(c);
+      end if;
+      
+      Termino(c, resultado);
+      
+      if (op = '-') then
+         resultado := -resultado;
+      end if;
+      
+      while (c = '+' or c = '-') loop
+         op:=c;
+         Get(c);
+         Termino(c, aux);
+         
+         --case Character'Pos(op) is																	-- To compile in Ada
+         --   when Character'Pos('+') => resultado := resultado+aux;	-- To compile in Ada
+         --   when Character'Pos('-') => resultado := resultado-aux;	-- To compile in Ada
+         --   when others => null;              											-- To compile in Ada
+         --end case;														        -- To compile in Ada
+
+         case op is																			-- Byron style, Character is directly considered Integer
+            when '+' => resultado := resultado+aux;			-- Byron style
+            when '-' => resultado := resultado-aux;			-- Byron style
+            when others => null;              					-- Byron style
+         end case;																			-- Byron style
+
+      end loop;
+            
+   end Expresion;
+      
+      
+   c : Character;
+   resultado : Integer;
+
+begin
+
+   c:='y';
+   
+   -- Debido a limitaciones del get de Ada las expresiones han de terminar con ;
+   
+   while (c /= 'n') loop
+      Get(c);
+      Expresion(c, resultado);
+      
+      Put("Result is: "); 
+      -- Put(Integer'Image(resultado)); -- To compile in Ada
+      Put(resultado);  -- Byron style, implicit casting to literal_string
+      New_Line;
+      
+      Put("New expression?(y/n): ");
+      Get (c);
+   end loop;
+    
+   null;
+
+end main;
