@@ -1063,114 +1063,117 @@ YY_RULE_SETUP
 case 31:
 YY_RULE_SETUP
 #line 71 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return INTEGER_LITERAL;}
+{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return INTEGER_LITERAL;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 72 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return FLOAT_LITERAL;}
+{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return FLOAT_LITERAL;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 73 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return FLOAT_LITERAL;}
+{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return FLOAT_LITERAL;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 74 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return CHARACTER_LITERAL;} 	/* ' */
+{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return CHARACTER_LITERAL;} 	/* ' */
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
 #line 75 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return STRING_LITERAL;}   	/* " */
+{ column=column+strlen(yytext);  //strncpy(substr, buff+10, 4);
+									  strncpy(yylval.string, yytext+1, strlen(yytext)-1);
+									  yylval.string[strlen(yytext-2)]='\0';
+									  return STRING_LITERAL;}   	/* " */
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 76 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
+#line 79 "lexicalAnalyzer.l"
+{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return BOOLEAN_LITERAL;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 77 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
+#line 80 "lexicalAnalyzer.l"
+{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return BOOLEAN_LITERAL;}
 	YY_BREAK
 /* Special characters */
 case 38:
 YY_RULE_SETUP
-#line 80 "lexicalAnalyzer.l"
+#line 83 "lexicalAnalyzer.l"
 {column=column+strlen(yytext); return yytext[0];}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 81 "lexicalAnalyzer.l"
+#line 84 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return ARROW; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 82 "lexicalAnalyzer.l"
+#line 85 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return POWER_OP;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 83 "lexicalAnalyzer.l"
+#line 86 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return ASSIGNMENT_OP;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 84 "lexicalAnalyzer.l"
+#line 87 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return NOT_EQUAL_OP;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 85 "lexicalAnalyzer.l"
+#line 88 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return GREATER_EQUAL_OP;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 86 "lexicalAnalyzer.l"
+#line 89 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return LESSER_EQUAL_OP;}
 	YY_BREAK
 /* Comments */
 case 45:
 YY_RULE_SETUP
-#line 90 "lexicalAnalyzer.l"
+#line 93 "lexicalAnalyzer.l"
 {column=column+strlen(yytext);/* ignore  line */}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 91 "lexicalAnalyzer.l"
+#line 94 "lexicalAnalyzer.l"
 {column=column+strlen(yytext);/* ignore lines*/}
 	YY_BREAK
 /* Built in functions */
 case 47:
 YY_RULE_SETUP
-#line 94 "lexicalAnalyzer.l"
+#line 97 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return PUT; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 95 "lexicalAnalyzer.l"
+#line 98 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return GET; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 96 "lexicalAnalyzer.l"
+#line 99 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return LENGTH; }	/* ' */
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 97 "lexicalAnalyzer.l"
+#line 100 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return NEW_LINE; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 98 "lexicalAnalyzer.l"
+#line 101 "lexicalAnalyzer.l"
 { column=column+strlen(yytext); return CONCAT; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 101 "lexicalAnalyzer.l"
+#line 104 "lexicalAnalyzer.l"
 {column=column+strlen(yytext);
 	                             strcpy(yylval.string, yytext); 
 	                             return IDENTIFIER;}
@@ -1185,36 +1188,36 @@ YY_RULE_SETUP
 	*/
 case 53:
 YY_RULE_SETUP
-#line 113 "lexicalAnalyzer.l"
+#line 116 "lexicalAnalyzer.l"
 {column++;/*ignore spaces*/}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 114 "lexicalAnalyzer.l"
+#line 117 "lexicalAnalyzer.l"
 {column=column+4;/* ignore tabs*/}
 	YY_BREAK
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
-#line 115 "lexicalAnalyzer.l"
+#line 118 "lexicalAnalyzer.l"
 {line++; column=1;/*return  END_LINE;*/}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 116 "lexicalAnalyzer.l"
+#line 119 "lexicalAnalyzer.l"
 {return 0; /* by default */}
 	YY_BREAK
 /* Unknown characters */
 case 56:
 YY_RULE_SETUP
-#line 119 "lexicalAnalyzer.l"
+#line 122 "lexicalAnalyzer.l"
 {error("Unknown character");}
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 121 "lexicalAnalyzer.l"
+#line 124 "lexicalAnalyzer.l"
 ECHO;
 	YY_BREAK
-#line 1218 "lex.yy.c"
+#line 1221 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2210,7 +2213,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 121 "lexicalAnalyzer.l"
+#line 124 "lexicalAnalyzer.l"
 
 
 	/* User Code Section */

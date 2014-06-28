@@ -71,9 +71,25 @@ L new_: {//entre llaves por usar variable local
 //          R2=valor entero a visualizar (opcional según formato)
 // No modifica ningún registro ni la ristra de formato
 L putf_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
-	  printf((char*)p,R2);             // traslada                 
-          reinv_str(p,&U(R1));   	    // re-invierte                
+    unsigned char *p2=inv_str(&U(R2)); // invierte: nva. dir. real 1er char
+    printf((char*)p,(char*)p2);             // trasladar
+//      printf((char*)p, R2);               
+        reinv_str(p,&U(R1));        // re-invierte   
+        reinv_str(p2,&U(R2));                 
 	  GT(R0);                           // retorna
-	}                                                          
+	}
+
+// void* free(int_size)           
+// Entrada: R0=etiqueta de retorno
+//          R1=tamaño (<=0)
+// Salida: R0=puntero al tramo de memoria asignado 
+// Sólo modifica R0                            
+L free_: {//entre llaves por usar variable local
+         int r=R0;
+         IF(R1>0) GT(exit_);         // no permite tamaños positivos
+         NH(R1);                     // libera tramo de memoria en heap   
+         R0=HP;                      // devuelve dirección 
+         GT(r);                      // retorna                  
+        }  
 
 ENDLIB

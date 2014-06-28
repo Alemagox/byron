@@ -28,4 +28,5 @@
 // Igualmente para funciones de Qlib; úsense sólo etiquetas no superiores a -10
 #define exit_    -10    // NOTA: a eliminar en futuras versiones, mantenido por compatibilidad
 #define new_     -11    // asigna o libera espacio en heap
-#define putf_    -12    // visualiza ristra y/o entero
+#define putf_    -12    // visualiza entero
+#define free_    -13    // asigna o libera espacio en heap

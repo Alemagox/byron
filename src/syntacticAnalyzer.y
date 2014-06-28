@@ -24,6 +24,8 @@ FILE *yyout;		// Compiled file
 // Variables used to work with symbols table
 symbolsTable sT;
 registerStruct *auxRegister, *auxRegisterList;
+qMachine Q;
+
 int errorCode, nRegisters;
 int stackScope;
 int anonymousId = 0;
@@ -166,7 +168,7 @@ main :
 	PROCEDURE IDENTIFIER IS
        	/*declarative_part_*/
 		declarative_part
-	BEGIN_
+	BEGIN_ { fprintf( yyout, "L 0:\n" ); }
    	sequence_of_statements
 	END IDENTIFIER ';'
 	; 
@@ -701,6 +703,8 @@ procedure_call_statement :
 	| PUT '(' STRING_LITERAL ')' ';'
 		{
 			// Generate code
+			generateCodePutStringLiteral( yyout, &Q, $<string>3);
+
 		}
 	| PUT '(' variable ')' ';'
 		{ 
@@ -1074,6 +1078,7 @@ int main(int argc, char** argv){
 	printf("-- Initializing symbols table\n\n");
     
   symbolsTableInit( &sT );
+  qMachineInit( &Q );
 
 	if (argc>1){
 		yyin=fopen(argv[1], "r");
@@ -1083,7 +1088,7 @@ int main(int argc, char** argv){
 		sprintf( anonymousIdString, "%s.q.c", anonymousIdString );
 		yyout=fopen(anonymousIdString, "w");
 
-		generateCodeStart( yyout );
+		generateCodeStart( yyout, Q );
 
 		printf("-- Starting parsing.\n");
 

@@ -6,6 +6,8 @@
 procedure main is
 
 begin
-  
+
+  Put("Nonononono");
+
   null;
 end main;

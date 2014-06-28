@@ -67,14 +67,17 @@ Character	{ column=column+strlen(yytext); return CHARACTER_TYPE;}
 Boolean		{ column=column+strlen(yytext); return BOOLEAN_TYPE;}
 
 	/* Data literals */
-
-{numeral}({exponent_pos})?			{ column=column+strlen(yytext); return INTEGER_LITERAL;}
-{numeral}{exponent_neg}				{ column=column+strlen(yytext); return FLOAT_LITERAL;}
-{numeral}"."{numeral}{exponent}?	{ column=column+strlen(yytext); return FLOAT_LITERAL;}
-\'.\'								{ column=column+strlen(yytext); return CHARACTER_LITERAL;} 	/* ' */
-\"({alphanumeric}|" "|.)*\"   		{ column=column+strlen(yytext); return STRING_LITERAL;}   	/* " */
-True								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
-False								{ column=column+strlen(yytext); return BOOLEAN_LITERAL;}
+																																				
+{numeral}({exponent_pos})?			{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return INTEGER_LITERAL;}
+{numeral}{exponent_neg}				{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return FLOAT_LITERAL;}
+{numeral}"."{numeral}{exponent}?	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return FLOAT_LITERAL;}
+\'.\'								{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return CHARACTER_LITERAL;} 	/* ' */
+\"({alphanumeric}|" "|.)*\"   		{ column=column+strlen(yytext);  //strncpy(substr, buff+10, 4);
+									  strncpy(yylval.string, yytext+1, strlen(yytext)-1);
+									  yylval.string[strlen(yytext-2)]='\0';
+									  return STRING_LITERAL;}   	/* " */
+True								{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return BOOLEAN_LITERAL;}
+False								{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return BOOLEAN_LITERAL;}
 
 	/* Special characters */
 "="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|"["|"]"|":"|"."|","|";"|"|" {column=column+strlen(yytext); return yytext[0];}

@@ -82,6 +82,8 @@ registerStruct *createRegister( char *id, int scope, symbolType typeSymbol, vari
   r->typeVariable = typeVariable;
 
   r->defined = 0;
+
+  r->address = 0;
 	
 	return r;
 }
