@@ -4,10 +4,14 @@
 --Ada.Text_IO;            -- To compile in Ada
 
 procedure main is
-
+  a : Integer;
 begin
+  
+  Get(a);
+  Put("Nonononono"); New_Line;
+  Put(a);
 
-  Put("Nonononono");
+  New_Line;
 
   null;
 end main;

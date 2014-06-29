@@ -27,12 +27,14 @@ registerStruct *auxRegister, *auxRegisterList;
 qMachine Q;
 
 int errorCode, nRegisters;
-int stackScope;
-int anonymousId = 0;
-char anonymousIdString[500];
 char errorString[500];
 char string1[15], string2[15];
 int nOthers;
+
+int stackScope;
+int anonymousId = 0;
+char anonymousIdString[500];
+
 int errorCompiling;
 
 
@@ -168,7 +170,11 @@ main :
 	PROCEDURE IDENTIFIER IS
        	/*declarative_part_*/
 		declarative_part
-	BEGIN_ { fprintf( yyout, "L 0:\n" ); }
+	BEGIN_ 
+		{ 
+			fprintf( yyout, "CODE(%d)\nL 0:\n", Q.nextCodeNumber++ ); 
+			Q.stat = 1;
+		}
    	sequence_of_statements
 	END IDENTIFIER ';'
 	; 
@@ -603,7 +609,27 @@ object_declaration :
 	IDENTIFIER identifier_list ':' constant type_definition assign_expression ';' 
 	{ 
 		auxRegister = createRegister( $1, sT.currentScope,  Variable, $5 ); 
-	  addRegister( &sT, auxRegister ); 
+	  errorCode = addRegister( &sT, auxRegister ); 
+	  if(errorCode){
+			yyerror();
+			YYABORT;
+		} 
+
+		errorCode = getVarStaticAddress( &Q, auxRegister );
+		if( errorCode == -1 ){
+			yyerror("Symbol created is not a variable");
+			YYABORT;
+		}
+		if( errorCode == -2){
+			yyerror("Case for object_declaration not implemented yet");
+			YYABORT;
+		}
+
+		errorCode = generateCodeVarStatic( yyout, &Q, auxRegister );
+		if( errorCode == -1 ){
+			yyerror("Symbol created is not a variable");
+			YYABORT;
+		}
 	}
 	;
 
@@ -696,15 +722,13 @@ procedure_call_statement :
   	
   	// It sets auxRegisterList as NULL
 		deleteRegisterList( &auxRegisterList );
-
 		// Generate code		
 	}
 
 	| PUT '(' STRING_LITERAL ')' ';'
 		{
 			// Generate code
-			generateCodePutStringLiteral( yyout, &Q, $<string>3);
-
+			generateCodePutStringLiteral( yyout, &Q, $<string>3 );
 		}
 	| PUT '(' variable ')' ';'
 		{ 
@@ -715,6 +739,7 @@ procedure_call_statement :
 			} 
 
 			// Generate code
+			generateCodePutVariable( yyout, &Q, $3 );
 		}
 	| GET '(' variable ')' ';'
 		{ 
@@ -725,8 +750,12 @@ procedure_call_statement :
 			} 
 			
 			// Generate code
+			generateCodeGetVariable( yyout, &Q, $3 );
 		}
 	| NEW_LINE ';'
+		{
+			generateCodeNewLine( yyout, &Q );
+		}
 	;
 
 
@@ -1088,7 +1117,7 @@ int main(int argc, char** argv){
 		sprintf( anonymousIdString, "%s.q.c", anonymousIdString );
 		yyout=fopen(anonymousIdString, "w");
 
-		generateCodeStart( yyout, Q );
+		generateCodeStart( yyout, &Q );
 
 		printf("-- Starting parsing.\n");
 

@@ -65,19 +65,71 @@ L new_: {//entre llaves por usar variable local
          GT(r);                      // retorna                  
         }                            
 
-// void putf(const unsigned char*, int)
+// void putfi(const unsigned char*, int)
 // Entrada: R0=etiqueta de retorno
 //          R1=dirección de la ristra de formato
 //          R2=valor entero a visualizar (opcional según formato)
 // No modifica ningún registro ni la ristra de formato
-L putf_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
-    unsigned char *p2=inv_str(&U(R2)); // invierte: nva. dir. real 1er char
-    printf((char*)p,(char*)p2);             // trasladar
-//      printf((char*)p, R2);               
-        reinv_str(p,&U(R1));        // re-invierte   
-        reinv_str(p2,&U(R2));                 
+L putfi_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
+    printf((char*)p,R2);             // trasladar            
+    
+    reinv_str(p,&U(R1));        // re-invierte         
 	  GT(R0);                           // retorna
 	}
+
+// void putfs(const unsigned char*, int)
+// Entrada: R0=etiqueta de retorno
+//          R1=dirección de la ristra de formato
+//          R2=direccion string a visualizar (opcional según formato)
+// No modifica ningún registro ni la ristra de formato
+L putfs_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
+    unsigned char *p2=inv_str(&U(R2)); // invierte: nva. dir. real 1er char
+    printf((char*)p,(char*)p2);             // trasladar
+           
+    reinv_str(p,&U(R1));        // re-invierte   
+    reinv_str(p2,&U(R2));                 
+    GT(R0);                           // retorna
+  }
+
+// void putnl(const unsigned char*, int)
+// Entrada: R0=etiqueta de retorno
+//          R1=dirección de la ristra de formato
+//          R2=direccion string a visualizar (opcional según formato)
+// No modifica ningún registro ni la ristra de formato
+L putnl_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
+    printf("%s", (char*)p);             // trasladar     
+    reinv_str(p,&U(R1));        // re-invierte         
+    GT(R0);                           // retorna
+  }
+
+
+// void getfi(const unsigned char*, int)
+// Entrada: R0=etiqueta de retorno
+//          R1=dirección de la ristra de formato
+//          R2=valor entero a visualizar (opcional según formato)
+// No modifica ningún registro ni la ristra de formato
+L getfi_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
+    int i;
+    scanf((char*)p, &i);            // leer
+    I(R2)=i;                        // guardar
+        
+    reinv_str(p,&U(R1));        // re-invierte           
+    GT(R0);                           // retorna
+  }
+
+// void getfc(const unsigned char*, int)
+// Entrada: R0=etiqueta de retorno
+//          R1=dirección de la ristra de formato
+//          R2=dirección caracter a obtener (opcional según formato)
+// No modifica ningún registro ni la ristra de formato
+L getfc_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
+    char i;
+    scanf((char*)p, &i);            // leer
+    U(R2)=i;                        // guardar
+
+    reinv_str(p,&U(R1));        // re-invierte           
+    GT(R0);                           // retorna
+  }
 
 // void* free(int_size)           
 // Entrada: R0=etiqueta de retorno

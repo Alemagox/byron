@@ -73,6 +73,7 @@ struct registerStruct{
     struct registerStruct *registerList;
 
     unsigned int address;
+    int size;
 
     //int scope;        // Where from is the symbol accesible 
     int parentScope;
