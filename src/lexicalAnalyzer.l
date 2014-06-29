@@ -74,19 +74,19 @@ Boolean		{ column=column+strlen(yytext); return BOOLEAN_TYPE;}
 \'.\'								{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return CHARACTER_LITERAL;} 	/* ' */
 \"({alphanumeric}|" "|.)*\"   		{ column=column+strlen(yytext);  //strncpy(substr, buff+10, 4);
 									  strncpy(yylval.string, yytext+1, strlen(yytext)-1);
-									  yylval.string[strlen(yytext-2)]='\0';
+									  yylval.string[strlen(yytext)-1]='\0';
 									  return STRING_LITERAL;}   	/* " */
 True								{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return BOOLEAN_LITERAL;}
 False								{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return BOOLEAN_LITERAL;}
 
 	/* Special characters */
 "="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|"["|"]"|":"|"."|","|";"|"|" {column=column+strlen(yytext); return yytext[0];}
-"=>" 	{ column=column+strlen(yytext); return ARROW; }
-"**"	{ column=column+strlen(yytext); return POWER_OP;}
-":="	{ column=column+strlen(yytext); return ASSIGNMENT_OP;}
-"/="	{ column=column+strlen(yytext); return NOT_EQUAL_OP;}
-">="	{ column=column+strlen(yytext); return GREATER_EQUAL_OP;}
-"<="	{ column=column+strlen(yytext); return LESSER_EQUAL_OP;}
+"=>" 	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return ARROW; }
+"**"	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return POWER_OP;}
+":="	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return ASSIGNMENT_OP;}
+"/="	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return NOT_EQUAL_OP;}
+">="	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return GREATER_EQUAL_OP;}
+"<="	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return LESSER_EQUAL_OP;}
 
 
 	/* Comments */

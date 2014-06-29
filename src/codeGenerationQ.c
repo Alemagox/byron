@@ -61,9 +61,9 @@ void qMachineInit( qMachine *Q ){
 **************************/
 
 void generateCodeStart( FILE* yyout, qMachine *Q ){
-	//IQ.o  IQ-v3.7.2-32bits.o
-	fprintf(yyout,"#include \"Q.h\"\n\n");
-	fprintf(yyout,"BEGIN\t\t\t\t//Start\n");
+  //IQ.o  IQ-v3.7.2-32bits.o
+  fprintf(yyout,"#include \"Q.h\"\n\n");
+  fprintf(yyout,"BEGIN\t\t\t\t//Start\n");
 
   // Reserve static space for format strings
   fprintf(yyout,"STAT(0)\t\t\t\n");
@@ -89,10 +89,42 @@ void generateCodeStart( FILE* yyout, qMachine *Q ){
 }
 
 void generateCodeEnd( FILE* yyout ){
-	fprintf(yyout,"\tR0=0;\t\t\t//Succesful state\n");
-	fprintf(yyout,"\tGT(-2);\t\t\t//Finish\n");
-	fprintf(yyout,"END\n");	
+  fprintf(yyout,"\tR0=0;\t\t\t//Succesful state\n");
+  fprintf(yyout,"\tGT(-2);\t\t\t//Finish\n");
+  fprintf(yyout,"END\n"); 
 }
+
+int generateCodeVarStatic( FILE* yyout, qMachine *Q, registerStruct *r, char value[] ){
+  
+  if(r->typeSymbol != Variable && r->typeSymbol != Literal ) return -1;
+
+
+  // When stat is 0, we are in a STAT block.
+  // When stat is 1, we are in a CODE blocke
+  if( Q->stat!=0 ){
+    fprintf(yyout,"STAT(%d)\t\t\t\n", Q->nextCodeNumber);
+
+    Q->stat=0;
+  }
+
+  if(r->typeSymbol == Variable){
+    
+    fprintf( yyout,"\tDAT(0x%x,%c,%s);\t//Var '%s', scope %d \n", 
+                r->address, getVarMemLabel(r->typeVariable),
+                value, r->key.id, r->key.scope
+           );
+  }else{
+    fprintf( yyout,"\tDAT(0x%x,%c,%s);\t//Literal '%s', scope %d \n", 
+                r->address, getVarMemLabel(r->typeVariable),
+                value, value, r->key.scope
+           );
+  }
+
+  return 0;
+}
+
+//int generateCodeVarSaveValue( FILE* yyout, qMachine *Q, registerStruct *r1, 
+//                          char value[] );
 
 void generateCodePutStringLiteral( FILE* yyout, qMachine *Q, char string[] ){
   int stringLength = strlen(string);
@@ -223,24 +255,79 @@ void generateCodeGetVariable( FILE* yyout, qMachine *Q, registerStruct *r ){
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
 }
 
-int generateCodeVarStatic( FILE* yyout, qMachine *Q, registerStruct *r ){
-  
-  if(r->typeSymbol != Variable) return -1;
-
+void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1, 
+                           registerStruct *r2, char op[] )
+{
   // When stat is 0, we are in a STAT block.
   // When stat is 1, we are in a CODE blocke
-  if( Q->stat!=0 ){
-    fprintf(yyout,"STAT(%d)\t\t\t\n", Q->nextCodeNumber);
+  if( Q->stat==0 ){
+    fprintf(yyout,"CODE(%d)\t\t\t\n", Q->nextCodeNumber++);
 
-    Q->stat=0;
+    Q->stat=1;
   }
 
-  fprintf( yyout,"\tDAT(0x%x,%c,0);\t//Var '%s', scope %d \n", 
-                r->address, getVarMemLabel(r->typeVariable),
-                r->key.id, r->key.scope
-         );
+  fprintf(yyout,"\t//////////////////////////////////\n");
+  fprintf(yyout,"\t// Relation evaluation\n");
 
-  return 0;
+  fprintf(yyout,"\tR1=%c(0x%x);\t\t//Load value left side\n", 
+                getVarMemLabel( r1->typeVariable ), r1->address); 
+  fprintf(yyout,"\tR2=%c(0x%x);\t\t//Load value right side\n", 
+                getVarMemLabel( r2->typeVariable ), r2->address);  
+
+  fprintf(yyout,"\tR0=1;\t\t\t//True\n");
+  //IF (R0 < 10) GT(1);
+  fprintf(yyout,"\tIF(R1 %s R2) GT(%d);\t//Jump if true\n", op, Q->nextLabel);
+  fprintf(yyout,"\tR0=0;\t\t\t//False\n");
+
+  fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+}
+
+int generateCodeOpenWhile( FILE* yyout, qMachine *Q ){
+  // When stat is 0, we are in a STAT block.
+  // When stat is 1, we are in a CODE blocke
+  if( Q->stat==0 ){
+    fprintf(yyout,"CODE(%d)\t\t\t\n", Q->nextCodeNumber++);
+
+    Q->stat=1;
+  }
+
+  fprintf(yyout,"\t//////////////////////////////////\n");
+  fprintf(yyout,"\t// Open while loop -> L:%d\n", Q->nextLabel);
+  fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+
+  // Reserving exit label and returning it
+  return Q->nextLabel++;
+}
+
+void generateCodeEvaluateWhile( FILE* yyout, qMachine *Q, int outLabel ){
+  // When stat is 0, we are in a STAT block.
+  // When stat is 1, we are in a CODE blocke
+  if( Q->stat==0 ){
+    fprintf(yyout,"CODE(%d)\t\t\t\n", Q->nextCodeNumber++);
+
+    Q->stat=1;
+  }
+
+  fprintf(yyout,"\t//////////////////////////////////\n");
+  fprintf(yyout,"\t// Evaluate while loop -> L:%d\n", outLabel-1 );
+  
+  // R0 contains the result of the expression
+  fprintf(yyout,"\tIF(R0 == 0) GT(%d);\t//Jump if 0\n", outLabel);
+
+}
+
+int generateCodeCloseWhile( FILE* yyout, qMachine *Q, int outLabel ){
+  // When stat is 0, we are in a STAT block.
+  // When stat is 1, we are in a CODE blocke
+  if( Q->stat==0 ){
+    fprintf(yyout,"CODE(%d)\t\t\t\n", Q->nextCodeNumber++);
+
+    Q->stat=1;
+  }
+  fprintf(yyout,"\t//////////////////////////////////\n");
+  fprintf(yyout,"\t// Close while loop -> L:%d\n", outLabel-1 );
+  fprintf(yyout,"\tGT(%d);\t\t\t//Evaluate loop again\n", outLabel-1);
+  fprintf(yyout,"L %d:\t\t\t\t//Exit while loop\n", outLabel);
 }
 
 /******************************
@@ -266,7 +353,7 @@ char getVarMemLabel( variableType vT ){
 
 int getVarStaticAddress( qMachine *Q, registerStruct *r ){
 
-  if(r->typeSymbol != Variable) return -1;
+  if(r->typeSymbol != Variable && r->typeSymbol != Literal ) return -1;
 
   switch( r->typeVariable ){
     case Integer:

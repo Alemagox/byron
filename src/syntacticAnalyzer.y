@@ -146,6 +146,7 @@ void generateAnonymousId();
 %type <regStruct>			procedure_specification 
 %type <regStruct>			relation
 %type <regStruct>			relation_list
+%type <string>				relational_operator
 %type <regStruct>			simple_expression
 %type <regStruct>			subprogram_body
 %type <regStruct>			subprogram_body_
@@ -573,15 +574,19 @@ logical_operator :
 
 
 loop_statement : 
-	WHILE '(' expression ')' LOOP
+	WHILE { $<integer>$=generateCodeOpenWhile( yyout, &Q ); }
+		'(' expression ')' { generateCodeEvaluateWhile( yyout, &Q, $<integer>2 ); }
+	LOOP
 		sequence_of_statements
 	END LOOP ';'
 	{
-		errorCode = checkIfNumeric(errorString, $3, 4);
+		errorCode = checkIfNumeric(errorString, $4, 4);
 		if(errorCode){
 			yyerror(errorString);
 			YYABORT;
 		}
+
+	  generateCodeCloseWhile( yyout, &Q, $<integer>2 );
 	}
 	;
 
@@ -625,7 +630,7 @@ object_declaration :
 			YYABORT;
 		}
 
-		errorCode = generateCodeVarStatic( yyout, &Q, auxRegister );
+		errorCode = generateCodeVarStatic( yyout, &Q, auxRegister, "0" );
 		if( errorCode == -1 ){
 			yyerror("Symbol created is not a variable");
 			YYABORT;
@@ -656,6 +661,10 @@ primary :
 																									sT.currentScope, Literal, 
 																									Integer
 																								);
+
+										getVarStaticAddress(  &Q, auxRegister );
+										generateCodeVarStatic( yyout, &Q, auxRegister, $<string>1 );
+
 										$$ = auxRegister;
 									}
 	| FLOAT_LITERAL			{ generateAnonymousId();
@@ -664,19 +673,31 @@ primary :
 																											sT.currentScope, Literal, 
 																											Real
 																										);	
+
+												getVarStaticAddress(  &Q, auxRegister );
+												generateCodeVarStatic( yyout, &Q, auxRegister, $<string>1 );
+
 												$$ = auxRegister;
 											}
 	| CHARACTER_LITERAL { auxRegister = createRegister( anonymousIdString, 
 																											sT.currentScope, Literal, 
 																											Character
 																										);	
+
+												getVarStaticAddress(  &Q, auxRegister );
+												generateCodeVarStatic( yyout, &Q, auxRegister, $<string>1 );
+
 												$$ = auxRegister;
 											}
 	| BOOLEAN_LITERAL		{ generateAnonymousId();
 												auxRegister = createRegister( anonymousIdString, 
 																											sT.currentScope, Literal, 
 																											Bool
-																										);	
+																										);
+
+												getVarStaticAddress(  &Q, auxRegister );
+												generateCodeVarStatic( yyout, &Q, auxRegister, $<string>1 );
+
 												$$ = auxRegister;
 											}
 	| NULL_ 						{	
@@ -820,7 +841,7 @@ relation :
 			}
 
 			/* Generate code for relation */
-
+			generateCodeRelation( yyout, &Q, $1, $3, $2 );
 
 			generateAnonymousId();
 			auxRegister = createRegister( anonymousIdString, 
@@ -865,12 +886,12 @@ relation_list :
 
 
 relational_operator : 
-	'='
-	| '<' 
-	| '>'
-	| NOT_EQUAL_OP
-	| LESSER_EQUAL_OP
-	| GREATER_EQUAL_OP
+	'='									{ strcpy($$, "=");  }
+	| '<' 							{ strcpy($$, "<");  }
+	| '>'								{ strcpy($$, ">");  }
+	| NOT_EQUAL_OP			{ strcpy($$, "!="); }
+	| LESSER_EQUAL_OP		{ strcpy($$, $<string>1); }
+	| GREATER_EQUAL_OP	{ strcpy($$, $<string>1); }
 	;
 
 

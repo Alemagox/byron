@@ -4,14 +4,17 @@
 --Ada.Text_IO;            -- To compile in Ada
 
 procedure main is
-  a : Integer;
+  c : Character;
 begin
-  
-  Get(a);
-  Put("Nonononono"); New_Line;
-  Put(a);
 
+  Put("Enter a letter(n to exit): ");
+  Get(c);
+
+  while (c /= 'n') loop
+    Put("Enter a letter(n to exit): ");
+    Get(c);
+  end loop;
+  Put("You're out!");
   New_Line;
-
   null;
 end main;

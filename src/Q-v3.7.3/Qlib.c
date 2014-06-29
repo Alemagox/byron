@@ -110,9 +110,13 @@ L putnl_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er cha
 // No modifica ningún registro ni la ristra de formato
 L getfi_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
     int i;
+    char c;
     scanf((char*)p, &i);            // leer
+    
     I(R2)=i;                        // guardar
-        
+    if(i != '\n')
+      scanf("%c", &c);              // catch enter
+
     reinv_str(p,&U(R1));        // re-invierte           
     GT(R0);                           // retorna
   }
@@ -125,7 +129,17 @@ L getfi_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er cha
 L getfc_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
     char i;
     scanf((char*)p, &i);            // leer
+
     U(R2)=i;                        // guardar
+    if(i != '\n')
+      scanf("%c", &i);              // catch enter
+/*
+    scanf("%c", &i);                 // ignorar no caracter
+    while(i != '\n'){
+      scanf("%c", &i);
+    }
+*/
+    //scanf("\n");                    // ignorar no caracter
 
     reinv_str(p,&U(R1));        // re-invierte           
     GT(R0);                           // retorna

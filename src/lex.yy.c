@@ -1085,7 +1085,7 @@ YY_RULE_SETUP
 #line 75 "lexicalAnalyzer.l"
 { column=column+strlen(yytext);  //strncpy(substr, buff+10, 4);
 									  strncpy(yylval.string, yytext+1, strlen(yytext)-1);
-									  yylval.string[strlen(yytext-2)]='\0';
+									  yylval.string[strlen(yytext)-1]='\0';
 									  return STRING_LITERAL;}   	/* " */
 	YY_BREAK
 case 36:
@@ -1107,32 +1107,32 @@ YY_RULE_SETUP
 case 39:
 YY_RULE_SETUP
 #line 84 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return ARROW; }
+{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return ARROW; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 85 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return POWER_OP;}
+{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return POWER_OP;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 86 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return ASSIGNMENT_OP;}
+{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return ASSIGNMENT_OP;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 87 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return NOT_EQUAL_OP;}
+{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return NOT_EQUAL_OP;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
 #line 88 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return GREATER_EQUAL_OP;}
+{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return GREATER_EQUAL_OP;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
 #line 89 "lexicalAnalyzer.l"
-{ column=column+strlen(yytext); return LESSER_EQUAL_OP;}
+{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return LESSER_EQUAL_OP;}
 	YY_BREAK
 /* Comments */
 case 45:

@@ -29,7 +29,7 @@
 #define exit_    -10    // NOTA: a eliminar en futuras versiones, mantenido por compatibilidad
 #define new_     -11    // asigna o libera espacio en heap
 #define putfi_   -12    // visualiza entero
-#define putfs_   -13    // visualiza entero
+#define putfs_   -13    // visualiza string
 #define putnl_   -14    // new line
 #define getfi_   -15    // lee entero
 #define getfc_   -16    // lee caracter

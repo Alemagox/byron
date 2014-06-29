@@ -49,6 +49,11 @@ void generateCodeStart( FILE* yyout, qMachine *Q );
 
 void generateCodeEnd( FILE* yyout );
 
+int generateCodeVarStatic( FILE* yyout, qMachine *Q, registerStruct *r, char value[] );
+
+//int generateCodeVarSaveValue( FILE* yyout, qMachine *Q, registerStruct *r1, 
+//                          char value[] );
+
 void generateCodePutStringLiteral( FILE* yyout, qMachine *Q, char string[] );
 
 void generateCodePutVariable( FILE* yyout, qMachine *Q, registerStruct *r );
@@ -57,7 +62,17 @@ void generateCodeNewLine( FILE* yyout, qMachine *Q );
 
 void generateCodeGetVariable( FILE* yyout, qMachine *Q, registerStruct *r );
 
-int generateCodeVarStatic( FILE* yyout, qMachine *Q, registerStruct *r );
+void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1, 
+                           registerStruct *r2, char op[] );
+
+int generateCodeOpenWhile( FILE* yyout, qMachine *Q );
+
+void generateCodeEvaluateWhile( FILE* yyout, qMachine *Q, int outLabel );
+
+int generateCodeCloseWhile( FILE* yyout, qMachine *Q, int outLabel );
+
+
+
 
 /******************************
   Q machine management methods 
