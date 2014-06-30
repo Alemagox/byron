@@ -62,14 +62,29 @@ void generateCodeNewLine( FILE* yyout, qMachine *Q );
 
 void generateCodeGetVariable( FILE* yyout, qMachine *Q, registerStruct *r );
 
+void generateCodeAssignment( FILE* yyout, qMachine *Q, registerStruct *r1,
+                             registerStruct *r2 );
+
+void generateCodeMultiply( FILE* yyout, qMachine *Q, registerStruct *r1,
+                             registerStruct *r2, char op );
+
+void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
+                             registerStruct *r2, char op );
+
 void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1, 
                            registerStruct *r2, char op[] );
+
+void generateCodeLogical( FILE* yyout, qMachine *Q, char op );
 
 int generateCodeOpenWhile( FILE* yyout, qMachine *Q );
 
 void generateCodeEvaluateWhile( FILE* yyout, qMachine *Q, int outLabel );
 
-int generateCodeCloseWhile( FILE* yyout, qMachine *Q, int outLabel );
+void generateCodeCloseWhile( FILE* yyout, qMachine *Q, int outLabel );
+
+void generateCodeEvaluateIf( FILE* yyout, qMachine *Q, int outLabel );
+
+void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ); 
 
 
 
