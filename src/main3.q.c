@@ -156,6 +156,14 @@ CODE(4)
 	R1=I(0x11fd8);		//Load value left term
 	R0=I(0x11fd4);		//Load value right term
 	R0=R1+R0;		//Add terms
+STAT(5)			
+	DAT(0x11fd0,I,1);	//Literal '1', scope 0 
+CODE(5)			
+	//////////////////////////////////
+	// Add terms
+	R1=R0;		//Load value left term
+	R0=I(0x11fd0);		//Load value right term
+	R0=R1+R0;		//Add terms
 	//////////////////////////////////
 	// Assignment to variable 'i', scope 0
 	R1=R0;		//Load value right side
@@ -204,13 +212,13 @@ L 16:
 	R1=0x11fee;		//Format New_Line address
 	GT(putnl_);		//Print variable
 L 17:				
-STAT(5)			
-	DAT(0x11fd0,I,3);	//Literal '3', scope 0 
-CODE(5)			
+STAT(6)			
+	DAT(0x11fcc,I,3);	//Literal '3', scope 0 
+CODE(6)			
 	//////////////////////////////////
 	// Add terms
 	R1=I(0x11fea);		//Load value left term
-	R0=I(0x11fd0);		//Load value right term
+	R0=I(0x11fcc);		//Load value right term
 	R0=R1-R0;		//Add terms
 	//////////////////////////////////
 	// Assignment to variable 'i', scope 0
@@ -260,22 +268,22 @@ L 21:
 	R1=0x11fee;		//Format New_Line address
 	GT(putnl_);		//Print variable
 L 22:				
-STAT(6)			
-	DAT(0x11fcc,I,2);	//Literal '2', scope 0 
-	DAT(0x11fc8,I,2);	//Literal '2', scope 0 
-CODE(6)			
-	//////////////////////////////////
-	// Multiply factors
-	R1=I(0x11fcc);		//Load value left factor
-	R0=I(0x11fc8);		//Load value right factor
-	R0=R1*R0;		//Multiply factors
 STAT(7)			
+	DAT(0x11fc8,I,2);	//Literal '2', scope 0 
 	DAT(0x11fc4,I,2);	//Literal '2', scope 0 
 CODE(7)			
 	//////////////////////////////////
+	// Multiply factors
+	R1=I(0x11fc8);		//Load value left factor
+	R0=I(0x11fc4);		//Load value right factor
+	R0=R1*R0;		//Multiply factors
+STAT(8)			
+	DAT(0x11fc0,I,3);	//Literal '3', scope 0 
+CODE(8)			
+	//////////////////////////////////
 	// Add terms
 	R1=R0;		//Load value left term
-	R0=I(0x11fc4);		//Load value right term
+	R0=I(0x11fc0);		//Load value right term
 	R0=R1+R0;		//Add terms
 	//////////////////////////////////
 	// Assignment to variable 'i', scope 0
@@ -297,7 +305,7 @@ L 23:
 	R3=R3+1;		
 	U(R3)=0x2b;		//'+'
 	R3=R3+1;		
-	U(R3)=0x32;		//'2'
+	U(R3)=0x33;		//'3'
 	R3=R3+1;		
 	U(R3)=0x20;		//' '
 	R3=R3+1;		
@@ -329,21 +337,21 @@ L 26:
 	R1=0x11fee;		//Format New_Line address
 	GT(putnl_);		//Print variable
 L 27:				
-STAT(8)			
-	DAT(0x11fc0,I,2);	//Literal '2', scope 0 
+STAT(9)			
 	DAT(0x11fbc,I,2);	//Literal '2', scope 0 
 	DAT(0x11fb8,I,2);	//Literal '2', scope 0 
-CODE(8)			
+	DAT(0x11fb4,I,3);	//Literal '3', scope 0 
+CODE(9)			
+	//////////////////////////////////
+	// Multiply factors
+	R1=I(0x11fb8);		//Load value left factor
+	R0=I(0x11fb4);		//Load value right factor
+	R0=R1*R0;		//Multiply factors
 	//////////////////////////////////
 	// Add terms
 	R1=I(0x11fbc);		//Load value left term
-	R0=I(0x11fb8);		//Load value right term
+	R0=I(0x0);		//Load value right term
 	R0=R1+R0;		//Add terms
-	//////////////////////////////////
-	// Multiply factors
-	R1=I(0x11fc0);		//Load value left factor
-	R0=I(0x0);		//Load value right factor
-	R0=R1*R0;		//Multiply factors
 	//////////////////////////////////
 	// Assignment to variable 'i', scope 0
 	R1=R0;		//Load value right side
@@ -351,24 +359,20 @@ CODE(8)
 	/////////////////////////
 	// Print string literal
 	R0=28;			//Return label
-	R1=11;			//String length
+	R1=9;			//String length
 	GT(new_);		//Assign heap space for string literal
 L 28:				
 	R3=R0;			//Save the address in the heap of the string literal
 	//Start assigning string to heap
 	U(R3)=0x32;		//'2'
 	R3=R3+1;		
-	U(R3)=0x2a;		//'*'
-	R3=R3+1;		
-	U(R3)=0x28;		//'('
-	R3=R3+1;		
-	U(R3)=0x32;		//'2'
-	R3=R3+1;		
 	U(R3)=0x2b;		//'+'
 	R3=R3+1;		
 	U(R3)=0x32;		//'2'
 	R3=R3+1;		
-	U(R3)=0x29;		//')'
+	U(R3)=0x2a;		//'*'
+	R3=R3+1;		
+	U(R3)=0x33;		//'3'
 	R3=R3+1;		
 	U(R3)=0x20;		//' '
 	R3=R3+1;		
@@ -384,7 +388,7 @@ L 28:
 	GT(putfs_);		//Print string literal
 L 29:				
 	R0=30;			//Return label
-	R1=-10;			//String length
+	R1=-8;			//String length
 	GT(free_);		//Free heap space for string literal
 L 30:				
 	//////////////////////////////////
@@ -483,14 +487,14 @@ L 36:
 	//////////////////////////////////
 	// Open while loop -> L:37
 L 37:				
-STAT(9)			
-	DAT(0x11fb7,U,'n');	//Literal ''n'', scope 0 
-CODE(9)			
+STAT(10)			
+	DAT(0x11fb3,U,'n');	//Literal ''n'', scope 0 
+CODE(10)			
 	//////////////////////////////////
 	// Relation evaluation
 	R3=R1;			//Save R1 (should use heap)
 	R1=U(0x11fe9);		//Load value left side
-	R2=U(0x11fb7);		//Load value right side
+	R2=U(0x11fb3);		//Load value right side
 	R0=1;			//True
 	IF(R1 != R2) GT(39);	//Jump if true
 	R0=0;			//False
@@ -501,14 +505,14 @@ L 39:
 	IF(R0 == 0) GT(38);	//Jump if 0
 	//////////////////////////////////
 	// Open if block 
-STAT(10)			
-	DAT(0x11fb6,U,'a');	//Literal ''a'', scope 0 
-CODE(10)			
+STAT(11)			
+	DAT(0x11fb2,U,'a');	//Literal ''a'', scope 0 
+CODE(11)			
 	//////////////////////////////////
 	// Relation evaluation
 	R3=R1;			//Save R1 (should use heap)
 	R1=U(0x11fe9);		//Load value left side
-	R2=U(0x11fb6);		//Load value right side
+	R2=U(0x11fb2);		//Load value right side
 	R0=1;			//True
 	IF(R1 == R2) GT(41);	//Jump if true
 	R0=0;			//False
@@ -565,28 +569,28 @@ L 45:
 L 40:				
 	//////////////////////////////////
 	// Open if block 
-STAT(11)			
-	DAT(0x11fb5,U,'3');	//Literal ''3'', scope 0 
-CODE(11)			
+STAT(12)			
+	DAT(0x11fb1,U,'3');	//Literal ''3'', scope 0 
+CODE(12)			
 	//////////////////////////////////
 	// Relation evaluation
 	R3=R1;			//Save R1 (should use heap)
 	R1=U(0x11fe9);		//Load value left side
-	R2=U(0x11fb5);		//Load value right side
+	R2=U(0x11fb1);		//Load value right side
 	R0=1;			//True
 	IF(R1 == R2) GT(47);	//Jump if true
 	R0=0;			//False
 L 47:				
 	R1=R3;			//Recover R1 (should use heap)
 	R1=R0;			//Saving R0 for relation call
-STAT(12)			
-	DAT(0x11fb4,U,'7');	//Literal ''7'', scope 0 
-CODE(12)			
+STAT(13)			
+	DAT(0x11fb0,U,'7');	//Literal ''7'', scope 0 
+CODE(13)			
 	//////////////////////////////////
 	// Relation evaluation
 	R3=R1;			//Save R1 (should use heap)
 	R1=U(0x11fe9);		//Load value left side
-	R2=U(0x11fb4);		//Load value right side
+	R2=U(0x11fb0);		//Load value right side
 	R0=1;			//True
 	IF(R1 == R2) GT(48);	//Jump if true
 	R0=0;			//False

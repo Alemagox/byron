@@ -98,9 +98,8 @@ void generateAnonymousId();
 %token LESSER_EQUAL_OP	// <=
 
 // Setting operators precedence
-%left '+'
-%left '-'
-%left '*'
+%left '+' '-' 
+%left '*' '/'
 %left POWER_OP			// **
 %left AND
 %left OR
@@ -132,8 +131,8 @@ void generateAnonymousId();
 %type <regStruct>			actual_parameter_list
 %type <regStruct>			actual_parameter_part
 %type <regStruct>			assignment_statement
-%type <regStruct>		 	binary_adding_list
-%type <op>						binary_adding_operator
+//%type <regStruct>		 	binary_adding_list
+//%type <op>						binary_adding_operator
 %type <regStruct>			discrete_choice
 %type <regStruct>			discrete_choice_list
 %type <regStruct>			expression
@@ -150,6 +149,7 @@ void generateAnonymousId();
 %type <regStruct>			relation_list
 %type <string>				relational_operator
 %type <regStruct>			simple_expression
+%type <regStruct>			simple_expression_
 %type <regStruct>			subprogram_body
 %type <regStruct>			subprogram_body_
 %type <regStruct>			subprogram_specification
@@ -285,7 +285,7 @@ assignment_statement :
 	}
 	;
 
-
+/*
 binary_adding_list : 
 	binary_adding_operator term
 		{
@@ -295,7 +295,7 @@ binary_adding_list :
 				YYABORT;
 			}
 
-			/* Generate code for addition */
+			/// Generate code for addition 
 			generateCodeAddition( yyout, &Q, $<regStruct>-1, $2, $1 );
 
 			generateAnonymousId();
@@ -314,7 +314,7 @@ binary_adding_list :
 				YYABORT;
 			}
 
-			/* Generate code for addition */
+			// Generate code for addition 
 			generateCodeAddition( yyout, &Q, $<regStruct>-1, $4, $1 );
 
 			generateAnonymousId();
@@ -329,12 +329,14 @@ binary_adding_list :
 			$$ = auxRegister;
 		}
 	;
+*/
 
+/*
 binary_adding_operator : 
 	'+' 	{	$$ = '+'; }
 	| '-'	{	$$ = '-'; }
 	;
-
+*/
 
 case_statement : 
 	CASE IDENTIFIER IS
@@ -954,6 +956,75 @@ sequence_of_statements :
 	;
 
 
+simple_expression :
+	unary_adding_operator simple_expression_
+		{
+			$$ = $2;
+		}
+	| simple_expression_
+		{
+			$$ = $1;
+		}
+	;
+
+simple_expression_ :
+	simple_expression_ '+' simple_expression_
+		{
+			errorCode = checkIfNumeric(errorString, $1, 1);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			errorCode = checkIfNumeric(errorString, $3, 1);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			// Generate code for addition 
+			generateCodeAddition( yyout, &Q, $1, $3, '+' );
+
+			generateAnonymousId();
+			auxRegister = createRegister( anonymousIdString, 
+																		sT.currentScope, Auxiliar, 
+																		getFactorVariableType($1, $3)
+																	);	
+			if($1->typeSymbol==Auxiliar) destroyRegister($1);
+			if($3->typeSymbol==Auxiliar) destroyRegister($3);
+			
+			$$ = auxRegister;
+		}
+	| simple_expression_ '-' simple_expression_
+		{
+			errorCode = checkIfNumeric(errorString, $1, 1);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			errorCode = checkIfNumeric(errorString, $3, 1);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			// Generate code for addition 
+			generateCodeAddition( yyout, &Q, $1, $3, '-' );
+
+			generateAnonymousId();
+			auxRegister = createRegister( anonymousIdString, 
+																		sT.currentScope, Auxiliar, 
+																		getFactorVariableType($1, $3)
+																	);	
+			if($1->typeSymbol==Auxiliar) destroyRegister($1);
+			if($3->typeSymbol==Auxiliar) destroyRegister($3);
+			
+			$$ = auxRegister;
+		}
+	| term
+		{
+			$$ = $1;
+		}
+	;
+
+/*	
 simple_expression : 
 	unary_adding_operator term { $<regStruct>$ = $2 ; } binary_adding_list 
 		{ 
@@ -962,7 +1033,7 @@ simple_expression :
 				yyerror(errorString);
 				YYABORT;
 			}
-			/* Generate code for addition */
+			// Generate code for addition 
 
 			generateAnonymousId();
 			auxRegister = createRegister( anonymousIdString, 
@@ -982,15 +1053,15 @@ simple_expression :
 					YYABORT;
 				}
 
-				/* Generate code for addition */
+				// Generate code for addition 
 
-				/*
-				generateAnonymousId();
-				auxRegister = createRegister( anonymousIdString, 
-																			sT.currentScope, Auxiliar, 
-																			$2->typeVariable
-																		);	
-				*/
+				
+				//generateAnonymousId();
+				//auxRegister = createRegister( anonymousIdString, 
+				//															sT.currentScope, Auxiliar, 
+				//															$2->typeVariable
+				//														);	
+				//
 				
 				$$ = $2;
 		 	}
@@ -1002,7 +1073,7 @@ simple_expression :
 					YYABORT;
 				}
 
-				/* Generate code for addition */
+				// Generate code for addition 
 
 				generateAnonymousId();
 				auxRegister = createRegister( anonymousIdString, 
@@ -1017,7 +1088,7 @@ simple_expression :
 			}
 	| term { $$ = $1; }
 	;
-
+*/
 
 simple_statement : 
 	null_statement

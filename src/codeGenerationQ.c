@@ -321,17 +321,19 @@ void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
   fprintf(yyout,"\t//////////////////////////////////\n");
   fprintf(yyout,"\t// Add terms\n");
 
-  if( r1->typeSymbol == Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    fprintf(yyout,"\tR1=R0;\t\t//Load value left term\n" );
+  if( r2->typeSymbol == Auxiliar ){ // When it's auxiliar, expression value is already in R0
+    fprintf(yyout,"\tR1=R0;\t\t//Load value right term\n" );
   }else{
-    fprintf(yyout,"\tR1=%c(0x%x);\t\t//Load value left term\n", 
-                getVarMemLabel( r1->typeVariable ), r1->address);
+    fprintf(yyout,"\tR1=%c(0x%x);\t\t//Load value right term\n", 
+                getVarMemLabel( r2->typeVariable ), r2->address);
   }
 
-   fprintf(yyout,"\tR0=%c(0x%x);\t\t//Load value right term\n", 
-                getVarMemLabel( r2->typeVariable ), r2->address);
+  if( r1->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
+    fprintf(yyout,"\tR0=%c(0x%x);\t\t//Load value left term\n", 
+                getVarMemLabel( r1->typeVariable ), r1->address);
+  }  
 
-   fprintf(yyout,"\tR0=R1%cR0;\t\t//Add terms\n", op);
+  fprintf(yyout,"\tR0=R0%cR1;\t\t//Add terms\n", op);
 }
 
 void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1, 

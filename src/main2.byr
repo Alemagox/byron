@@ -4,35 +4,15 @@
 --Ada.Text_IO;            -- To compile in Ada
 
 procedure main is
-
-   --Use Ada.Text_IO;     -- To compile in Ada
-
-   procedure Numero(c: in out Character; resultado: out Integer) is
-   begin
-
-      resultado := 10*resultado + c - '0' ;
-      
-
-   end Numero;
-      
-      
+  i : Integer;
   c : Character;
-  resultado : Integer;
-
 begin
 
-   c:='y';
-   
-   -- Due to limitations of get in Ada, the expression has to finish with ;
-   
-   
-   while (c > '0' and c < '9') loop
-         --resultado := 10*resultado+Character'Pos(c)-Character'Pos('0'); -- To compile in Ada
-         resultado := 10*resultado + c - '0' ;                            -- Byron style, explicit casting.
-        
-      end loop;
 
+  i := 90-7+1+2;
+  Put("1+7 = ");
+  Put(i);
+  New_Line;
 
-   null;
-
+  null;
 end main;
