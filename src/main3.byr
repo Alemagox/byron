@@ -4,8 +4,47 @@
 --Ada.Text_IO;            -- To compile in Ada
 
 procedure main is
+  i : Integer;
   c : Character;
 begin
+
+  c := 'k';
+  Put(c);
+  New_Line;
+
+
+  i := 3*4;
+  Put("3*4 = ");
+  Put(i);
+  New_Line;
+
+  i := i/2;
+  Put("12/2 = ");
+  Put(i);
+  New_Line;
+
+  i := 1+7;
+  Put("1+7 = ");
+  Put(i);
+  New_Line;
+
+  i := i-3;
+  Put("8-3 = ");
+  Put(i);
+  New_Line;
+
+  i := 2*2+2;
+  Put("2*2+2 = ");
+  Put(i);
+  New_Line;
+
+  i := 2*(2+2);
+  Put("2*(2+2) = ");
+  Put(i);
+  New_Line;
+
+
+
 
   Put("Enter a letter(n to exit): ");
   Get(c);
@@ -23,7 +62,7 @@ begin
       New_Line;        
     end if;
 
-    
+
 
 --    case c is                                        -- Byron style, Character is directly considered Integer
 --        when 'z' => Put("What a ZZZombie");         -- Byron style

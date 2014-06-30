@@ -143,6 +143,7 @@ void generateAnonymousId();
 %type <regStruct>			function_specification
 %type <op>						logical_operator
 %type <typeSymbol>		mode
+%type <op>						multiplying_operator
 %type <regStruct>			primary 
 %type <regStruct>			procedure_specification 
 %type <regStruct>			relation
@@ -279,6 +280,8 @@ assignment_statement :
 		getVariableTypeName( string2, $3->typeVariable );
 		//printf("Assigning type %s := type %s.\n", string1, string2);
 		// In code generation, force casting if variable types are different
+
+		generateCodeAssignment( yyout, &Q, $1, $3 );
 	}
 	;
 
@@ -293,6 +296,8 @@ binary_adding_list :
 			}
 
 			/* Generate code for addition */
+			generateCodeAddition( yyout, &Q, $<regStruct>-1, $2, $1 );
+
 			generateAnonymousId();
 			auxRegister = createRegister( anonymousIdString, 
 																		sT.currentScope, Auxiliar, 
@@ -310,8 +315,9 @@ binary_adding_list :
 			}
 
 			/* Generate code for addition */
-			generateAnonymousId();
+			generateCodeAddition( yyout, &Q, $<regStruct>-1, $4, $1 );
 
+			generateAnonymousId();
 			auxRegister = createRegister( anonymousIdString, 
 																		sT.currentScope, Auxiliar, 
 																		getFactorVariableType($<regStruct>-1, $4)
@@ -325,8 +331,8 @@ binary_adding_list :
 	;
 
 binary_adding_operator : 
-	'+' 	{	$<op>$ = '+'; }
-	| '-'	{	$<op>$ = '-'; }
+	'+' 	{	$$ = '+'; }
+	| '-'	{	$$ = '-'; }
 	;
 
 
@@ -626,8 +632,8 @@ mode :
 
 
 multiplying_operator : 
-	'*'
-	| '/'
+	'*'   { $$='*'; }
+	| '/' { $$='/'; }
 	;
 
 
@@ -1084,6 +1090,8 @@ term :
   		getVariableTypeName(string2, $3->typeVariable);
   		//printf("4##########\n");
   		//printf("####%s - %s\n", string1, string2);
+
+  		generateCodeMultiply( yyout, &Q, $1, $3, $2 );
 
 			generateAnonymousId();
 			auxRegister = createRegister( anonymousIdString, 

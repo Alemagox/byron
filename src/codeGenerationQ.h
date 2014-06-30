@@ -62,6 +62,15 @@ void generateCodeNewLine( FILE* yyout, qMachine *Q );
 
 void generateCodeGetVariable( FILE* yyout, qMachine *Q, registerStruct *r );
 
+void generateCodeAssignment( FILE* yyout, qMachine *Q, registerStruct *r1,
+                             registerStruct *r2 );
+
+void generateCodeMultiply( FILE* yyout, qMachine *Q, registerStruct *r1,
+                             registerStruct *r2, char op );
+
+void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
+                             registerStruct *r2, char op );
+
 void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1, 
                            registerStruct *r2, char op[] );
 
