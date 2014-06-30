@@ -23,7 +23,7 @@ begin
   Put(i);
   New_Line;
 
-  i := 1+7;
+  i := 1+7+1;
   Put("1+7 = ");
   Put(i);
   New_Line;
@@ -33,13 +33,13 @@ begin
   Put(i);
   New_Line;
 
-  i := 2*2+2;
-  Put("2*2+2 = ");
+  i := 2*2+3;
+  Put("2*2+3 = ");
   Put(i);
   New_Line;
 
-  i := 2*(2+2);
-  Put("2*(2+2) = ");
+  i := 2+2*3;
+  Put("2+2*3 = ");
   Put(i);
   New_Line;
 
