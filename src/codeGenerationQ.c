@@ -269,6 +269,9 @@ void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1,
   fprintf(yyout,"\t//////////////////////////////////\n");
   fprintf(yyout,"\t// Relation evaluation\n");
 
+  // Save R1
+  fprintf(yyout,"\tR3=R1;\t\t\t//Save R1 (should use heap)\n"); 
+
   fprintf(yyout,"\tR1=%c(0x%x);\t\t//Load value left side\n", 
                 getVarMemLabel( r1->typeVariable ), r1->address); 
   fprintf(yyout,"\tR2=%c(0x%x);\t\t//Load value right side\n", 
@@ -280,6 +283,27 @@ void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1,
   fprintf(yyout,"\tR0=0;\t\t\t//False\n");
 
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+
+  fprintf(yyout,"\tR1=R3;\t\t\t//Recover R1 (should use heap)\n");
+}
+
+void generateCodeLogical( FILE* yyout, qMachine *Q, char op){
+  // When stat is 0, we are in a STAT block.
+  // When stat is 1, we are in a CODE blocke
+  if( Q->stat==0 ){
+    fprintf(yyout,"CODE(%d)\t\t\t\n", Q->nextCodeNumber++);
+
+    Q->stat=1;
+  }
+
+  fprintf(yyout,"\tR0=R0 %c R1;\t", op );
+  if(op=='*'){
+    fprintf(yyout,"// and generated\n" );
+  }else{
+    fprintf(yyout,"// or generated\n" );
+  }
+
+  //Free R1  
 }
 
 int generateCodeOpenWhile( FILE* yyout, qMachine *Q ){
@@ -313,10 +337,9 @@ void generateCodeEvaluateWhile( FILE* yyout, qMachine *Q, int outLabel ){
   
   // R0 contains the result of the expression
   fprintf(yyout,"\tIF(R0 == 0) GT(%d);\t//Jump if 0\n", outLabel);
-
 }
 
-int generateCodeCloseWhile( FILE* yyout, qMachine *Q, int outLabel ){
+void generateCodeCloseWhile( FILE* yyout, qMachine *Q, int outLabel ){
   // When stat is 0, we are in a STAT block.
   // When stat is 1, we are in a CODE blocke
   if( Q->stat==0 ){
@@ -328,6 +351,36 @@ int generateCodeCloseWhile( FILE* yyout, qMachine *Q, int outLabel ){
   fprintf(yyout,"\t// Close while loop -> L:%d\n", outLabel-1 );
   fprintf(yyout,"\tGT(%d);\t\t\t//Evaluate loop again\n", outLabel-1);
   fprintf(yyout,"L %d:\t\t\t\t//Exit while loop\n", outLabel);
+}
+
+void generateCodeEvaluateIf( FILE* yyout, qMachine *Q, int outLabel ){
+  // When stat is 0, we are in a STAT block.
+  // When stat is 1, we are in a CODE blocke
+  if( Q->stat==0 ){
+    fprintf(yyout,"CODE(%d)\t\t\t\n", Q->nextCodeNumber++);
+
+    Q->stat=1;
+  }
+
+  fprintf(yyout,"\t//////////////////////////////////\n");
+  fprintf(yyout,"\t// Evaluate if block \n" );
+  
+  // R0 contains the result of the expression
+  fprintf(yyout,"\tIF(R0 == 0) GT(%d);\t//Jump if 0\n", outLabel);
+}
+
+void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ){
+  // When stat is 0, we are in a STAT block.
+  // When stat is 1, we are in a CODE blocke
+  if( Q->stat==0 ){
+    fprintf(yyout,"CODE(%d)\t\t\t\n", Q->nextCodeNumber++);
+
+    Q->stat=1;
+  }
+
+  fprintf(yyout,"\t//////////////////////////////////\n");
+  fprintf(yyout,"\t// Close if block \n");
+  fprintf(yyout,"L %d:\t\t\t\t\n", outLabel);
 }
 
 /******************************

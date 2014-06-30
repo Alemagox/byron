@@ -141,6 +141,7 @@ void generateAnonymousId();
 %type <regStruct>			factor
 %type <regStruct>			formal_part
 %type <regStruct>			function_specification
+%type <op>						logical_operator
 %type <typeSymbol>		mode
 %type <regStruct>			primary 
 %type <regStruct>			procedure_specification 
@@ -472,14 +473,32 @@ elsif_list :
 
 else_statement : 
 	ELSE
+		{ fprintf(yyout,"\t//////////////////////////////////\n");
+			fprintf(yyout,"\t// Open else block \n");
+
+	  } 
 		sequence_of_statements
 	| /* empty */
 	;
 
 
 elsif_statement : 
-	ELSIF '(' expression ')' THEN
+	ELSIF { fprintf(yyout,"\t//////////////////////////////////\n");
+  				fprintf(yyout,"\t// Open elsif block \n");
+					$<integer>$=Q.nextLabel++;
+				 } 
+		'(' expression ')' 
+		{ 
+			errorCode = checkIfNumeric(errorString, $4, 3);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			generateCodeEvaluateIf( yyout, &Q, $<integer>2 ); 
+		}
+	THEN
 		sequence_of_statements
+		{ generateCodeNextIf( yyout, &Q, $<integer>2 ); }
 	;
 
 
@@ -547,18 +566,25 @@ identifier_list :
 
 
 if_statement : 
-	IF '(' expression ')' THEN
+	IF {  fprintf(yyout,"\t//////////////////////////////////\n");
+  			fprintf(yyout,"\t// Open if block \n");
+				$<integer>$=Q.nextLabel++; 
+			}
+		'(' expression ')'
+		{ 
+			errorCode = checkIfNumeric(errorString, $4, 3);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			generateCodeEvaluateIf( yyout, &Q, $<integer>2 ); 
+		}
+	THEN
 		sequence_of_statements
+		{ generateCodeNextIf( yyout, &Q, $<integer>2 ); }
 	elsif_list
 	else_statement
 	END IF ';'
-	{
-		errorCode = checkIfNumeric(errorString, $3, 3);
-		if(errorCode){
-			yyerror(errorString);
-			YYABORT;
-		}
-	}
 	;
 
 
@@ -568,14 +594,14 @@ indexed_component :
 
 
 logical_operator : 
-	AND
-	| OR
+	AND   { $$ = '*'; };
+	| OR 	{ $$ = '+'; }
 	;
 
 
 loop_statement : 
-	WHILE { $<integer>$=generateCodeOpenWhile( yyout, &Q ); }
-		'(' expression ')' { generateCodeEvaluateWhile( yyout, &Q, $<integer>2 ); }
+	WHILE 								{ $<integer>$=generateCodeOpenWhile( yyout, &Q ); }
+		'(' expression ')' 	{ generateCodeEvaluateWhile( yyout, &Q, $<integer>2 ); }
 	LOOP
 		sequence_of_statements
 	END LOOP ';'
@@ -854,23 +880,31 @@ relation :
 
 
 relation_list :
-	logical_operator relation { $<regStruct>$ = $2; } relation_list
-	{
-		errorCode = checkIfNumeric(errorString, $<regStruct>2, 3);
-		if(errorCode){
-			yyerror(errorString);
-			YYABORT;
-		}
+	logical_operator 
+		{ fprintf(yyout,"\tR1=R0;\t\t\t//Saving R0 for relation call\n");; } 
+	relation 
+		{ 
+			$<regStruct>$ = $3; 
 
-		/* Generate code for relation */
+			errorCode = checkIfNumeric(errorString, $3, 3);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+
+			/* Generate code for relation */
+			// R1 has the evaluation of the previous expression
+			generateCodeLogical( yyout, &Q, $1 );
+		}
+	relation_list
+	{
 
 		generateAnonymousId();
-
 		auxRegister = createRegister( anonymousIdString, 
 																	sT.currentScope, Auxiliar, 
-																	getFactorVariableType($<regStruct>-1, $2)
+																	getFactorVariableType($<regStruct>-1, $3)
 																);	
-		if($2->typeSymbol==Auxiliar)destroyRegister($2);
+		if($3->typeSymbol==Auxiliar)destroyRegister($3);
 		$$ = auxRegister;
 	}
 	| /* empty */ 
@@ -886,7 +920,7 @@ relation_list :
 
 
 relational_operator : 
-	'='									{ strcpy($$, "=");  }
+	'='									{ strcpy($$, "==");  }
 	| '<' 							{ strcpy($$, "<");  }
 	| '>'								{ strcpy($$, ">");  }
 	| NOT_EQUAL_OP			{ strcpy($$, "!="); }

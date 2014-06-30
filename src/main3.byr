@@ -11,6 +11,27 @@ begin
   Get(c);
 
   while (c /= 'n') loop
+    
+    if(c='a')then
+      Put("Muahahaha");
+      New_Line;
+    end if;
+
+    if(c = '3' or c = '7') then
+      Put("Numero: ");
+      Put(c);
+      New_Line;        
+    end if;
+
+    
+
+--    case c is                                        -- Byron style, Character is directly considered Integer
+--        when 'z' => Put("What a ZZZombie");         -- Byron style
+--        when 'c' => Put("What a CCombo breaker");         -- Byron style
+--        when others => Put("Whatever... ");                            -- Byron style
+--    end case;
+--    New_Line;
+
     Put("Enter a letter(n to exit): ");
     Get(c);
   end loop;
