@@ -100,9 +100,8 @@ void generateAnonymousId();
 // Setting operators precedence
 %left '+' '-' 
 %left '*' '/'
-%left POWER_OP			// **
-%left AND
-%left OR
+//%left POWER_OP			// **
+%left OR AND
 
 // Built in functions
 %token PUT
@@ -142,7 +141,7 @@ void generateAnonymousId();
 %type <regStruct>			function_specification
 %type <op>						logical_operator
 %type <typeSymbol>		mode
-%type <op>						multiplying_operator
+//%type <op>						multiplying_operator
 %type <regStruct>			primary 
 %type <regStruct>			procedure_specification 
 %type <regStruct>			relation
@@ -284,59 +283,6 @@ assignment_statement :
 		generateCodeAssignment( yyout, &Q, $1, $3 );
 	}
 	;
-
-/*
-binary_adding_list : 
-	binary_adding_operator term
-		{
-			errorCode = checkIfNumeric(errorString, $<regStruct>2, 1);
-			if(errorCode){
-				yyerror(errorString);
-				YYABORT;
-			}
-
-			/// Generate code for addition 
-			generateCodeAddition( yyout, &Q, $<regStruct>-1, $2, $1 );
-
-			generateAnonymousId();
-			auxRegister = createRegister( anonymousIdString, 
-																		sT.currentScope, Auxiliar, 
-																		getFactorVariableType($<regStruct>-1, $2)
-																	);	
-			if($2->typeSymbol==Auxiliar) destroyRegister($2);
-			$$ = auxRegister;
-		}
-	| binary_adding_operator term { $<regStruct>$ = $2 ; } binary_adding_list
-		{
-			errorCode = checkIfNumeric(errorString, $<regStruct>2, 1);
-			if(errorCode){
-				yyerror(errorString);
-				YYABORT;
-			}
-
-			// Generate code for addition 
-			generateCodeAddition( yyout, &Q, $<regStruct>-1, $4, $1 );
-
-			generateAnonymousId();
-			auxRegister = createRegister( anonymousIdString, 
-																		sT.currentScope, Auxiliar, 
-																		getFactorVariableType($<regStruct>-1, $4)
-																	);	
-
-			if($2->typeSymbol==Auxiliar) destroyRegister($2);
-			if($4->typeSymbol==Auxiliar) destroyRegister($4);
-			//destroyRegister($4);
-			$$ = auxRegister;
-		}
-	;
-*/
-
-/*
-binary_adding_operator : 
-	'+' 	{	$$ = '+'; }
-	| '-'	{	$$ = '-'; }
-	;
-*/
 
 case_statement : 
 	CASE IDENTIFIER IS
@@ -537,7 +483,7 @@ expression_list :
 
 factor : 
 	primary { $<regStruct>$ = $<regStruct>1; }
-	| primary POWER_OP primary { yyerror("Incomplete factor"); $<regStruct>$ = $<regStruct>1; }
+	//| primary POWER_OP primary { yyerror("Incomplete factor"); $<regStruct>$ = $<regStruct>1; }
 	| NOT primary { yyerror("Incomplete factor"); $<regStruct>$ = $<regStruct>2; }
 	;
 
@@ -632,12 +578,12 @@ mode :
 	| /* empty */ { $$ = In; }
 	;
 
-
+/*
 multiplying_operator : 
 	'*'   { $$='*'; }
 	| '/' { $$='/'; }
 	;
-
+*/
 
 null_statement : 
 	NULL_ ';'
@@ -968,7 +914,8 @@ simple_expression :
 	;
 
 simple_expression_ :
-	simple_expression_ '+' simple_expression_
+	term { $$ = $1; }
+	| simple_expression_ '+' simple_expression_
 		{
 			errorCode = checkIfNumeric(errorString, $1, 1);
 			if(errorCode){
@@ -1018,77 +965,7 @@ simple_expression_ :
 			
 			$$ = auxRegister;
 		}
-	| term
-		{
-			$$ = $1;
-		}
 	;
-
-/*	
-simple_expression : 
-	unary_adding_operator term { $<regStruct>$ = $2 ; } binary_adding_list 
-		{ 
-			errorCode = checkIfNumeric(errorString, $2, 1);
-			if(errorCode){
-				yyerror(errorString);
-				YYABORT;
-			}
-			// Generate code for addition 
-
-			generateAnonymousId();
-			auxRegister = createRegister( anonymousIdString, 
-																		sT.currentScope, Auxiliar, 
-																		getFactorVariableType($2, $4)
-																	);	
-			if($2->typeSymbol==Auxiliar) destroyRegister($2);
-			if($4->typeSymbol==Auxiliar) destroyRegister($4);
-			
-			$$ = auxRegister;
-		}
-	| unary_adding_operator term 
-			{ 
-				errorCode = checkIfNumeric(errorString, $<regStruct>2, 1);
-				if(errorCode){
-					yyerror(errorString);
-					YYABORT;
-				}
-
-				// Generate code for addition 
-
-				
-				//generateAnonymousId();
-				//auxRegister = createRegister( anonymousIdString, 
-				//															sT.currentScope, Auxiliar, 
-				//															$2->typeVariable
-				//														);	
-				//
-				
-				$$ = $2;
-		 	}
-	| term { $<regStruct>$ = $1 ; } binary_adding_list 
-			{ 	
-				errorCode = checkIfNumeric(errorString, $<regStruct>1, 1);
-				if(errorCode){
-					yyerror(errorString);
-					YYABORT;
-				}
-
-				// Generate code for addition 
-
-				generateAnonymousId();
-				auxRegister = createRegister( anonymousIdString, 
-																			sT.currentScope, Auxiliar, 
-																			getFactorVariableType($1, $3)
-																		);
-
-				if($1->typeSymbol==Auxiliar) destroyRegister($1);
-				if($3->typeSymbol==Auxiliar) destroyRegister($3);
-	
-				$$ = auxRegister;
-			}
-	| term { $$ = $1; }
-	;
-*/
 
 simple_statement : 
 	null_statement
@@ -1138,7 +1015,7 @@ subprogram_specification :
 	| function_specification { $<regStruct>$ = $1; }
 	;
 
-
+/*
 term : 
 	factor { $$ = $<regStruct>1; }
 	| term multiplying_operator factor 
@@ -1175,6 +1052,70 @@ term :
 			$$ = auxRegister;
 		}		
 	;
+*/
+
+term : 
+	factor { $$ = $1; }
+	| term '*' term
+		{ 
+			errorCode = checkIfNumeric(errorString, $3, 0);
+			if(errorCode) {
+				yyerror(errorString);
+				YYABORT;
+			}
+
+			errorCode = checkIfNumeric(errorString, $1, 0);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			} 
+
+			getVariableTypeName(string1, $1->typeVariable);
+  		getVariableTypeName(string2, $3->typeVariable);
+
+  		generateCodeMultiply( yyout, &Q, $1, $3, '*' );
+
+			generateAnonymousId();
+			auxRegister = createRegister( anonymousIdString, 
+																		sT.currentScope, Auxiliar, 
+																		getFactorVariableType($1, $3)
+																	);	
+			if($1->typeSymbol==Auxiliar) destroyRegister($1);
+			if($3->typeSymbol==Auxiliar) destroyRegister($3);
+
+			$$ = auxRegister;
+		}
+	| term '/' term
+		{ 
+			errorCode = checkIfNumeric(errorString, $3, 0);
+			if(errorCode) {
+				yyerror(errorString);
+				YYABORT;
+			}
+
+			errorCode = checkIfNumeric(errorString, $1, 0);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			} 
+
+			getVariableTypeName(string1, $1->typeVariable);
+  		getVariableTypeName(string2, $3->typeVariable);
+
+  		generateCodeMultiply( yyout, &Q, $1, $3, '/' );
+
+			generateAnonymousId();
+			auxRegister = createRegister( anonymousIdString, 
+																		sT.currentScope, Auxiliar, 
+																		getFactorVariableType($1, $3)
+																	);	
+			if($1->typeSymbol==Auxiliar) destroyRegister($1);
+			if($3->typeSymbol==Auxiliar) destroyRegister($3);
+
+			$$ = auxRegister;
+		}	
+	;
+
 
 type_declaration : 
 	TYPE IDENTIFIER IS type_definition ';'

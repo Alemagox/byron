@@ -69,21 +69,20 @@
      NOT_EQUAL_OP = 287,
      GREATER_EQUAL_OP = 288,
      LESSER_EQUAL_OP = 289,
-     POWER_OP = 290,
-     PUT = 291,
-     GET = 292,
-     LENGTH = 293,
-     NEW_LINE = 294,
-     CONCAT = 295,
-     INTEGER_TYPE = 296,
-     REAL_TYPE = 297,
-     CHARACTER_TYPE = 298,
-     BOOLEAN_TYPE = 299,
-     INTEGER_LITERAL = 300,
-     FLOAT_LITERAL = 301,
-     CHARACTER_LITERAL = 302,
-     STRING_LITERAL = 303,
-     BOOLEAN_LITERAL = 304
+     PUT = 290,
+     GET = 291,
+     LENGTH = 292,
+     NEW_LINE = 293,
+     CONCAT = 294,
+     INTEGER_TYPE = 295,
+     REAL_TYPE = 296,
+     CHARACTER_TYPE = 297,
+     BOOLEAN_TYPE = 298,
+     INTEGER_LITERAL = 299,
+     FLOAT_LITERAL = 300,
+     CHARACTER_LITERAL = 301,
+     STRING_LITERAL = 302,
+     BOOLEAN_LITERAL = 303
    };
 #endif
 
@@ -107,7 +106,7 @@ typedef union YYSTYPE
 
 
 /* Line 2068 of yacc.c  */
-#line 111 "compiler.tab.h"
+#line 110 "compiler.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

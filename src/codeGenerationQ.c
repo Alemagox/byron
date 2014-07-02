@@ -26,6 +26,9 @@ void qMachineInit( qMachine *Q ){
     Q->RR[i] = 0;
   }
 
+  Q->usedR = 0;
+  Q->lastRstack = 0;
+
   // next label to use is 1
   Q->nextLabel  = 1;
   Q->nextCodeNumber = 0;
@@ -284,6 +287,8 @@ void generateCodeAssignment( FILE* yyout, qMachine *Q, registerStruct *r1,
 
 void generateCodeMultiply( FILE* yyout, qMachine *Q, registerStruct *r1,
                              registerStruct *r2, char op ){
+  int leftR, rightR;
+
   // When stat is 0, we are in a STAT block.
   // When stat is 1, we are in a CODE blocke
   if( Q->stat==0 ){
@@ -293,23 +298,38 @@ void generateCodeMultiply( FILE* yyout, qMachine *Q, registerStruct *r1,
   }
 
   fprintf(yyout,"\t//////////////////////////////////\n");
-  fprintf(yyout,"\t// Multiply factors\n");
+  fprintf(yyout,"\t// Multilply factors\n");
 
-  if( r1->typeSymbol == Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    fprintf(yyout,"\tR1=R0;\t\t//Load value left factor\n" );
+  if( r2->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
+    rightR = newRegister( Q );
+    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right factor\n",
+                rightR, 
+                getVarMemLabel( r2->typeVariable ), r2->address);
   }else{
-    fprintf(yyout,"\tR1=%c(0x%x);\t\t//Load value left factor\n", 
-                getVarMemLabel( r1->typeVariable ), r1->address);
+    rightR = lastRegister( Q )-1;
+    fprintf(yyout,"\t//Right factor already in R%d\n", rightR );
   }
 
-   fprintf(yyout,"\tR0=%c(0x%x);\t\t//Load value right factor\n", 
-                getVarMemLabel( r2->typeVariable ), r2->address);
+  if( r1->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
+    leftR = newRegister( Q );
+    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value left factor\n", 
+                    leftR,
+                    getVarMemLabel( r1->typeVariable ), r1->address);
+  }else{
+    leftR = lastRegister( Q )-2; // Register was saved in the prev to previous to last
+    fprintf(yyout,"\t//Left factor already in R%d\n", leftR );
+  }
 
-   fprintf(yyout,"\tR0=R1%cR0;\t\t//Multiply factors\n", op);
+  fprintf(yyout,"\tR%d=R%d%cR%d;\t\t//Multiply factors\n", leftR<rightR?leftR:rightR, 
+                leftR, op, rightR);
+
+  popRegister( Q ); // We free the greater register
 }
 
 void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
                              registerStruct *r2, char op ){
+  int leftR, rightR;
+
   // When stat is 0, we are in a STAT block.
   // When stat is 1, we are in a CODE blocke
   if( Q->stat==0 ){
@@ -321,19 +341,30 @@ void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
   fprintf(yyout,"\t//////////////////////////////////\n");
   fprintf(yyout,"\t// Add terms\n");
 
-  if( r2->typeSymbol == Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    fprintf(yyout,"\tR1=R0;\t\t//Load value right term\n" );
-  }else{
-    fprintf(yyout,"\tR1=%c(0x%x);\t\t//Load value right term\n", 
+  if( r2->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
+    rightR = newRegister( Q );
+    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right term\n",
+                rightR, 
                 getVarMemLabel( r2->typeVariable ), r2->address);
+  }else{
+    rightR = lastRegister( Q )-1;
+    fprintf(yyout,"\t//Right factor already in R%d\n", rightR );
   }
 
   if( r1->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    fprintf(yyout,"\tR0=%c(0x%x);\t\t//Load value left term\n", 
-                getVarMemLabel( r1->typeVariable ), r1->address);
-  }  
+    leftR = newRegister( Q );
+    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value left term\n", 
+                    leftR,
+                    getVarMemLabel( r1->typeVariable ), r1->address);
+  }else{
+    leftR = lastRegister( Q )-2; // Register was saved in the prev to previous to last
+    fprintf(yyout,"\t//Left term already in R%d\n", leftR );
+  }
 
-  fprintf(yyout,"\tR0=R0%cR1;\t\t//Add terms\n", op);
+  fprintf(yyout,"\tR%d=R%d%cR%d;\t\t//Add terms\n", leftR<rightR?leftR:rightR, 
+                leftR, op, rightR);
+
+  popRegister( Q ); // We free the greater register
 }
 
 void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1, 
@@ -507,4 +538,20 @@ int getVarStaticAddress( qMachine *Q, registerStruct *r ){
   r->address = Q->Ztop;
 
   return 0;
+}
+
+int lastRegister( qMachine *Q ){
+  return Q->lastRstack;
+}
+
+int newRegister( qMachine *Q ){
+  //int r=Q->lastRstack++;
+
+  return Q->lastRstack++;
+}
+
+int popRegister( qMachine *Q ){
+  //int r=Q->lastRstack;
+
+  return --Q->lastRstack;
 }

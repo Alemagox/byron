@@ -8,9 +8,8 @@ procedure main is
   c : Character;
 begin
 
-
-  i := 90-7+1+2;
-  Put("1+7 = ");
+  i := 2*12-2*(5+5)/(2-1);
+  Put("Result = ");
   Put(i);
   New_Line;
 

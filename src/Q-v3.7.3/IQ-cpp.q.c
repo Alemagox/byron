@@ -19,28 +19,48 @@ STAT(0)
 CODE(0)
 L 0:
 STAT(1)
- DAT(0x11fe5,I,90);
- DAT(0x11fe1,I,7);
+ DAT(0x11fe5,I,2);
+ DAT(0x11fe1,I,12);
 CODE(1)
 
 
- R1=I(0x11fe1);
- R0=I(0x11fe5);
- R0=R0-R1;
+ R0=I(0x11fe1);
+ R1=I(0x11fe5);
+ R0=R1*R0;
 STAT(2)
- DAT(0x11fdd,I,1);
+ DAT(0x11fdd,I,2);
+ DAT(0x11fd9,I,5);
+ DAT(0x11fd5,I,5);
 CODE(2)
 
 
- R1=I(0x11fdd);
- R0=R0+R1;
+ R1=I(0x11fd5);
+ R2=I(0x11fd9);
+ R1=R2+R1;
+
+
+
+ R2=I(0x11fdd);
+ R1=R2*R1;
 STAT(3)
- DAT(0x11fd9,I,2);
+ DAT(0x11fd1,I,2);
+ DAT(0x11fcd,I,1);
 CODE(3)
 
 
- R1=I(0x11fd9);
- R0=R0+R1;
+ R2=I(0x11fcd);
+ R3=I(0x11fd1);
+ R2=R3-R2;
+
+
+
+
+ R1=R1/R2;
+
+
+
+
+ R0=R0-R1;
 
 
  R1=R0;
@@ -48,16 +68,22 @@ CODE(3)
 
 
  R0=1;
- R1=7;
+ R1=10;
  GT(-11);
 L 1:
  R3=R0;
 
- U(R3)=0x31;
+ U(R3)=0x52;
  R3=R3+1;
- U(R3)=0x2b;
+ U(R3)=0x65;
  R3=R3+1;
- U(R3)=0x37;
+ U(R3)=0x73;
+ R3=R3+1;
+ U(R3)=0x75;
+ R3=R3+1;
+ U(R3)=0x6c;
+ R3=R3+1;
+ U(R3)=0x74;
  R3=R3+1;
  U(R3)=0x20;
  R3=R3+1;
@@ -73,7 +99,7 @@ L 1:
  GT(-13);
 L 2:
  R0=3;
- R1=-6;
+ R1=-9;
  GT(-17);
 L 3:
 

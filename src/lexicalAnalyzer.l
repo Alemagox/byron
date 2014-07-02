@@ -82,7 +82,7 @@ False								{ column=column+strlen(yytext); strcpy(yylval.string, yytext); retu
 	/* Special characters */
 "="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|"["|"]"|":"|"."|","|";"|"|" {column=column+strlen(yytext); return yytext[0];}
 "=>" 	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return ARROW; }
-"**"	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return POWER_OP;}
+ /* "**"	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return POWER_OP;}*/
 ":="	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return ASSIGNMENT_OP;}
 "/="	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return NOT_EQUAL_OP;}
 ">="	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return GREATER_EQUAL_OP;}

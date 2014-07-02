@@ -13,28 +13,48 @@ STAT(0)
 CODE(0)
 L 0:
 STAT(1)			
-	DAT(0x11fe5,I,90);	//Literal '90', scope 0 
-	DAT(0x11fe1,I,7);	//Literal '7', scope 0 
+	DAT(0x11fe5,I,2);	//Literal '2', scope 0 
+	DAT(0x11fe1,I,12);	//Literal '12', scope 0 
 CODE(1)			
 	//////////////////////////////////
-	// Add terms
-	R1=I(0x11fe1);		//Load value right term
-	R0=I(0x11fe5);		//Load value left term
-	R0=R0-R1;		//Add terms
+	// Multilply factors
+	R0=I(0x11fe1);		//Load value right factor
+	R1=I(0x11fe5);		//Load value left factor
+	R0=R1*R0;		//Multiply factors
 STAT(2)			
-	DAT(0x11fdd,I,1);	//Literal '1', scope 0 
+	DAT(0x11fdd,I,2);	//Literal '2', scope 0 
+	DAT(0x11fd9,I,5);	//Literal '5', scope 0 
+	DAT(0x11fd5,I,5);	//Literal '5', scope 0 
 CODE(2)			
 	//////////////////////////////////
 	// Add terms
-	R1=I(0x11fdd);		//Load value right term
-	R0=R0+R1;		//Add terms
+	R1=I(0x11fd5);		//Load value right term
+	R2=I(0x11fd9);		//Load value left term
+	R1=R2+R1;		//Add terms
+	//////////////////////////////////
+	// Multilply factors
+	//Right factor already in R1
+	R2=I(0x11fdd);		//Load value left factor
+	R1=R2*R1;		//Multiply factors
 STAT(3)			
-	DAT(0x11fd9,I,2);	//Literal '2', scope 0 
+	DAT(0x11fd1,I,2);	//Literal '2', scope 0 
+	DAT(0x11fcd,I,1);	//Literal '1', scope 0 
 CODE(3)			
 	//////////////////////////////////
 	// Add terms
-	R1=I(0x11fd9);		//Load value right term
-	R0=R0+R1;		//Add terms
+	R2=I(0x11fcd);		//Load value right term
+	R3=I(0x11fd1);		//Load value left term
+	R2=R3-R2;		//Add terms
+	//////////////////////////////////
+	// Multilply factors
+	//Right factor already in R2
+	//Left factor already in R1
+	R1=R1/R2;		//Multiply factors
+	//////////////////////////////////
+	// Add terms
+	//Right factor already in R1
+	//Left term already in R0
+	R0=R0-R1;		//Add terms
 	//////////////////////////////////
 	// Assignment to variable 'i', scope 0
 	R1=R0;		//Load value right side
@@ -42,16 +62,22 @@ CODE(3)
 	/////////////////////////
 	// Print string literal
 	R0=1;			//Return label
-	R1=7;			//String length
+	R1=10;			//String length
 	GT(new_);		//Assign heap space for string literal
 L 1:				
 	R3=R0;			//Save the address in the heap of the string literal
 	//Start assigning string to heap
-	U(R3)=0x31;		//'1'
+	U(R3)=0x52;		//'R'
 	R3=R3+1;		
-	U(R3)=0x2b;		//'+'
+	U(R3)=0x65;		//'e'
 	R3=R3+1;		
-	U(R3)=0x37;		//'7'
+	U(R3)=0x73;		//'s'
+	R3=R3+1;		
+	U(R3)=0x75;		//'u'
+	R3=R3+1;		
+	U(R3)=0x6c;		//'l'
+	R3=R3+1;		
+	U(R3)=0x74;		//'t'
 	R3=R3+1;		
 	U(R3)=0x20;		//' '
 	R3=R3+1;		
@@ -67,7 +93,7 @@ L 1:
 	GT(putfs_);		//Print string literal
 L 2:				
 	R0=3;			//Return label
-	R1=-6;			//String length
+	R1=-9;			//String length
 	GT(free_);		//Free heap space for string literal
 L 3:				
 	//////////////////////////////////

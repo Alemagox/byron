@@ -9,10 +9,13 @@ struct qMachine{
   int Htop;
 
   // R6 and R7 are reserved 
-  int R[8];  //  = {0,0,0,0,0,0,1,1};
+  int R[6];  //  = {0,0,0,0,0,0};
   int RR[4]; //= {0,0,0,0};
 
-  int nextLabel;// = 0;
+  int usedR;  // = 0
+  int lastRstack; // = 0
+
+  int nextLabel; // =0
   int nextCodeNumber;// = 0;
 
   char formatPutString[15];
@@ -95,5 +98,11 @@ void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel );
 char getVarMemLabel (variableType vT);
 
 int getVarStaticAddress( qMachine *Q, registerStruct *r );
+
+int newRegister( qMachine *Q );
+
+int popRegister( qMachine *Q );
+
+int lastRegister( qMachine *Q );
 
 #endif

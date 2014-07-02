@@ -8,22 +8,22 @@ procedure main is
   c : Character;
 begin
 
-  --c := 'k';
-  --Put(c);
-  --New_Line;
+  c := 'k';
+  Put(c);
+  New_Line;
 
 
-  --i := 3*4;
-  --Put("3*4 = ");
-  --Put(i);
-  --New_Line;
+  i := 3*4;
+  Put("3*4 = ");
+  Put(i);
+  New_Line;
 
-  --i := i/2;
-  --Put("12/2 = ");
-  --Put(i);
-  --New_Line;
+  i := i/2;
+  Put("12/2 = ");
+  Put(i);
+  New_Line;
 
-  i := 1+7;
+  i := 1+7+1;
   Put("1+7 = ");
   Put(i);
   New_Line;
