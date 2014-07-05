@@ -73,16 +73,15 @@
      GET = 291,
      LENGTH = 292,
      NEW_LINE = 293,
-     CONCAT = 294,
-     INTEGER_TYPE = 295,
-     REAL_TYPE = 296,
-     CHARACTER_TYPE = 297,
-     BOOLEAN_TYPE = 298,
-     INTEGER_LITERAL = 299,
-     FLOAT_LITERAL = 300,
-     CHARACTER_LITERAL = 301,
-     STRING_LITERAL = 302,
-     BOOLEAN_LITERAL = 303
+     INTEGER_TYPE = 294,
+     REAL_TYPE = 295,
+     CHARACTER_TYPE = 296,
+     BOOLEAN_TYPE = 297,
+     INTEGER_LITERAL = 298,
+     FLOAT_LITERAL = 299,
+     CHARACTER_LITERAL = 300,
+     STRING_LITERAL = 301,
+     BOOLEAN_LITERAL = 302
    };
 #endif
 
@@ -106,7 +105,7 @@ typedef union YYSTYPE
 
 
 /* Line 2068 of yacc.c  */
-#line 110 "compiler.tab.h"
+#line 109 "compiler.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

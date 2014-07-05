@@ -65,11 +65,9 @@ void generateAnonymousId();
 %token BEGIN_	// It created conflict with BEGIN from flex :(
 %token CASE
 %token CONSTANT
-//%token DO
 %token ELSE
 %token ELSIF
 %token END
-//%token END_LINE  //In byron we can directly ignore new lines
 %token FUNCTION
 %token IF
 %token <string> IDENTIFIER
@@ -100,7 +98,6 @@ void generateAnonymousId();
 // Setting operators precedence
 %left '+' '-' 
 %left '*' '/'
-//%left POWER_OP			// **
 %left OR AND
 
 // Built in functions
@@ -108,7 +105,6 @@ void generateAnonymousId();
 %token GET
 %token LENGTH
 %token NEW_LINE
-%token CONCAT
 
 // Type tokens
 %token <integer> INTEGER_TYPE
@@ -139,13 +135,13 @@ void generateAnonymousId();
 %type <regStruct>			factor
 %type <regStruct>			formal_part
 %type <regStruct>			function_specification
-%type <op>						logical_operator
+//%type <op>						logical_operator
 %type <typeSymbol>		mode
 //%type <op>						multiplying_operator
 %type <regStruct>			primary 
 %type <regStruct>			procedure_specification 
 %type <regStruct>			relation
-%type <regStruct>			relation_list
+//%type <regStruct>			relation_list
 %type <string>				relational_operator
 %type <regStruct>			simple_expression
 %type <regStruct>			simple_expression_
@@ -455,7 +451,7 @@ elsif_statement :
 		{ generateCodeNextIf( yyout, &Q, $<integer>2 ); }
 	;
 
-
+/*
 expression : 
 	relation { $<regStruct>$ = $1; } relation_list {
 
@@ -466,6 +462,60 @@ expression :
 			$$ = $3;
 		}
 	}
+	;
+*/
+expression : 
+	relation { $<regStruct>$ = $1; } 
+	| expression AND expression
+		{
+			errorCode = checkIfNumeric(errorString, $1, 3);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			errorCode = checkIfNumeric(errorString, $3, 3);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			// Generate code for addition 
+			generateCodeLogical( yyout, &Q, $1, $3, '*' );
+
+			generateAnonymousId();
+			auxRegister = createRegister( anonymousIdString, 
+																		sT.currentScope, Auxiliar, 
+																		getFactorVariableType($1, $3)
+																	);	
+			if($1->typeSymbol==Auxiliar) destroyRegister($1);
+			if($3->typeSymbol==Auxiliar) destroyRegister($3);
+			
+			$$ = auxRegister;
+		}
+	| expression OR expression
+		{
+			errorCode = checkIfNumeric(errorString, $1, 3);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			errorCode = checkIfNumeric(errorString, $3, 3);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			// Generate code for addition 
+			generateCodeLogical( yyout, &Q, $1, $3, '+' );
+
+			generateAnonymousId();
+			auxRegister = createRegister( anonymousIdString, 
+																		sT.currentScope, Auxiliar, 
+																		getFactorVariableType($1, $3)
+																	);	
+			if($1->typeSymbol==Auxiliar) destroyRegister($1);
+			if($3->typeSymbol==Auxiliar) destroyRegister($3);
+			
+			$$ = auxRegister;
+		}
 	;
 
 expression_list : 
@@ -546,12 +596,12 @@ indexed_component :
 	IDENTIFIER '[' expression expression_list ']'
 	;
 
-
+/*
 logical_operator : 
 	AND   { $$ = '*'; };
 	| OR 	{ $$ = '+'; }
 	;
-
+*/
 
 loop_statement : 
 	WHILE 								{ $<integer>$=generateCodeOpenWhile( yyout, &Q ); }
@@ -832,7 +882,7 @@ relation :
 		}
 	;
 
-
+/*
 relation_list :
 	logical_operator 
 		{ fprintf(yyout,"\tR1=R0;\t\t\t//Saving R0 for relation call\n");; } 
@@ -846,7 +896,7 @@ relation_list :
 				YYABORT;
 			}
 
-			/* Generate code for relation */
+			// Generate code for relation 
 			// R1 has the evaluation of the previous expression
 			generateCodeLogical( yyout, &Q, $1 );
 		}
@@ -861,7 +911,7 @@ relation_list :
 		if($3->typeSymbol==Auxiliar)destroyRegister($3);
 		$$ = auxRegister;
 	}
-	| /* empty */ 
+	| // empty 
 		{
 			generateAnonymousId();
 			auxRegister = createRegister( anonymousIdString, 
@@ -871,7 +921,7 @@ relation_list :
 			$$ = auxRegister; 
 		}
 	;
-
+*/
 
 relational_operator : 
 	'='									{ strcpy($$, "==");  }

@@ -77,7 +77,8 @@ void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
 void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1, 
                            registerStruct *r2, char op[] );
 
-void generateCodeLogical( FILE* yyout, qMachine *Q, char op );
+void generateCodeLogical( FILE* yyout, qMachine *Q, registerStruct *r1, 
+                           registerStruct *r2, char op );
 
 int generateCodeOpenWhile( FILE* yyout, qMachine *Q );
 

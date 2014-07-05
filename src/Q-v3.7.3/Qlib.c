@@ -85,7 +85,8 @@ L putfi_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er cha
 L putfs_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
     unsigned char *p2=inv_str(&U(R2)); // invierte: nva. dir. real 1er char
     printf((char*)p,(char*)p2);             // trasladar
-           
+    //printf((char*)p,R2);             // trasladar
+
     reinv_str(p,&U(R1));        // re-invierte   
     reinv_str(p2,&U(R2));                 
     GT(R0);                           // retorna

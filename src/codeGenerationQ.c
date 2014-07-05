@@ -135,48 +135,30 @@ void generateCodePutStringLiteral( FILE* yyout, qMachine *Q, char string[] ){
 
   // When stat is 0, we are in a STAT block.
   // When stat is 1, we are in a CODE blocke
-  if( Q->stat==0 ){
-    fprintf(yyout,"CODE(%d)\t\t\t\n", Q->nextCodeNumber++);
-
-    Q->stat=1;
+  if( Q->stat==1 ){
+    fprintf(yyout,"STAT(%d)\t\t\t\n", Q->nextCodeNumber);
   }
+  Q->Ztop = Q->Ztop - (strlen(string)+1-2);
+  fprintf(yyout,"\tSTR(0x%x, %s);\t\t\t\n", Q->Ztop, string);
+  fprintf(yyout,"CODE(%d)\t\t\t\n", Q->nextCodeNumber++);
+  Q->stat=1;
 
   fprintf(yyout,"\t/////////////////////////\n");
   fprintf(yyout,"\t// Print string literal\n");
-  fprintf(yyout,"\tR0=%d;\t\t\t//Return label\n", Q->nextLabel);
-  fprintf(yyout,"\tR1=%i;\t\t\t//String length\n", stringLength );
-  fprintf(yyout,"\tGT(new_);\t\t//Assign heap space for string literal\n" );
-
-  fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
-
-  fprintf(yyout,"\tR3=R0;\t\t\t//Save the address in the heap of the string literal\n");
   
-  // Assigning string to heap
-  fprintf(yyout,"\t//Start assigning string to heap\n"); 
-  
-  for(i=0; i<stringLength-1; i++){
-    fprintf(yyout,"\tU(R3)=0x%x;\t\t//'%c'\n", string[i], string[i]);
-    fprintf(yyout,"\tR3=R3+1;\t\t\n");
-  }
-  fprintf(yyout,"\tU(R3)=0x0;\t\t//'\\0'\n");
-
-  fprintf(yyout,"\t//Finished assigning string to heap\n");
-
   // Print string!!!
-  fprintf(yyout,"\tR2=R0;\t\t\t//String literal address\n", Q->nextLabel);
+  //fprintf(yyout,"\tR2=R0;\t\t\t//String literal address\n", Q->nextLabel);
   fprintf(yyout,"\tR0=%d;\t\t\t//Return label\n", Q->nextLabel);
   fprintf(yyout,"\tR1=0x%x;\t\t//Format string address\n", Q->formatPutStringAddress );
+  fprintf(yyout,"\tR2=0x%x;\t\t\t//String literal address\n", Q->Ztop);
   fprintf(yyout,"\tGT(putfs_);\t\t//Print string literal\n" );
 
-  // Free heap
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
 
-  fprintf(yyout,"\tR0=%d;\t\t\t//Return label\n", Q->nextLabel);
-  fprintf(yyout,"\tR1=-%i;\t\t\t//String length\n", stringLength-1 );
-  fprintf(yyout,"\tGT(free_);\t\t//Free heap space for string literal\n" );
-  
-  fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+  // Recover R0, R1 and R2
 
+  fprintf(yyout,"\t// End of Print string literal\n");
+  fprintf(yyout,"\t//////////////////////////////////\n");
 }
 
 void generateCodePutVariable( FILE* yyout, qMachine *Q, registerStruct *r ){
@@ -193,6 +175,8 @@ void generateCodePutVariable( FILE* yyout, qMachine *Q, registerStruct *r ){
           r->key.id, r->key.scope
          );
 
+  // Save R0, R1 and R2
+
   // Print variable!!!
   fprintf(yyout,"\tR0=%d;\t\t\t//Return label\n", Q->nextLabel);
   if( r->typeVariable == Character ){
@@ -206,6 +190,12 @@ void generateCodePutVariable( FILE* yyout, qMachine *Q, registerStruct *r ){
 
 
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+  // Recover R0, R1 and R2
+
+  fprintf(yyout,"\t// End of Print variable '%s', scope %d\n",
+          r->key.id, r->key.scope
+         );
+  fprintf(yyout,"\t//////////////////////////////////\n");
 }
 
 void generateCodeNewLine( FILE* yyout, qMachine *Q ){
@@ -220,6 +210,8 @@ void generateCodeNewLine( FILE* yyout, qMachine *Q ){
   fprintf(yyout,"\t//////////////////////////////////\n");
   fprintf(yyout,"\t// Print New_Line\n" );
 
+  // Recover R0, R1
+
   // Print variable!!!
   fprintf(yyout,"\tR0=%d;\t\t\t//Return label\n", Q->nextLabel);
   fprintf(yyout,"\tR1=0x%x;\t\t//Format New_Line address\n", Q->formatNewLineAddress );
@@ -227,6 +219,10 @@ void generateCodeNewLine( FILE* yyout, qMachine *Q ){
 
 
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+
+  // Recover R0, R1
+  fprintf(yyout,"\t// End of New_Line\n");
+  fprintf(yyout,"\t//////////////////////////////////\n");
 }
 
 void generateCodeGetVariable( FILE* yyout, qMachine *Q, registerStruct *r ){
@@ -243,6 +239,8 @@ void generateCodeGetVariable( FILE* yyout, qMachine *Q, registerStruct *r ){
           r->key.id, r->key.scope
          );
 
+  // Save R0, R1 and R2
+
   // Print variable!!!
   fprintf(yyout,"\tR0=%d;\t\t\t//Return label\n", Q->nextLabel);
   fprintf(yyout,"\tR2=0x%x;\t\t//Variable address\n", r->address);
@@ -254,8 +252,13 @@ void generateCodeGetVariable( FILE* yyout, qMachine *Q, registerStruct *r ){
     fprintf(yyout,"\tGT(getfi_);\t\t//Get variable\n" );
   }
 
-  
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+  // Recover R0, R1 and R2
+
+  fprintf(yyout,"\t// End of Get variable '%s', scope %d\n",
+          r->key.id, r->key.scope
+         );
+  fprintf(yyout,"\t//////////////////////////////////\n");
 }
 
 void generateCodeAssignment( FILE* yyout, qMachine *Q, registerStruct *r1,
@@ -274,15 +277,16 @@ void generateCodeAssignment( FILE* yyout, qMachine *Q, registerStruct *r1,
          );
 
   if( r2->typeSymbol == Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    fprintf(yyout,"\tR1=R0;\t\t//Load value right side\n" );
+    //fprintf(yyout,"\tR1=R0;\t\t//Load value right side\n" );
   }else{
-    fprintf(yyout,"\tR1=%c(0x%x);\t\t//Load value right side\n", 
-                getVarMemLabel( r2->typeVariable ), r2->address);
+    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right side\n", 
+                lastRegister( Q )-1, getVarMemLabel( r2->typeVariable ), r2->address);
   }
   
-  fprintf(yyout,"\t%c(0x%x)=R1;\t\t//Save value right side into variable\n", 
-                getVarMemLabel( r1->typeVariable ), r1->address);
+  fprintf(yyout,"\t%c(0x%x)=R%d;\t\t//Save value right side into variable\n", 
+                getVarMemLabel( r1->typeVariable ), r1->address, lastRegister( Q )-1);
 
+  popRegister( Q ); // Free assigned register
 }
 
 void generateCodeMultiply( FILE* yyout, qMachine *Q, registerStruct *r1,
@@ -370,6 +374,8 @@ void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
 void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1, 
                            registerStruct *r2, char op[] )
 {
+  int leftR, rightR, resultR;
+
   // When stat is 0, we are in a STAT block.
   // When stat is 1, we are in a CODE blocke
   if( Q->stat==0 ){
@@ -381,25 +387,49 @@ void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1,
   fprintf(yyout,"\t//////////////////////////////////\n");
   fprintf(yyout,"\t// Relation evaluation\n");
 
-  // Save R1
-  fprintf(yyout,"\tR3=R1;\t\t\t//Save R1 (should use heap)\n"); 
+ 
+  if( r2->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
+    rightR = newRegister( Q );
+    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right expression result\n",
+                rightR, 
+                getVarMemLabel( r2->typeVariable ), r2->address);
+  }else{
+    rightR = lastRegister( Q )-1;
+    fprintf(yyout,"\t//Right expression result already in R%d\n", rightR );
+  }
 
-  fprintf(yyout,"\tR1=%c(0x%x);\t\t//Load value left side\n", 
-                getVarMemLabel( r1->typeVariable ), r1->address); 
-  fprintf(yyout,"\tR2=%c(0x%x);\t\t//Load value right side\n", 
-                getVarMemLabel( r2->typeVariable ), r2->address);  
+  if( r1->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
+    leftR = newRegister( Q );
+    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value left expression result\n", 
+                    leftR,
+                    getVarMemLabel( r1->typeVariable ), r1->address);
+  }else{
+    leftR = lastRegister( Q )-2; // Register was saved in the prev to previous to last
+    fprintf(yyout,"\t//Left expression result already in R%d\n", leftR );
+  }
 
-  fprintf(yyout,"\tR0=1;\t\t\t//True\n");
+  
   //IF (R0 < 10) GT(1);
-  fprintf(yyout,"\tIF(R1 %s R2) GT(%d);\t//Jump if true\n", op, Q->nextLabel);
-  fprintf(yyout,"\tR0=0;\t\t\t//False\n");
+  resultR = leftR<rightR?leftR:rightR;
+  fprintf(yyout,"\tIF(R%d%sR%d) GT(%d);\t//Jump if true\n", 
+               leftR, op, rightR, Q->nextLabel);
+  fprintf(yyout,"\tR%d=0;\t\t\t//Set as False\n", resultR /*leftR<rightR?leftR:rightR*/);
+  fprintf(yyout,"\tGT(%d);\t//Jump to end\n", Q->nextLabel+1);
 
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+  fprintf(yyout,"\tR%d=1;\t\t\t//Set as True\n",  resultR);
 
-  fprintf(yyout,"\tR1=R3;\t\t\t//Recover R1 (should use heap)\n");
+  fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+  fprintf(yyout,"\t// End of evaluation\n");
+
+  popRegister( Q ); // We free the latest register
+
 }
 
-void generateCodeLogical( FILE* yyout, qMachine *Q, char op){
+void generateCodeLogical( FILE* yyout, qMachine *Q, registerStruct *r1, 
+                          registerStruct *r2, char op){
+  int leftR, rightR;
+
   // When stat is 0, we are in a STAT block.
   // When stat is 1, we are in a CODE blocke
   if( Q->stat==0 ){
@@ -408,14 +438,31 @@ void generateCodeLogical( FILE* yyout, qMachine *Q, char op){
     Q->stat=1;
   }
 
-  fprintf(yyout,"\tR0=R0 %c R1;\t", op );
-  if(op=='*'){
-    fprintf(yyout,"// and generated\n" );
+  if( r2->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
+    rightR = newRegister( Q );
+    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right boolean\n",
+                rightR, 
+                getVarMemLabel( r2->typeVariable ), r2->address);
   }else{
-    fprintf(yyout,"// or generated\n" );
+    rightR = lastRegister( Q )-1;
+    fprintf(yyout,"\t//Right boolean already in R%d\n", rightR );
   }
 
-  //Free R1  
+  if( r1->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
+    leftR = newRegister( Q );
+    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value left boolean\n", 
+                    leftR,
+                    getVarMemLabel( r1->typeVariable ), r1->address);
+  }else{
+    leftR = lastRegister( Q )-2; // Register was saved in the prev to previous to last
+    fprintf(yyout,"\t//Left boolean already in R%d\n", leftR );
+  }
+
+
+  fprintf(yyout,"\tR%d=R%d%cR%d;\t\t//Evaluate expressions\n", leftR<rightR?leftR:rightR, 
+                leftR, op, rightR);
+
+  popRegister( Q ); // We free the greater register 
 }
 
 int generateCodeOpenWhile( FILE* yyout, qMachine *Q ){
@@ -448,7 +495,9 @@ void generateCodeEvaluateWhile( FILE* yyout, qMachine *Q, int outLabel ){
   fprintf(yyout,"\t// Evaluate while loop -> L:%d\n", outLabel-1 );
   
   // R0 contains the result of the expression
-  fprintf(yyout,"\tIF(R0 == 0) GT(%d);\t//Jump if 0\n", outLabel);
+  fprintf(yyout,"\tIF(R%d==0) GT(%d);\t//Jump if 0\n", lastRegister( Q )-1, outLabel);
+
+  
 }
 
 void generateCodeCloseWhile( FILE* yyout, qMachine *Q, int outLabel ){
@@ -478,7 +527,7 @@ void generateCodeEvaluateIf( FILE* yyout, qMachine *Q, int outLabel ){
   fprintf(yyout,"\t// Evaluate if block \n" );
   
   // R0 contains the result of the expression
-  fprintf(yyout,"\tIF(R0 == 0) GT(%d);\t//Jump if 0\n", outLabel);
+  fprintf(yyout,"\tIF(R%d==0) GT(%d);\t//Jump if 0\n", lastRegister( Q )-1,  outLabel);
 }
 
 void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ){
