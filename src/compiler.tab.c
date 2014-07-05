@@ -565,20 +565,20 @@ static const yytype_int16 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   173,   173,   169,   182,   195,   211,   213,   213,   218,
-     223,   224,   229,   265,   282,   303,   304,   309,   318,   319,
-     324,   325,   326,   327,   332,   333,   338,   339,   340,   341,
-     348,   349,   353,   361,   374,   382,   390,   391,   397,   396,
-     402,   407,   412,   407,   426,   427,   452,   480,   486,   493,
-     495,   500,   504,   509,   510,   515,   525,   526,   531,   536,
-     546,   531,   554,   559,   560,   559,   577,   578,   579,   580,
-     585,   590,   619,   628,   629,   634,   646,   658,   668,   679,
-     686,   693,   694,   695,   700,   725,   730,   741,   752,   760,
-     797,   804,   805,   833,   834,   835,   836,   837,   838,   843,
-     844,   849,   856,   857,   862,   866,   873,   874,   899,   927,
-     928,   929,   934,   935,   940,   956,   961,   970,   971,   976,
-     977,  1006,  1039,  1044,  1045,  1046,  1047,  1048,  1049,  1050,
-    1067,  1068,  1072,  1080,  1081
+       0,   168,   168,   164,   177,   190,   206,   208,   208,   213,
+     218,   219,   224,   260,   277,   298,   299,   304,   313,   314,
+     319,   320,   321,   322,   327,   328,   333,   334,   335,   336,
+     343,   344,   348,   356,   369,   377,   385,   386,   392,   391,
+     397,   402,   407,   402,   421,   422,   447,   475,   481,   488,
+     490,   495,   499,   504,   505,   510,   520,   521,   526,   531,
+     541,   526,   549,   554,   555,   554,   572,   573,   574,   575,
+     580,   585,   614,   623,   624,   629,   641,   653,   663,   674,
+     681,   688,   689,   690,   695,   720,   725,   736,   747,   755,
+     792,   799,   800,   828,   829,   830,   831,   832,   833,   838,
+     839,   844,   851,   852,   857,   861,   868,   869,   894,   922,
+     923,   924,   929,   930,   935,   951,   956,   965,   966,   971,
+     972,  1001,  1034,  1039,  1040,  1041,  1042,  1043,  1044,  1045,
+    1062,  1063,  1067,  1075,  1076
 };
 #endif
 
@@ -1697,7 +1697,7 @@ yyreduce:
         case 2:
 
 /* Line 1806 of yacc.c  */
-#line 173 "syntacticAnalyzer.y"
+#line 168 "syntacticAnalyzer.y"
     { 
 			fprintf( yyout, "CODE(%d)\nL 0:\n", Q.nextCodeNumber++ ); 
 			Q.stat = 1;
@@ -1707,7 +1707,7 @@ yyreduce:
   case 4:
 
 /* Line 1806 of yacc.c  */
-#line 183 "syntacticAnalyzer.y"
+#line 178 "syntacticAnalyzer.y"
     {
 			auxRegister = createRegister(	(yyvsp[(1) - (1)].regStruct)->key.id, (yyvsp[(1) - (1)].regStruct)->key.scope, 
 																		(yyvsp[(1) - (1)].regStruct)->typeSymbol, (yyvsp[(1) - (1)].regStruct)->typeVariable);
@@ -1725,7 +1725,7 @@ yyreduce:
   case 5:
 
 /* Line 1806 of yacc.c  */
-#line 196 "syntacticAnalyzer.y"
+#line 191 "syntacticAnalyzer.y"
     {
 			auxRegister = createRegister(	(yyvsp[(3) - (3)].regStruct)->key.id, (yyvsp[(3) - (3)].regStruct)->key.scope, 
 																		(yyvsp[(3) - (3)].regStruct)->typeSymbol, (yyvsp[(3) - (3)].regStruct)->typeVariable);
@@ -1743,28 +1743,28 @@ yyreduce:
   case 6:
 
 /* Line 1806 of yacc.c  */
-#line 211 "syntacticAnalyzer.y"
+#line 206 "syntacticAnalyzer.y"
     { (yyval.regStruct) = NULL; }
     break;
 
   case 7:
 
 /* Line 1806 of yacc.c  */
-#line 213 "syntacticAnalyzer.y"
+#line 208 "syntacticAnalyzer.y"
     {auxRegisterList = NULL;}
     break;
 
   case 8:
 
 /* Line 1806 of yacc.c  */
-#line 213 "syntacticAnalyzer.y"
+#line 208 "syntacticAnalyzer.y"
     { (yyval.regStruct) = auxRegisterList;  }
     break;
 
   case 12:
 
 /* Line 1806 of yacc.c  */
-#line 230 "syntacticAnalyzer.y"
+#line 225 "syntacticAnalyzer.y"
     { 
 		errorCode = checkAssignmentType((yyvsp[(1) - (4)].regStruct), (yyvsp[(3) - (4)].regStruct));
 
@@ -1802,7 +1802,7 @@ yyreduce:
   case 13:
 
 /* Line 1806 of yacc.c  */
-#line 268 "syntacticAnalyzer.y"
+#line 263 "syntacticAnalyzer.y"
     {
 		// Get register of the identifier
 		auxRegister = getSymbol(&sT, (yyvsp[(2) - (7)].string), sT.currentScope);
@@ -1818,7 +1818,7 @@ yyreduce:
   case 14:
 
 /* Line 1806 of yacc.c  */
-#line 284 "syntacticAnalyzer.y"
+#line 279 "syntacticAnalyzer.y"
     {
 		errorCode = checkIfNumeric(errorString, (yyvsp[(2) - (4)].regStruct), 5);
 		if(errorCode && (yyvsp[(2) - (4)].regStruct)->typeVariable!=Void){ // others have Void as varaible type
@@ -1839,7 +1839,7 @@ yyreduce:
   case 17:
 
 /* Line 1806 of yacc.c  */
-#line 310 "syntacticAnalyzer.y"
+#line 305 "syntacticAnalyzer.y"
     {
 		auxRegister = createRegister( (yyvsp[(1) - (6)].string), sT.currentScope,  Field, (yyvsp[(4) - (6)].typeVariable) ); 
 	  addRegisterToList( &auxRegisterList, auxRegister );
@@ -1849,14 +1849,14 @@ yyreduce:
   case 28:
 
 /* Line 1806 of yacc.c  */
-#line 340 "syntacticAnalyzer.y"
+#line 335 "syntacticAnalyzer.y"
     { /*destroyRegister( $1 );*/ }
     break;
 
   case 29:
 
 /* Line 1806 of yacc.c  */
-#line 342 "syntacticAnalyzer.y"
+#line 337 "syntacticAnalyzer.y"
     { markSubprogramAsDefined( (yyvsp[(1) - (1)].regStruct) );
 		//destroyRegister( $1 ); 
 	  }
@@ -1865,7 +1865,7 @@ yyreduce:
   case 32:
 
 /* Line 1806 of yacc.c  */
-#line 354 "syntacticAnalyzer.y"
+#line 349 "syntacticAnalyzer.y"
     {			
 			errorCode = checkIfDiscreteChoice(errorString, (yyvsp[(1) - (1)].regStruct));
 			if(errorCode){
@@ -1878,7 +1878,7 @@ yyreduce:
   case 33:
 
 /* Line 1806 of yacc.c  */
-#line 362 "syntacticAnalyzer.y"
+#line 357 "syntacticAnalyzer.y"
     {
 			generateAnonymousId();
 			auxRegister = createRegister( anonymousIdString, 
@@ -1892,7 +1892,7 @@ yyreduce:
   case 34:
 
 /* Line 1806 of yacc.c  */
-#line 375 "syntacticAnalyzer.y"
+#line 370 "syntacticAnalyzer.y"
     {
 			errorCode = checkIfOthers(errorString, (yyvsp[(1) - (3)].regStruct), (yyvsp[(3) - (3)].regStruct));
 			if(errorCode){
@@ -1905,7 +1905,7 @@ yyreduce:
   case 35:
 
 /* Line 1806 of yacc.c  */
-#line 383 "syntacticAnalyzer.y"
+#line 378 "syntacticAnalyzer.y"
     {
 			(yyval.regStruct) = (yyvsp[(1) - (1)].regStruct);
 		}
@@ -1914,7 +1914,7 @@ yyreduce:
   case 38:
 
 /* Line 1806 of yacc.c  */
-#line 397 "syntacticAnalyzer.y"
+#line 392 "syntacticAnalyzer.y"
     { fprintf(yyout,"\t//////////////////////////////////\n");
 			fprintf(yyout,"\t// Open else block \n");
 
@@ -1924,7 +1924,7 @@ yyreduce:
   case 41:
 
 /* Line 1806 of yacc.c  */
-#line 407 "syntacticAnalyzer.y"
+#line 402 "syntacticAnalyzer.y"
     { fprintf(yyout,"\t//////////////////////////////////\n");
   				fprintf(yyout,"\t// Open elsif block \n");
 					(yyval.integer)=Q.nextLabel++;
@@ -1934,7 +1934,7 @@ yyreduce:
   case 42:
 
 /* Line 1806 of yacc.c  */
-#line 412 "syntacticAnalyzer.y"
+#line 407 "syntacticAnalyzer.y"
     { 
 			errorCode = checkIfNumeric(errorString, (yyvsp[(4) - (5)].regStruct), 3);
 			if(errorCode){
@@ -1948,21 +1948,21 @@ yyreduce:
   case 43:
 
 /* Line 1806 of yacc.c  */
-#line 422 "syntacticAnalyzer.y"
+#line 417 "syntacticAnalyzer.y"
     { generateCodeNextIf( yyout, &Q, (yyvsp[(2) - (8)].integer) ); }
     break;
 
   case 44:
 
 /* Line 1806 of yacc.c  */
-#line 426 "syntacticAnalyzer.y"
+#line 421 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 45:
 
 /* Line 1806 of yacc.c  */
-#line 428 "syntacticAnalyzer.y"
+#line 423 "syntacticAnalyzer.y"
     {
 			errorCode = checkIfNumeric(errorString, (yyvsp[(1) - (3)].regStruct), 3);
 			if(errorCode){
@@ -1992,7 +1992,7 @@ yyreduce:
   case 46:
 
 /* Line 1806 of yacc.c  */
-#line 453 "syntacticAnalyzer.y"
+#line 448 "syntacticAnalyzer.y"
     {
 			errorCode = checkIfNumeric(errorString, (yyvsp[(1) - (3)].regStruct), 3);
 			if(errorCode){
@@ -2022,7 +2022,7 @@ yyreduce:
   case 47:
 
 /* Line 1806 of yacc.c  */
-#line 481 "syntacticAnalyzer.y"
+#line 476 "syntacticAnalyzer.y"
     {
 		addRegisterToList( &auxRegisterList, (yyvsp[(2) - (3)].regStruct) );
 		(yyval.regStruct) = auxRegisterList;
@@ -2032,7 +2032,7 @@ yyreduce:
   case 48:
 
 /* Line 1806 of yacc.c  */
-#line 486 "syntacticAnalyzer.y"
+#line 481 "syntacticAnalyzer.y"
     {
 		(yyval.regStruct) = NULL;
 	}
@@ -2041,21 +2041,21 @@ yyreduce:
   case 49:
 
 /* Line 1806 of yacc.c  */
-#line 493 "syntacticAnalyzer.y"
+#line 488 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 50:
 
 /* Line 1806 of yacc.c  */
-#line 495 "syntacticAnalyzer.y"
+#line 490 "syntacticAnalyzer.y"
     { yyerror("Incomplete factor"); (yyval.regStruct) = (yyvsp[(2) - (2)].regStruct); }
     break;
 
   case 51:
 
 /* Line 1806 of yacc.c  */
-#line 501 "syntacticAnalyzer.y"
+#line 496 "syntacticAnalyzer.y"
     { 
 		(yyval.regStruct) = auxRegisterList; 
 	}
@@ -2064,14 +2064,14 @@ yyreduce:
   case 52:
 
 /* Line 1806 of yacc.c  */
-#line 504 "syntacticAnalyzer.y"
+#line 499 "syntacticAnalyzer.y"
     { (yyval.regStruct) = NULL; }
     break;
 
   case 55:
 
 /* Line 1806 of yacc.c  */
-#line 516 "syntacticAnalyzer.y"
+#line 511 "syntacticAnalyzer.y"
     { 
 		auxRegister = createRegister( (yyvsp[(2) - (5)].string), sT.currentScope,  Function, (yyvsp[(5) - (5)].typeVariable) ); 
 	  addRegister( &sT, auxRegister );
@@ -2082,7 +2082,7 @@ yyreduce:
   case 58:
 
 /* Line 1806 of yacc.c  */
-#line 531 "syntacticAnalyzer.y"
+#line 526 "syntacticAnalyzer.y"
     {  fprintf(yyout,"\t//////////////////////////////////\n");
   			fprintf(yyout,"\t// Open if block \n");
 				(yyval.integer)=Q.nextLabel++; 
@@ -2092,7 +2092,7 @@ yyreduce:
   case 59:
 
 /* Line 1806 of yacc.c  */
-#line 536 "syntacticAnalyzer.y"
+#line 531 "syntacticAnalyzer.y"
     { 
 			errorCode = checkIfNumeric(errorString, (yyvsp[(4) - (5)].regStruct), 3);
 			if(errorCode){
@@ -2106,28 +2106,28 @@ yyreduce:
   case 60:
 
 /* Line 1806 of yacc.c  */
-#line 546 "syntacticAnalyzer.y"
+#line 541 "syntacticAnalyzer.y"
     { generateCodeNextIf( yyout, &Q, (yyvsp[(2) - (8)].integer) ); }
     break;
 
   case 63:
 
 /* Line 1806 of yacc.c  */
-#line 559 "syntacticAnalyzer.y"
+#line 554 "syntacticAnalyzer.y"
     { (yyval.integer)=generateCodeOpenWhile( yyout, &Q ); }
     break;
 
   case 64:
 
 /* Line 1806 of yacc.c  */
-#line 560 "syntacticAnalyzer.y"
+#line 555 "syntacticAnalyzer.y"
     { generateCodeEvaluateWhile( yyout, &Q, (yyvsp[(2) - (5)].integer) ); }
     break;
 
   case 65:
 
 /* Line 1806 of yacc.c  */
-#line 564 "syntacticAnalyzer.y"
+#line 559 "syntacticAnalyzer.y"
     {
 		errorCode = checkIfNumeric(errorString, (yyvsp[(4) - (11)].regStruct), 4);
 		if(errorCode){
@@ -2142,35 +2142,35 @@ yyreduce:
   case 66:
 
 /* Line 1806 of yacc.c  */
-#line 577 "syntacticAnalyzer.y"
+#line 572 "syntacticAnalyzer.y"
     { (yyval.typeSymbol) = Out; }
     break;
 
   case 67:
 
 /* Line 1806 of yacc.c  */
-#line 578 "syntacticAnalyzer.y"
+#line 573 "syntacticAnalyzer.y"
     { (yyval.typeSymbol) = InOut; }
     break;
 
   case 68:
 
 /* Line 1806 of yacc.c  */
-#line 579 "syntacticAnalyzer.y"
+#line 574 "syntacticAnalyzer.y"
     { (yyval.typeSymbol) = In; }
     break;
 
   case 69:
 
 /* Line 1806 of yacc.c  */
-#line 580 "syntacticAnalyzer.y"
+#line 575 "syntacticAnalyzer.y"
     { (yyval.typeSymbol) = In; }
     break;
 
   case 71:
 
 /* Line 1806 of yacc.c  */
-#line 591 "syntacticAnalyzer.y"
+#line 586 "syntacticAnalyzer.y"
     { 
 		auxRegister = createRegister( (yyvsp[(1) - (7)].string), sT.currentScope,  Variable, (yyvsp[(5) - (7)].typeVariable) ); 
 	  errorCode = addRegister( &sT, auxRegister ); 
@@ -2200,7 +2200,7 @@ yyreduce:
   case 72:
 
 /* Line 1806 of yacc.c  */
-#line 620 "syntacticAnalyzer.y"
+#line 615 "syntacticAnalyzer.y"
     { 
 		auxRegister = createRegister( (yyvsp[(1) - (6)].string), sT.currentScope,  (yyvsp[(4) - (6)].typeSymbol), (yyvsp[(5) - (6)].typeVariable) ); 
 	  addRegisterToList( &auxRegisterList, auxRegister ); 
@@ -2210,7 +2210,7 @@ yyreduce:
   case 75:
 
 /* Line 1806 of yacc.c  */
-#line 634 "syntacticAnalyzer.y"
+#line 629 "syntacticAnalyzer.y"
     { generateAnonymousId();
 
 										auxRegister = createRegister( anonymousIdString, 
@@ -2228,7 +2228,7 @@ yyreduce:
   case 76:
 
 /* Line 1806 of yacc.c  */
-#line 646 "syntacticAnalyzer.y"
+#line 641 "syntacticAnalyzer.y"
     { generateAnonymousId();
 
 												auxRegister = createRegister( anonymousIdString, 
@@ -2246,7 +2246,7 @@ yyreduce:
   case 77:
 
 /* Line 1806 of yacc.c  */
-#line 658 "syntacticAnalyzer.y"
+#line 653 "syntacticAnalyzer.y"
     { auxRegister = createRegister( anonymousIdString, 
 																											sT.currentScope, Literal, 
 																											Character
@@ -2262,7 +2262,7 @@ yyreduce:
   case 78:
 
 /* Line 1806 of yacc.c  */
-#line 668 "syntacticAnalyzer.y"
+#line 663 "syntacticAnalyzer.y"
     { generateAnonymousId();
 												auxRegister = createRegister( anonymousIdString, 
 																											sT.currentScope, Literal, 
@@ -2279,7 +2279,7 @@ yyreduce:
   case 79:
 
 /* Line 1806 of yacc.c  */
-#line 679 "syntacticAnalyzer.y"
+#line 674 "syntacticAnalyzer.y"
     {	
 												auxRegister = createRegister( anonymousIdString, 
 																											sT.currentScope, Literal, 
@@ -2292,7 +2292,7 @@ yyreduce:
   case 80:
 
 /* Line 1806 of yacc.c  */
-#line 686 "syntacticAnalyzer.y"
+#line 681 "syntacticAnalyzer.y"
     { generateAnonymousId();
 												auxRegister = createRegister( anonymousIdString, 
 																											sT.currentScope, Literal, 
@@ -2305,28 +2305,28 @@ yyreduce:
   case 81:
 
 /* Line 1806 of yacc.c  */
-#line 693 "syntacticAnalyzer.y"
+#line 688 "syntacticAnalyzer.y"
     {	(yyval.regStruct) = (yyvsp[(1) - (1)].regStruct);	}
     break;
 
   case 82:
 
 /* Line 1806 of yacc.c  */
-#line 694 "syntacticAnalyzer.y"
+#line 689 "syntacticAnalyzer.y"
     {	(yyval.regStruct) = (yyvsp[(1) - (1)].regStruct);	}
     break;
 
   case 83:
 
 /* Line 1806 of yacc.c  */
-#line 695 "syntacticAnalyzer.y"
+#line 690 "syntacticAnalyzer.y"
     {	(yyval.regStruct) = (yyvsp[(2) - (3)].regStruct);	}
     break;
 
   case 84:
 
 /* Line 1806 of yacc.c  */
-#line 701 "syntacticAnalyzer.y"
+#line 696 "syntacticAnalyzer.y"
     { 
 		//printf( "line %d -- id '%s' -- scope %d\n", line, $1, sT.currentScope );
 		
@@ -2355,7 +2355,7 @@ yyreduce:
   case 85:
 
 /* Line 1806 of yacc.c  */
-#line 726 "syntacticAnalyzer.y"
+#line 721 "syntacticAnalyzer.y"
     {
 			// Generate code
 			generateCodePutStringLiteral( yyout, &Q, (yyvsp[(3) - (5)].string) );
@@ -2365,7 +2365,7 @@ yyreduce:
   case 86:
 
 /* Line 1806 of yacc.c  */
-#line 731 "syntacticAnalyzer.y"
+#line 726 "syntacticAnalyzer.y"
     { 
 			errorCode = checkPutGet( errorString, (yyvsp[(3) - (5)].regStruct) );
 		  if ( errorCode!=0 ){
@@ -2381,7 +2381,7 @@ yyreduce:
   case 87:
 
 /* Line 1806 of yacc.c  */
-#line 742 "syntacticAnalyzer.y"
+#line 737 "syntacticAnalyzer.y"
     { 
 			errorCode = checkPutGet( errorString, (yyvsp[(3) - (5)].regStruct) );
 		  if ( errorCode!=0 ){
@@ -2397,7 +2397,7 @@ yyreduce:
   case 88:
 
 /* Line 1806 of yacc.c  */
-#line 753 "syntacticAnalyzer.y"
+#line 748 "syntacticAnalyzer.y"
     {
 			generateCodeNewLine( yyout, &Q );
 		}
@@ -2406,7 +2406,7 @@ yyreduce:
   case 89:
 
 /* Line 1806 of yacc.c  */
-#line 761 "syntacticAnalyzer.y"
+#line 756 "syntacticAnalyzer.y"
     { auxRegister = createRegister( (yyvsp[(2) - (3)].string), sT.currentScope,  Procedure, Void ); 
 	  if ( addRegister( &sT, auxRegister ) ) { // Procedure has been already specified, but not defined
 	  	free(auxRegister);
@@ -2444,14 +2444,14 @@ yyreduce:
   case 91:
 
 /* Line 1806 of yacc.c  */
-#line 804 "syntacticAnalyzer.y"
+#line 799 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 92:
 
 /* Line 1806 of yacc.c  */
-#line 806 "syntacticAnalyzer.y"
+#line 801 "syntacticAnalyzer.y"
     {	//yyerror("Incomple simple expression");
 			errorCode = checkIfNumeric(errorString, (yyvsp[(1) - (3)].regStruct), 2);
 			if(errorCode){
@@ -2480,49 +2480,49 @@ yyreduce:
   case 93:
 
 /* Line 1806 of yacc.c  */
-#line 833 "syntacticAnalyzer.y"
+#line 828 "syntacticAnalyzer.y"
     { strcpy((yyval.string), "==");  }
     break;
 
   case 94:
 
 /* Line 1806 of yacc.c  */
-#line 834 "syntacticAnalyzer.y"
+#line 829 "syntacticAnalyzer.y"
     { strcpy((yyval.string), "<");  }
     break;
 
   case 95:
 
 /* Line 1806 of yacc.c  */
-#line 835 "syntacticAnalyzer.y"
+#line 830 "syntacticAnalyzer.y"
     { strcpy((yyval.string), ">");  }
     break;
 
   case 96:
 
 /* Line 1806 of yacc.c  */
-#line 836 "syntacticAnalyzer.y"
+#line 831 "syntacticAnalyzer.y"
     { strcpy((yyval.string), "!="); }
     break;
 
   case 97:
 
 /* Line 1806 of yacc.c  */
-#line 837 "syntacticAnalyzer.y"
+#line 832 "syntacticAnalyzer.y"
     { strcpy((yyval.string), (yyvsp[(1) - (1)].string)); }
     break;
 
   case 98:
 
 /* Line 1806 of yacc.c  */
-#line 838 "syntacticAnalyzer.y"
+#line 833 "syntacticAnalyzer.y"
     { strcpy((yyval.string), (yyvsp[(1) - (1)].string)); }
     break;
 
   case 104:
 
 /* Line 1806 of yacc.c  */
-#line 863 "syntacticAnalyzer.y"
+#line 858 "syntacticAnalyzer.y"
     {
 			(yyval.regStruct) = (yyvsp[(2) - (2)].regStruct);
 		}
@@ -2531,7 +2531,7 @@ yyreduce:
   case 105:
 
 /* Line 1806 of yacc.c  */
-#line 867 "syntacticAnalyzer.y"
+#line 862 "syntacticAnalyzer.y"
     {
 			(yyval.regStruct) = (yyvsp[(1) - (1)].regStruct);
 		}
@@ -2540,14 +2540,14 @@ yyreduce:
   case 106:
 
 /* Line 1806 of yacc.c  */
-#line 873 "syntacticAnalyzer.y"
+#line 868 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 107:
 
 /* Line 1806 of yacc.c  */
-#line 875 "syntacticAnalyzer.y"
+#line 870 "syntacticAnalyzer.y"
     {
 			errorCode = checkIfNumeric(errorString, (yyvsp[(1) - (3)].regStruct), 1);
 			if(errorCode){
@@ -2577,7 +2577,7 @@ yyreduce:
   case 108:
 
 /* Line 1806 of yacc.c  */
-#line 900 "syntacticAnalyzer.y"
+#line 895 "syntacticAnalyzer.y"
     {
 			errorCode = checkIfNumeric(errorString, (yyvsp[(1) - (3)].regStruct), 1);
 			if(errorCode){
@@ -2607,7 +2607,7 @@ yyreduce:
   case 114:
 
 /* Line 1806 of yacc.c  */
-#line 941 "syntacticAnalyzer.y"
+#line 936 "syntacticAnalyzer.y"
     {
 		enterScope ( &sT );
 
@@ -2624,42 +2624,42 @@ yyreduce:
   case 115:
 
 /* Line 1806 of yacc.c  */
-#line 960 "syntacticAnalyzer.y"
+#line 955 "syntacticAnalyzer.y"
     { exitScope ( &sT ); (yyval.regStruct) = (yyvsp[(1) - (7)].regStruct); }
     break;
 
   case 116:
 
 /* Line 1806 of yacc.c  */
-#line 965 "syntacticAnalyzer.y"
+#line 960 "syntacticAnalyzer.y"
     { exitScope ( &sT ); (yyval.regStruct) = (yyvsp[(1) - (6)].regStruct); }
     break;
 
   case 117:
 
 /* Line 1806 of yacc.c  */
-#line 970 "syntacticAnalyzer.y"
+#line 965 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 118:
 
 /* Line 1806 of yacc.c  */
-#line 971 "syntacticAnalyzer.y"
+#line 966 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 119:
 
 /* Line 1806 of yacc.c  */
-#line 976 "syntacticAnalyzer.y"
+#line 971 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 120:
 
 /* Line 1806 of yacc.c  */
-#line 978 "syntacticAnalyzer.y"
+#line 973 "syntacticAnalyzer.y"
     { 
 			errorCode = checkIfNumeric(errorString, (yyvsp[(3) - (3)].regStruct), 0);
 			if(errorCode) {
@@ -2693,7 +2693,7 @@ yyreduce:
   case 121:
 
 /* Line 1806 of yacc.c  */
-#line 1007 "syntacticAnalyzer.y"
+#line 1002 "syntacticAnalyzer.y"
     { 
 			errorCode = checkIfNumeric(errorString, (yyvsp[(3) - (3)].regStruct), 0);
 			if(errorCode) {
@@ -2727,49 +2727,49 @@ yyreduce:
   case 123:
 
 /* Line 1806 of yacc.c  */
-#line 1044 "syntacticAnalyzer.y"
+#line 1039 "syntacticAnalyzer.y"
     { (yyval.typeVariable) = Integer; }
     break;
 
   case 124:
 
 /* Line 1806 of yacc.c  */
-#line 1045 "syntacticAnalyzer.y"
+#line 1040 "syntacticAnalyzer.y"
     { (yyval.typeVariable) = Real; }
     break;
 
   case 125:
 
 /* Line 1806 of yacc.c  */
-#line 1046 "syntacticAnalyzer.y"
+#line 1041 "syntacticAnalyzer.y"
     { (yyval.typeVariable) = Character; }
     break;
 
   case 126:
 
 /* Line 1806 of yacc.c  */
-#line 1047 "syntacticAnalyzer.y"
+#line 1042 "syntacticAnalyzer.y"
     { (yyval.typeVariable) = Bool; }
     break;
 
   case 127:
 
 /* Line 1806 of yacc.c  */
-#line 1048 "syntacticAnalyzer.y"
+#line 1043 "syntacticAnalyzer.y"
     { (yyval.typeVariable) = ArrayVariable; }
     break;
 
   case 128:
 
 /* Line 1806 of yacc.c  */
-#line 1049 "syntacticAnalyzer.y"
+#line 1044 "syntacticAnalyzer.y"
     { (yyval.typeVariable) = Record; }
     break;
 
   case 129:
 
 /* Line 1806 of yacc.c  */
-#line 1051 "syntacticAnalyzer.y"
+#line 1046 "syntacticAnalyzer.y"
     { 
 			auxRegister = getSymbol(&sT, (yyvsp[(1) - (1)].string), sT.currentScope);
 
@@ -2787,7 +2787,7 @@ yyreduce:
   case 132:
 
 /* Line 1806 of yacc.c  */
-#line 1072 "syntacticAnalyzer.y"
+#line 1067 "syntacticAnalyzer.y"
     { auxRegister = getSymbol(&sT, (yyvsp[(1) - (1)].string), sT.currentScope);
 							 /* check if variable really exists */
 							if(auxRegister == NULL){
@@ -2801,14 +2801,14 @@ yyreduce:
   case 133:
 
 /* Line 1806 of yacc.c  */
-#line 1080 "syntacticAnalyzer.y"
+#line 1075 "syntacticAnalyzer.y"
     { yyerror("Incomplete! -> indexed_component in variable"); YYABORT; (yyval.regStruct) = NULL; }
     break;
 
   case 134:
 
 /* Line 1806 of yacc.c  */
-#line 1081 "syntacticAnalyzer.y"
+#line 1076 "syntacticAnalyzer.y"
     { yyerror("Incomplete! -> selected_component in variable"); YYABORT; (yyval.regStruct) = NULL; }
     break;
 
@@ -3046,7 +3046,7 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 1084 "syntacticAnalyzer.y"
+#line 1079 "syntacticAnalyzer.y"
 
 
 //Codigo C adicional

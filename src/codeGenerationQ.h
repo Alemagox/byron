@@ -106,4 +106,8 @@ int popRegister( qMachine *Q );
 
 int lastRegister( qMachine *Q );
 
+int pushRstack( FILE* yyout, int r );
+
+int popRstack( FILE* yyout, int r );
+
 #endif

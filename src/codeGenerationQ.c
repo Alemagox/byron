@@ -146,16 +146,23 @@ void generateCodePutStringLiteral( FILE* yyout, qMachine *Q, char string[] ){
   fprintf(yyout,"\t/////////////////////////\n");
   fprintf(yyout,"\t// Print string literal\n");
   
+  // Save R0, R1 and R2
+  pushRstack( yyout, 0 );
+  pushRstack( yyout, 1 );
+  pushRstack( yyout, 2 );
+
   // Print string!!!
-  //fprintf(yyout,"\tR2=R0;\t\t\t//String literal address\n", Q->nextLabel);
-  fprintf(yyout,"\tR0=%d;\t\t\t//Return label\n", Q->nextLabel);
-  fprintf(yyout,"\tR1=0x%x;\t\t//Format string address\n", Q->formatPutStringAddress );
+  fprintf(yyout,"\tR0=%d;\t\t\t\t//Return label\n", Q->nextLabel);
+  fprintf(yyout,"\tR1=0x%x;\t\t\t//Format string address\n", Q->formatPutStringAddress );
   fprintf(yyout,"\tR2=0x%x;\t\t\t//String literal address\n", Q->Ztop);
-  fprintf(yyout,"\tGT(putfs_);\t\t//Print string literal\n" );
+  fprintf(yyout,"\tGT(putfs_);\t\t\t//Print string literal\n" );
 
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
 
   // Recover R0, R1 and R2
+  popRstack( yyout, 2 );
+  popRstack( yyout, 1 );
+  popRstack( yyout, 0 );
 
   fprintf(yyout,"\t// End of Print string literal\n");
   fprintf(yyout,"\t//////////////////////////////////\n");
@@ -174,23 +181,29 @@ void generateCodePutVariable( FILE* yyout, qMachine *Q, registerStruct *r ){
   fprintf(yyout,"\t// Print variable '%s', scope %d\n",
           r->key.id, r->key.scope
          );
-
   // Save R0, R1 and R2
+  pushRstack( yyout, 0 );
+  pushRstack( yyout, 1 );
+  pushRstack( yyout, 2 );
 
   // Print variable!!!
-  fprintf(yyout,"\tR0=%d;\t\t\t//Return label\n", Q->nextLabel);
+  fprintf(yyout,"\tR0=%d;\t\t\t\t//Return label\n", Q->nextLabel);
   if( r->typeVariable == Character ){
-    fprintf(yyout,"\tR1=0x%x;\t\t//Format char address\n", Q->formatPutCharAddress );
+    fprintf(yyout,"\tR1=0x%x;\t\t\t//Format char address\n", Q->formatPutCharAddress );
   }else{
-    fprintf(yyout,"\tR1=0x%x;\t\t//Format int address\n", Q->formatPutIntAddress );
+    fprintf(yyout,"\tR1=0x%x;\t\t\t//Format int address\n", Q->formatPutIntAddress );
   }
   fprintf(yyout,"\tR2=%c(0x%x);\t\t//Variable value\n", 
                 getVarMemLabel( r->typeVariable ), r->address);
-  fprintf(yyout,"\tGT(putfi_);\t\t//Print variable\n" );
+  fprintf(yyout,"\tGT(putfi_);\t\t\t//Print variable\n" );
 
 
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
   // Recover R0, R1 and R2
+  // Save R0, R1 and R2
+  popRstack( yyout, 2 );
+  popRstack( yyout, 1 );
+  popRstack( yyout, 0 );
 
   fprintf(yyout,"\t// End of Print variable '%s', scope %d\n",
           r->key.id, r->key.scope
@@ -211,16 +224,21 @@ void generateCodeNewLine( FILE* yyout, qMachine *Q ){
   fprintf(yyout,"\t// Print New_Line\n" );
 
   // Recover R0, R1
+  pushRstack( yyout, 0 );
+  pushRstack( yyout, 1 );
 
   // Print variable!!!
-  fprintf(yyout,"\tR0=%d;\t\t\t//Return label\n", Q->nextLabel);
-  fprintf(yyout,"\tR1=0x%x;\t\t//Format New_Line address\n", Q->formatNewLineAddress );
-  fprintf(yyout,"\tGT(putnl_);\t\t//Print variable\n" );
+  fprintf(yyout,"\tR0=%d;\t\t\t\t//Return label\n", Q->nextLabel);
+  fprintf(yyout,"\tR1=0x%x;\t\t\t//Format New_Line address\n", Q->formatNewLineAddress );
+  fprintf(yyout,"\tGT(putnl_);\t\t\t//Print variable\n" );
 
 
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
 
   // Recover R0, R1
+  popRstack( yyout, 1 );
+  popRstack( yyout, 0 );
+
   fprintf(yyout,"\t// End of New_Line\n");
   fprintf(yyout,"\t//////////////////////////////////\n");
 }
@@ -240,6 +258,9 @@ void generateCodeGetVariable( FILE* yyout, qMachine *Q, registerStruct *r ){
          );
 
   // Save R0, R1 and R2
+  pushRstack( yyout, 0 );
+  pushRstack( yyout, 1 );
+  pushRstack( yyout, 2 );
 
   // Print variable!!!
   fprintf(yyout,"\tR0=%d;\t\t\t//Return label\n", Q->nextLabel);
@@ -253,7 +274,11 @@ void generateCodeGetVariable( FILE* yyout, qMachine *Q, registerStruct *r ){
   }
 
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+
   // Recover R0, R1 and R2
+  popRstack( yyout, 2 );
+  popRstack( yyout, 1 );
+  popRstack( yyout, 0 );
 
   fprintf(yyout,"\t// End of Get variable '%s', scope %d\n",
           r->key.id, r->key.scope
@@ -529,7 +554,7 @@ void generateCodeEvaluateIf( FILE* yyout, qMachine *Q, int outLabel ){
   // R0 contains the result of the expression
   fprintf(yyout,"\tIF(R%d==0) GT(%d);\t//Jump if 0\n", lastRegister( Q )-1,  outLabel);
 
-  
+
 }
 
 void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ){
@@ -605,4 +630,19 @@ int popRegister( qMachine *Q ){
   //int r=Q->lastRstack;
 
   return --Q->lastRstack;
+}
+
+int pushRstack( FILE* yyout, int r ){
+  fprintf(yyout,"\tR7=R7-4;\t\t\t//Save space for register R%d\n", r);
+  fprintf(yyout,"\tI(R7)=R%d;\t\t\t//R%d saved\n", r, r);
+
+  return 0;
+}
+
+int popRstack( FILE* yyout, int r ){
+
+  fprintf(yyout,"\tR%d=I(R7);\t\t\t//R%d recovered\n", r, r);
+  fprintf(yyout,"\tR7=R7+4;\t\t\t//Free space for register R%d\n", r);
+
+  return 0;
 }
