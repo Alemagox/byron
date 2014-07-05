@@ -280,7 +280,7 @@ void generateCodeAssignment( FILE* yyout, qMachine *Q, registerStruct *r1,
     //fprintf(yyout,"\tR1=R0;\t\t//Load value right side\n" );
   }else{
     fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right side\n", 
-                lastRegister( Q )-1, getVarMemLabel( r2->typeVariable ), r2->address);
+                newRegister( Q ), getVarMemLabel( r2->typeVariable ), r2->address);
   }
   
   fprintf(yyout,"\t%c(0x%x)=R%d;\t\t//Save value right side into variable\n", 
@@ -497,7 +497,7 @@ void generateCodeEvaluateWhile( FILE* yyout, qMachine *Q, int outLabel ){
   // R0 contains the result of the expression
   fprintf(yyout,"\tIF(R%d==0) GT(%d);\t//Jump if 0\n", lastRegister( Q )-1, outLabel);
 
-  
+
 }
 
 void generateCodeCloseWhile( FILE* yyout, qMachine *Q, int outLabel ){
@@ -528,6 +528,8 @@ void generateCodeEvaluateIf( FILE* yyout, qMachine *Q, int outLabel ){
   
   // R0 contains the result of the expression
   fprintf(yyout,"\tIF(R%d==0) GT(%d);\t//Jump if 0\n", lastRegister( Q )-1,  outLabel);
+
+  
 }
 
 void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ){

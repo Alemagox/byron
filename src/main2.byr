@@ -7,9 +7,9 @@ procedure main is
   i : Integer;
   c : Character;
 begin
-
+  c := '4';
   --i := 2*12-2*(5+5)/(2-1);
-  i := 1>4 or 2<3 and 1>4;
+  i := c = '3' or c <= '7' and c >= '5';
   Put("Result = ");
   Put(i);
   New_Line;

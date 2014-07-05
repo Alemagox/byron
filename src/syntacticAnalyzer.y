@@ -98,7 +98,8 @@ void generateAnonymousId();
 // Setting operators precedence
 %left '+' '-' 
 %left '*' '/'
-%left OR AND
+%left OR 
+%left AND
 
 // Built in functions
 %token PUT
@@ -126,8 +127,6 @@ void generateAnonymousId();
 %type <regStruct>			actual_parameter_list
 %type <regStruct>			actual_parameter_part
 %type <regStruct>			assignment_statement
-//%type <regStruct>		 	binary_adding_list
-//%type <op>						binary_adding_operator
 %type <regStruct>			discrete_choice
 %type <regStruct>			discrete_choice_list
 %type <regStruct>			expression
@@ -135,13 +134,10 @@ void generateAnonymousId();
 %type <regStruct>			factor
 %type <regStruct>			formal_part
 %type <regStruct>			function_specification
-//%type <op>						logical_operator
 %type <typeSymbol>		mode
-//%type <op>						multiplying_operator
 %type <regStruct>			primary 
 %type <regStruct>			procedure_specification 
 %type <regStruct>			relation
-//%type <regStruct>			relation_list
 %type <string>				relational_operator
 %type <regStruct>			simple_expression
 %type <regStruct>			simple_expression_
@@ -205,26 +201,6 @@ actual_parameter_list :
 			//$$ = auxRegisterList;
 		}
 	;
-
-/*
-actual_parameter_list : 
-	expression expression_list
-	{ 
-		/*
-		printf("!¡!¡ - actual_parameter_list. Line: %d\n", line);
-		printSymbolsTable(sT);
-		printf("\n");
-		addRegisterToList( &auxRegisterList, $1 );
-		printf("\n");
-		printSymbolsTable(sT);
-		printf("\n");
-		
-
-		addRegisterToList( &auxRegisterList, $1 );
-		$$ = auxRegisterList;
-	}
-	;
-*/
 
 actual_parameter_part : 
 	'(' ')' { $$ = NULL; }
@@ -363,16 +339,6 @@ declarative_item :
 	  }
 	; 
 
-/*
-declarative_part : 
-	{ enterScope ( &sT ); } declarative_part_
-
-
-declarative_part_	:
-	 declarative_item declarative_part_
-	| /* empty */ /*
-	;
-*/
 declarative_part	:
 	 declarative_item declarative_part
 	| /* empty */ 
@@ -451,19 +417,6 @@ elsif_statement :
 		{ generateCodeNextIf( yyout, &Q, $<integer>2 ); }
 	;
 
-/*
-expression : 
-	relation { $<regStruct>$ = $1; } relation_list {
-
-		if($3->typeVariable == Void ){ // There's no list
-			$$ = $1;
-			destroyRegister($3);
-		}else {
-			$$ = $3;
-		}
-	}
-	;
-*/
 expression : 
 	relation { $<regStruct>$ = $1; } 
 	| expression AND expression
@@ -596,12 +549,6 @@ indexed_component :
 	IDENTIFIER '[' expression expression_list ']'
 	;
 
-/*
-logical_operator : 
-	AND   { $$ = '*'; };
-	| OR 	{ $$ = '+'; }
-	;
-*/
 
 loop_statement : 
 	WHILE 								{ $<integer>$=generateCodeOpenWhile( yyout, &Q ); }
@@ -628,12 +575,6 @@ mode :
 	| /* empty */ { $$ = In; }
 	;
 
-/*
-multiplying_operator : 
-	'*'   { $$='*'; }
-	| '/' { $$='/'; }
-	;
-*/
 
 null_statement : 
 	NULL_ ';'
@@ -882,46 +823,6 @@ relation :
 		}
 	;
 
-/*
-relation_list :
-	logical_operator 
-		{ fprintf(yyout,"\tR1=R0;\t\t\t//Saving R0 for relation call\n");; } 
-	relation 
-		{ 
-			$<regStruct>$ = $3; 
-
-			errorCode = checkIfNumeric(errorString, $3, 3);
-			if(errorCode){
-				yyerror(errorString);
-				YYABORT;
-			}
-
-			// Generate code for relation 
-			// R1 has the evaluation of the previous expression
-			generateCodeLogical( yyout, &Q, $1 );
-		}
-	relation_list
-	{
-
-		generateAnonymousId();
-		auxRegister = createRegister( anonymousIdString, 
-																	sT.currentScope, Auxiliar, 
-																	getFactorVariableType($<regStruct>-1, $3)
-																);	
-		if($3->typeSymbol==Auxiliar)destroyRegister($3);
-		$$ = auxRegister;
-	}
-	| // empty 
-		{
-			generateAnonymousId();
-			auxRegister = createRegister( anonymousIdString, 
-																		sT.currentScope, Auxiliar, 
-																		Void
-																	);	
-			$$ = auxRegister; 
-		}
-	;
-*/
 
 relational_operator : 
 	'='									{ strcpy($$, "==");  }
@@ -1065,44 +966,6 @@ subprogram_specification :
 	| function_specification { $<regStruct>$ = $1; }
 	;
 
-/*
-term : 
-	factor { $$ = $<regStruct>1; }
-	| term multiplying_operator factor 
-		{ 
-			errorCode = checkIfNumeric(errorString, $3, 0);
-			if(errorCode) {
-				printRegister(*$3);
-				yyerror(errorString);
-				YYABORT;
-			}
-
-			errorCode = checkIfNumeric(errorString, $1, 0);
-			if(errorCode){
-				printRegister(*$1);
-				yyerror(errorString);
-				YYABORT;
-			} 
-
-			getVariableTypeName(string1, $1->typeVariable);
-  		getVariableTypeName(string2, $3->typeVariable);
-  		//printf("4##########\n");
-  		//printf("####%s - %s\n", string1, string2);
-
-  		generateCodeMultiply( yyout, &Q, $1, $3, $2 );
-
-			generateAnonymousId();
-			auxRegister = createRegister( anonymousIdString, 
-																		sT.currentScope, Auxiliar, 
-																		getFactorVariableType($1, $3)
-																	);	
-			if($1->typeSymbol==Auxiliar) destroyRegister($1);
-			if($3->typeSymbol==Auxiliar) destroyRegister($3);
-
-			$$ = auxRegister;
-		}		
-	;
-*/
 
 term : 
 	factor { $$ = $1; }

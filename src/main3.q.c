@@ -17,8 +17,8 @@ STAT(1)
 CODE(1)			
 	//////////////////////////////////
 	// Assignment to variable 'c', scope 0
-	R1=U(0x11fe8);		//Load value right side
-	U(0x11fe9)=R1;		//Save value right side into variable
+	R0=U(0x11fe8);		//Load value right side
+	U(0x11fe9)=R0;		//Save value right side into variable
 	//////////////////////////////////
 	// Print variable 'c', scope 0
 	R0=1;			//Return label
@@ -26,179 +26,218 @@ CODE(1)
 	R2=U(0x11fe9);		//Variable value
 	GT(putfi_);		//Print variable
 L 1:				
+	// End of Print variable 'c', scope 0
+	//////////////////////////////////
 	//////////////////////////////////
 	// Print New_Line
 	R0=2;			//Return label
 	R1=0x11fee;		//Format New_Line address
 	GT(putnl_);		//Print variable
 L 2:				
+	// End of New_Line
+	//////////////////////////////////
 STAT(2)			
 	DAT(0x11fe4,I,3);	//Literal '3', scope 0 
 	DAT(0x11fe0,I,4);	//Literal '4', scope 0 
 CODE(2)			
 	//////////////////////////////////
-	// Multiply factors
-	R1=I(0x11fe4);		//Load value left factor
+	// Multilply factors
 	R0=I(0x11fe0);		//Load value right factor
+	R1=I(0x11fe4);		//Load value left factor
 	R0=R1*R0;		//Multiply factors
 	//////////////////////////////////
 	// Assignment to variable 'i', scope 0
-	R1=R0;		//Load value right side
-	I(0x11fea)=R1;		//Save value right side into variable
+	I(0x11fea)=R0;		//Save value right side into variable
+STAT(3)			
+	STR(0x11fd9, "3*4 = ");			
+CODE(3)			
 	/////////////////////////
 	// Print string literal
 	R0=3;			//Return label
-	R1=7;			//String length
-	GT(new_);		//Assign heap space for string literal
-L 3:				
-	R3=R0;			//Save the address in the heap of the string literal
-	//Start assigning string to heap
-	U(R3)=0x33;		//'3'
-	R3=R3+1;		
-	U(R3)=0x2a;		//'*'
-	R3=R3+1;		
-	U(R3)=0x34;		//'4'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x3d;		//'='
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x0;		//'\0'
-	//Finished assigning string to heap
-	R2=R0;			//String literal address
-	R0=4;			//Return label
 	R1=0x11ffd;		//Format string address
+	R2=0x11fd9;			//String literal address
 	GT(putfs_);		//Print string literal
-L 4:				
-	R0=5;			//Return label
-	R1=-6;			//String length
-	GT(free_);		//Free heap space for string literal
-L 5:				
+L 3:				
+	// End of Print string literal
+	//////////////////////////////////
 	//////////////////////////////////
 	// Print variable 'i', scope 0
-	R0=6;			//Return label
+	R0=4;			//Return label
 	R1=0x11ffa;		//Format int address
 	R2=I(0x11fea);		//Variable value
 	GT(putfi_);		//Print variable
-L 6:				
+L 4:				
+	// End of Print variable 'i', scope 0
+	//////////////////////////////////
 	//////////////////////////////////
 	// Print New_Line
-	R0=7;			//Return label
+	R0=5;			//Return label
 	R1=0x11fee;		//Format New_Line address
 	GT(putnl_);		//Print variable
-L 7:				
-STAT(3)			
-	DAT(0x11fdc,I,2);	//Literal '2', scope 0 
-CODE(3)			
+L 5:				
+	// End of New_Line
 	//////////////////////////////////
-	// Multiply factors
+STAT(4)			
+	DAT(0x11fd5,I,2);	//Literal '2', scope 0 
+CODE(4)			
+	//////////////////////////////////
+	// Multilply factors
+	R0=I(0x11fd5);		//Load value right factor
 	R1=I(0x11fea);		//Load value left factor
-	R0=I(0x11fdc);		//Load value right factor
 	R0=R1/R0;		//Multiply factors
 	//////////////////////////////////
 	// Assignment to variable 'i', scope 0
-	R1=R0;		//Load value right side
-	I(0x11fea)=R1;		//Save value right side into variable
+	I(0x11fea)=R0;		//Save value right side into variable
+STAT(5)			
+	STR(0x11fcd, "12/2 = ");			
+CODE(5)			
 	/////////////////////////
 	// Print string literal
-	R0=8;			//Return label
-	R1=8;			//String length
-	GT(new_);		//Assign heap space for string literal
-L 8:				
-	R3=R0;			//Save the address in the heap of the string literal
-	//Start assigning string to heap
-	U(R3)=0x31;		//'1'
-	R3=R3+1;		
-	U(R3)=0x32;		//'2'
-	R3=R3+1;		
-	U(R3)=0x2f;		//'/'
-	R3=R3+1;		
-	U(R3)=0x32;		//'2'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x3d;		//'='
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x0;		//'\0'
-	//Finished assigning string to heap
-	R2=R0;			//String literal address
-	R0=9;			//Return label
+	R0=6;			//Return label
 	R1=0x11ffd;		//Format string address
+	R2=0x11fcd;			//String literal address
 	GT(putfs_);		//Print string literal
-L 9:				
-	R0=10;			//Return label
-	R1=-7;			//String length
-	GT(free_);		//Free heap space for string literal
-L 10:				
+L 6:				
+	// End of Print string literal
+	//////////////////////////////////
 	//////////////////////////////////
 	// Print variable 'i', scope 0
-	R0=11;			//Return label
+	R0=7;			//Return label
 	R1=0x11ffa;		//Format int address
 	R2=I(0x11fea);		//Variable value
 	GT(putfi_);		//Print variable
-L 11:				
+L 7:				
+	// End of Print variable 'i', scope 0
+	//////////////////////////////////
 	//////////////////////////////////
 	// Print New_Line
-	R0=12;			//Return label
+	R0=8;			//Return label
 	R1=0x11fee;		//Format New_Line address
 	GT(putnl_);		//Print variable
-L 12:				
-STAT(4)			
-	DAT(0x11fd8,I,1);	//Literal '1', scope 0 
-	DAT(0x11fd4,I,7);	//Literal '7', scope 0 
-CODE(4)			
+L 8:				
+	// End of New_Line
+	//////////////////////////////////
+STAT(6)			
+	DAT(0x11fc9,I,1);	//Literal '1', scope 0 
+	DAT(0x11fc5,I,7);	//Literal '7', scope 0 
+CODE(6)			
 	//////////////////////////////////
 	// Add terms
-	R1=I(0x11fd8);		//Load value left term
-	R0=I(0x11fd4);		//Load value right term
+	R0=I(0x11fc5);		//Load value right term
+	R1=I(0x11fc9);		//Load value left term
 	R0=R1+R0;		//Add terms
-STAT(5)			
-	DAT(0x11fd0,I,1);	//Literal '1', scope 0 
-CODE(5)			
+STAT(7)			
+	DAT(0x11fc1,I,1);	//Literal '1', scope 0 
+CODE(7)			
 	//////////////////////////////////
 	// Add terms
-	R1=R0;		//Load value left term
-	R0=I(0x11fd0);		//Load value right term
-	R0=R1+R0;		//Add terms
+	R1=I(0x11fc1);		//Load value right term
+	//Left term already in R0
+	R0=R0+R1;		//Add terms
 	//////////////////////////////////
 	// Assignment to variable 'i', scope 0
-	R1=R0;		//Load value right side
-	I(0x11fea)=R1;		//Save value right side into variable
+	I(0x11fea)=R0;		//Save value right side into variable
+STAT(8)			
+	STR(0x11fba, "1+7 = ");			
+CODE(8)			
 	/////////////////////////
 	// Print string literal
-	R0=13;			//Return label
-	R1=7;			//String length
-	GT(new_);		//Assign heap space for string literal
-L 13:				
-	R3=R0;			//Save the address in the heap of the string literal
-	//Start assigning string to heap
-	U(R3)=0x31;		//'1'
-	R3=R3+1;		
-	U(R3)=0x2b;		//'+'
-	R3=R3+1;		
-	U(R3)=0x37;		//'7'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x3d;		//'='
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x0;		//'\0'
-	//Finished assigning string to heap
-	R2=R0;			//String literal address
-	R0=14;			//Return label
+	R0=9;			//Return label
 	R1=0x11ffd;		//Format string address
+	R2=0x11fba;			//String literal address
 	GT(putfs_);		//Print string literal
+L 9:				
+	// End of Print string literal
+	//////////////////////////////////
+	//////////////////////////////////
+	// Print variable 'i', scope 0
+	R0=10;			//Return label
+	R1=0x11ffa;		//Format int address
+	R2=I(0x11fea);		//Variable value
+	GT(putfi_);		//Print variable
+L 10:				
+	// End of Print variable 'i', scope 0
+	//////////////////////////////////
+	//////////////////////////////////
+	// Print New_Line
+	R0=11;			//Return label
+	R1=0x11fee;		//Format New_Line address
+	GT(putnl_);		//Print variable
+L 11:				
+	// End of New_Line
+	//////////////////////////////////
+STAT(9)			
+	DAT(0x11fb6,I,3);	//Literal '3', scope 0 
+CODE(9)			
+	//////////////////////////////////
+	// Add terms
+	R0=I(0x11fb6);		//Load value right term
+	R1=I(0x11fea);		//Load value left term
+	R0=R1-R0;		//Add terms
+	//////////////////////////////////
+	// Assignment to variable 'i', scope 0
+	I(0x11fea)=R0;		//Save value right side into variable
+STAT(10)			
+	STR(0x11faf, "8-3 = ");			
+CODE(10)			
+	/////////////////////////
+	// Print string literal
+	R0=12;			//Return label
+	R1=0x11ffd;		//Format string address
+	R2=0x11faf;			//String literal address
+	GT(putfs_);		//Print string literal
+L 12:				
+	// End of Print string literal
+	//////////////////////////////////
+	//////////////////////////////////
+	// Print variable 'i', scope 0
+	R0=13;			//Return label
+	R1=0x11ffa;		//Format int address
+	R2=I(0x11fea);		//Variable value
+	GT(putfi_);		//Print variable
+L 13:				
+	// End of Print variable 'i', scope 0
+	//////////////////////////////////
+	//////////////////////////////////
+	// Print New_Line
+	R0=14;			//Return label
+	R1=0x11fee;		//Format New_Line address
+	GT(putnl_);		//Print variable
 L 14:				
+	// End of New_Line
+	//////////////////////////////////
+STAT(11)			
+	DAT(0x11fab,I,2);	//Literal '2', scope 0 
+	DAT(0x11fa7,I,2);	//Literal '2', scope 0 
+CODE(11)			
+	//////////////////////////////////
+	// Multilply factors
+	R0=I(0x11fa7);		//Load value right factor
+	R1=I(0x11fab);		//Load value left factor
+	R0=R1*R0;		//Multiply factors
+STAT(12)			
+	DAT(0x11fa3,I,3);	//Literal '3', scope 0 
+CODE(12)			
+	//////////////////////////////////
+	// Add terms
+	R1=I(0x11fa3);		//Load value right term
+	//Left term already in R0
+	R0=R0+R1;		//Add terms
+	//////////////////////////////////
+	// Assignment to variable 'i', scope 0
+	I(0x11fea)=R0;		//Save value right side into variable
+STAT(13)			
+	STR(0x11f9a, "2*2+3 = ");			
+CODE(13)			
+	/////////////////////////
+	// Print string literal
 	R0=15;			//Return label
-	R1=-6;			//String length
-	GT(free_);		//Free heap space for string literal
+	R1=0x11ffd;		//Format string address
+	R2=0x11f9a;			//String literal address
+	GT(putfs_);		//Print string literal
 L 15:				
+	// End of Print string literal
+	//////////////////////////////////
 	//////////////////////////////////
 	// Print variable 'i', scope 0
 	R0=16;			//Return label
@@ -206,582 +245,276 @@ L 15:
 	R2=I(0x11fea);		//Variable value
 	GT(putfi_);		//Print variable
 L 16:				
+	// End of Print variable 'i', scope 0
+	//////////////////////////////////
 	//////////////////////////////////
 	// Print New_Line
 	R0=17;			//Return label
 	R1=0x11fee;		//Format New_Line address
 	GT(putnl_);		//Print variable
 L 17:				
-STAT(6)			
-	DAT(0x11fcc,I,3);	//Literal '3', scope 0 
-CODE(6)			
+	// End of New_Line
+	//////////////////////////////////
+STAT(14)			
+	DAT(0x11f96,I,2);	//Literal '2', scope 0 
+	DAT(0x11f92,I,2);	//Literal '2', scope 0 
+	DAT(0x11f8e,I,3);	//Literal '3', scope 0 
+CODE(14)			
+	//////////////////////////////////
+	// Multilply factors
+	R0=I(0x11f8e);		//Load value right factor
+	R1=I(0x11f92);		//Load value left factor
+	R0=R1*R0;		//Multiply factors
 	//////////////////////////////////
 	// Add terms
-	R1=I(0x11fea);		//Load value left term
-	R0=I(0x11fcc);		//Load value right term
-	R0=R1-R0;		//Add terms
+	//Right factor already in R0
+	R1=I(0x11f96);		//Load value left term
+	R0=R1+R0;		//Add terms
 	//////////////////////////////////
 	// Assignment to variable 'i', scope 0
-	R1=R0;		//Load value right side
-	I(0x11fea)=R1;		//Save value right side into variable
+	I(0x11fea)=R0;		//Save value right side into variable
+STAT(15)			
+	STR(0x11f85, "2+2*3 = ");			
+CODE(15)			
 	/////////////////////////
 	// Print string literal
 	R0=18;			//Return label
-	R1=7;			//String length
-	GT(new_);		//Assign heap space for string literal
+	R1=0x11ffd;		//Format string address
+	R2=0x11f85;			//String literal address
+	GT(putfs_);		//Print string literal
 L 18:				
-	R3=R0;			//Save the address in the heap of the string literal
-	//Start assigning string to heap
-	U(R3)=0x38;		//'8'
-	R3=R3+1;		
-	U(R3)=0x2d;		//'-'
-	R3=R3+1;		
-	U(R3)=0x33;		//'3'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x3d;		//'='
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x0;		//'\0'
-	//Finished assigning string to heap
-	R2=R0;			//String literal address
+	// End of Print string literal
+	//////////////////////////////////
+	//////////////////////////////////
+	// Print variable 'i', scope 0
 	R0=19;			//Return label
-	R1=0x11ffd;		//Format string address
-	GT(putfs_);		//Print string literal
+	R1=0x11ffa;		//Format int address
+	R2=I(0x11fea);		//Variable value
+	GT(putfi_);		//Print variable
 L 19:				
+	// End of Print variable 'i', scope 0
+	//////////////////////////////////
+	//////////////////////////////////
+	// Print New_Line
 	R0=20;			//Return label
-	R1=-6;			//String length
-	GT(free_);		//Free heap space for string literal
+	R1=0x11fee;		//Format New_Line address
+	GT(putnl_);		//Print variable
 L 20:				
+	// End of New_Line
 	//////////////////////////////////
-	// Print variable 'i', scope 0
+STAT(16)			
+	STR(0x11f69, "Enter a letter(n to exit): ");			
+CODE(16)			
+	/////////////////////////
+	// Print string literal
 	R0=21;			//Return label
-	R1=0x11ffa;		//Format int address
-	R2=I(0x11fea);		//Variable value
-	GT(putfi_);		//Print variable
+	R1=0x11ffd;		//Format string address
+	R2=0x11f69;			//String literal address
+	GT(putfs_);		//Print string literal
 L 21:				
+	// End of Print string literal
 	//////////////////////////////////
-	// Print New_Line
-	R0=22;			//Return label
-	R1=0x11fee;		//Format New_Line address
-	GT(putnl_);		//Print variable
-L 22:				
-STAT(7)			
-	DAT(0x11fc8,I,2);	//Literal '2', scope 0 
-	DAT(0x11fc4,I,2);	//Literal '2', scope 0 
-CODE(7)			
-	//////////////////////////////////
-	// Multiply factors
-	R1=I(0x11fc8);		//Load value left factor
-	R0=I(0x11fc4);		//Load value right factor
-	R0=R1*R0;		//Multiply factors
-STAT(8)			
-	DAT(0x11fc0,I,3);	//Literal '3', scope 0 
-CODE(8)			
-	//////////////////////////////////
-	// Add terms
-	R1=R0;		//Load value left term
-	R0=I(0x11fc0);		//Load value right term
-	R0=R1+R0;		//Add terms
-	//////////////////////////////////
-	// Assignment to variable 'i', scope 0
-	R1=R0;		//Load value right side
-	I(0x11fea)=R1;		//Save value right side into variable
-	/////////////////////////
-	// Print string literal
-	R0=23;			//Return label
-	R1=9;			//String length
-	GT(new_);		//Assign heap space for string literal
-L 23:				
-	R3=R0;			//Save the address in the heap of the string literal
-	//Start assigning string to heap
-	U(R3)=0x32;		//'2'
-	R3=R3+1;		
-	U(R3)=0x2a;		//'*'
-	R3=R3+1;		
-	U(R3)=0x32;		//'2'
-	R3=R3+1;		
-	U(R3)=0x2b;		//'+'
-	R3=R3+1;		
-	U(R3)=0x33;		//'3'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x3d;		//'='
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x0;		//'\0'
-	//Finished assigning string to heap
-	R2=R0;			//String literal address
-	R0=24;			//Return label
-	R1=0x11ffd;		//Format string address
-	GT(putfs_);		//Print string literal
-L 24:				
-	R0=25;			//Return label
-	R1=-8;			//String length
-	GT(free_);		//Free heap space for string literal
-L 25:				
-	//////////////////////////////////
-	// Print variable 'i', scope 0
-	R0=26;			//Return label
-	R1=0x11ffa;		//Format int address
-	R2=I(0x11fea);		//Variable value
-	GT(putfi_);		//Print variable
-L 26:				
-	//////////////////////////////////
-	// Print New_Line
-	R0=27;			//Return label
-	R1=0x11fee;		//Format New_Line address
-	GT(putnl_);		//Print variable
-L 27:				
-STAT(9)			
-	DAT(0x11fbc,I,2);	//Literal '2', scope 0 
-	DAT(0x11fb8,I,2);	//Literal '2', scope 0 
-	DAT(0x11fb4,I,3);	//Literal '3', scope 0 
-CODE(9)			
-	//////////////////////////////////
-	// Multiply factors
-	R1=I(0x11fb8);		//Load value left factor
-	R0=I(0x11fb4);		//Load value right factor
-	R0=R1*R0;		//Multiply factors
-	//////////////////////////////////
-	// Add terms
-	R1=I(0x11fbc);		//Load value left term
-	R0=I(0x0);		//Load value right term
-	R0=R1+R0;		//Add terms
-	//////////////////////////////////
-	// Assignment to variable 'i', scope 0
-	R1=R0;		//Load value right side
-	I(0x11fea)=R1;		//Save value right side into variable
-	/////////////////////////
-	// Print string literal
-	R0=28;			//Return label
-	R1=9;			//String length
-	GT(new_);		//Assign heap space for string literal
-L 28:				
-	R3=R0;			//Save the address in the heap of the string literal
-	//Start assigning string to heap
-	U(R3)=0x32;		//'2'
-	R3=R3+1;		
-	U(R3)=0x2b;		//'+'
-	R3=R3+1;		
-	U(R3)=0x32;		//'2'
-	R3=R3+1;		
-	U(R3)=0x2a;		//'*'
-	R3=R3+1;		
-	U(R3)=0x33;		//'3'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x3d;		//'='
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x0;		//'\0'
-	//Finished assigning string to heap
-	R2=R0;			//String literal address
-	R0=29;			//Return label
-	R1=0x11ffd;		//Format string address
-	GT(putfs_);		//Print string literal
-L 29:				
-	R0=30;			//Return label
-	R1=-8;			//String length
-	GT(free_);		//Free heap space for string literal
-L 30:				
-	//////////////////////////////////
-	// Print variable 'i', scope 0
-	R0=31;			//Return label
-	R1=0x11ffa;		//Format int address
-	R2=I(0x11fea);		//Variable value
-	GT(putfi_);		//Print variable
-L 31:				
-	//////////////////////////////////
-	// Print New_Line
-	R0=32;			//Return label
-	R1=0x11fee;		//Format New_Line address
-	GT(putnl_);		//Print variable
-L 32:				
-	/////////////////////////
-	// Print string literal
-	R0=33;			//Return label
-	R1=28;			//String length
-	GT(new_);		//Assign heap space for string literal
-L 33:				
-	R3=R0;			//Save the address in the heap of the string literal
-	//Start assigning string to heap
-	U(R3)=0x45;		//'E'
-	R3=R3+1;		
-	U(R3)=0x6e;		//'n'
-	R3=R3+1;		
-	U(R3)=0x74;		//'t'
-	R3=R3+1;		
-	U(R3)=0x65;		//'e'
-	R3=R3+1;		
-	U(R3)=0x72;		//'r'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x61;		//'a'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x6c;		//'l'
-	R3=R3+1;		
-	U(R3)=0x65;		//'e'
-	R3=R3+1;		
-	U(R3)=0x74;		//'t'
-	R3=R3+1;		
-	U(R3)=0x74;		//'t'
-	R3=R3+1;		
-	U(R3)=0x65;		//'e'
-	R3=R3+1;		
-	U(R3)=0x72;		//'r'
-	R3=R3+1;		
-	U(R3)=0x28;		//'('
-	R3=R3+1;		
-	U(R3)=0x6e;		//'n'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x74;		//'t'
-	R3=R3+1;		
-	U(R3)=0x6f;		//'o'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x65;		//'e'
-	R3=R3+1;		
-	U(R3)=0x78;		//'x'
-	R3=R3+1;		
-	U(R3)=0x69;		//'i'
-	R3=R3+1;		
-	U(R3)=0x74;		//'t'
-	R3=R3+1;		
-	U(R3)=0x29;		//')'
-	R3=R3+1;		
-	U(R3)=0x3a;		//':'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x0;		//'\0'
-	//Finished assigning string to heap
-	R2=R0;			//String literal address
-	R0=34;			//Return label
-	R1=0x11ffd;		//Format string address
-	GT(putfs_);		//Print string literal
-L 34:				
-	R0=35;			//Return label
-	R1=-27;			//String length
-	GT(free_);		//Free heap space for string literal
-L 35:				
 	//////////////////////////////////
 	// Get variable 'c', scope 0
-	R0=36;			//Return label
+	R0=22;			//Return label
 	R2=0x11fe9;		//Variable address
 	R1=0x11ff7;		//Format char address
 	GT(getfc_);		//Get variable
-L 36:				
+L 22:				
+	// End of Get variable 'c', scope 0
 	//////////////////////////////////
-	// Open while loop -> L:37
-L 37:				
-STAT(10)			
-	DAT(0x11fb3,U,'n');	//Literal ''n'', scope 0 
-CODE(10)			
+	//////////////////////////////////
+	// Open while loop -> L:23
+L 23:				
+STAT(17)			
+	DAT(0x11f68,U,'n');	//Literal ''n'', scope 0 
+CODE(17)			
 	//////////////////////////////////
 	// Relation evaluation
-	R3=R1;			//Save R1 (should use heap)
-	R1=U(0x11fe9);		//Load value left side
-	R2=U(0x11fb3);		//Load value right side
-	R0=1;			//True
-	IF(R1 != R2) GT(39);	//Jump if true
-	R0=0;			//False
-L 39:				
-	R1=R3;			//Recover R1 (should use heap)
+	R0=U(0x11f68);		//Load value right expression result
+	R1=U(0x11fe9);		//Load value left expression result
+	IF(R1!=R0) GT(25);	//Jump if true
+	R0=0;			//Set as False
+	GT(26);	//Jump to end
+L 25:				
+	R0=1;			//Set as True
+L 26:				
+	// End of evaluation
 	//////////////////////////////////
-	// Evaluate while loop -> L:37
-	IF(R0 == 0) GT(38);	//Jump if 0
+	// Evaluate while loop -> L:23
+	IF(R0==0) GT(24);	//Jump if 0
 	//////////////////////////////////
 	// Open if block 
-STAT(11)			
-	DAT(0x11fb2,U,'a');	//Literal ''a'', scope 0 
-CODE(11)			
+STAT(18)			
+	DAT(0x11f67,U,'a');	//Literal ''a'', scope 0 
+CODE(18)			
 	//////////////////////////////////
 	// Relation evaluation
-	R3=R1;			//Save R1 (should use heap)
-	R1=U(0x11fe9);		//Load value left side
-	R2=U(0x11fb2);		//Load value right side
-	R0=1;			//True
-	IF(R1 == R2) GT(41);	//Jump if true
-	R0=0;			//False
-L 41:				
-	R1=R3;			//Recover R1 (should use heap)
+	R1=U(0x11f67);		//Load value right expression result
+	R2=U(0x11fe9);		//Load value left expression result
+	IF(R2==R1) GT(28);	//Jump if true
+	R1=0;			//Set as False
+	GT(29);	//Jump to end
+L 28:				
+	R1=1;			//Set as True
+L 29:				
+	// End of evaluation
 	//////////////////////////////////
 	// Evaluate if block 
-	IF(R0 == 0) GT(40);	//Jump if 0
+	IF(R1==0) GT(27);	//Jump if 0
+STAT(19)			
+	STR(0x11f5d, "Muahahaha");			
+CODE(19)			
+	/////////////////////////
+	// Print string literal
+	R0=30;			//Return label
+	R1=0x11ffd;		//Format string address
+	R2=0x11f5d;			//String literal address
+	GT(putfs_);		//Print string literal
+L 30:				
+	// End of Print string literal
+	//////////////////////////////////
+	//////////////////////////////////
+	// Print New_Line
+	R0=31;			//Return label
+	R1=0x11fee;		//Format New_Line address
+	GT(putnl_);		//Print variable
+L 31:				
+	// End of New_Line
+	//////////////////////////////////
+	//////////////////////////////////
+	// Close if block 
+L 27:				
+	//////////////////////////////////
+	// Open if block 
+STAT(20)			
+	DAT(0x11f5c,U,'3');	//Literal ''3'', scope 0 
+CODE(20)			
+	//////////////////////////////////
+	// Relation evaluation
+	R2=U(0x11f5c);		//Load value right expression result
+	R3=U(0x11fe9);		//Load value left expression result
+	IF(R3==R2) GT(33);	//Jump if true
+	R2=0;			//Set as False
+	GT(34);	//Jump to end
+L 33:				
+	R2=1;			//Set as True
+L 34:				
+	// End of evaluation
+STAT(21)			
+	DAT(0x11f5b,U,'7');	//Literal ''7'', scope 0 
+CODE(21)			
+	//////////////////////////////////
+	// Relation evaluation
+	R3=U(0x11f5b);		//Load value right expression result
+	R4=U(0x11fe9);		//Load value left expression result
+	IF(R4<=R3) GT(35);	//Jump if true
+	R3=0;			//Set as False
+	GT(36);	//Jump to end
+L 35:				
+	R3=1;			//Set as True
+L 36:				
+	// End of evaluation
+STAT(22)			
+	DAT(0x11f5a,U,'5');	//Literal ''5'', scope 0 
+CODE(22)			
+	//////////////////////////////////
+	// Relation evaluation
+	R4=U(0x11f5a);		//Load value right expression result
+	R5=U(0x11fe9);		//Load value left expression result
+	IF(R5>=R4) GT(37);	//Jump if true
+	R4=0;			//Set as False
+	GT(38);	//Jump to end
+L 37:				
+	R4=1;			//Set as True
+L 38:				
+	// End of evaluation
+	//Right boolean already in R4
+	//Left boolean already in R3
+	R3=R3*R4;		//Evaluate expressions
+	//Right boolean already in R3
+	//Left boolean already in R2
+	R2=R2+R3;		//Evaluate expressions
+	//////////////////////////////////
+	// Evaluate if block 
+	IF(R2==0) GT(32);	//Jump if 0
+STAT(23)			
+	STR(0x11f51, "Numero: ");			
+CODE(23)			
+	/////////////////////////
+	// Print string literal
+	R0=39;			//Return label
+	R1=0x11ffd;		//Format string address
+	R2=0x11f51;			//String literal address
+	GT(putfs_);		//Print string literal
+L 39:				
+	// End of Print string literal
+	//////////////////////////////////
+	//////////////////////////////////
+	// Print variable 'c', scope 0
+	R0=40;			//Return label
+	R1=0x11ff7;		//Format char address
+	R2=U(0x11fe9);		//Variable value
+	GT(putfi_);		//Print variable
+L 40:				
+	// End of Print variable 'c', scope 0
+	//////////////////////////////////
+	//////////////////////////////////
+	// Print New_Line
+	R0=41;			//Return label
+	R1=0x11fee;		//Format New_Line address
+	GT(putnl_);		//Print variable
+L 41:				
+	// End of New_Line
+	//////////////////////////////////
+	//////////////////////////////////
+	// Close if block 
+L 32:				
+STAT(24)			
+	STR(0x11f35, "Enter a letter(n to exit): ");			
+CODE(24)			
 	/////////////////////////
 	// Print string literal
 	R0=42;			//Return label
-	R1=10;			//String length
-	GT(new_);		//Assign heap space for string literal
-L 42:				
-	R3=R0;			//Save the address in the heap of the string literal
-	//Start assigning string to heap
-	U(R3)=0x4d;		//'M'
-	R3=R3+1;		
-	U(R3)=0x75;		//'u'
-	R3=R3+1;		
-	U(R3)=0x61;		//'a'
-	R3=R3+1;		
-	U(R3)=0x68;		//'h'
-	R3=R3+1;		
-	U(R3)=0x61;		//'a'
-	R3=R3+1;		
-	U(R3)=0x68;		//'h'
-	R3=R3+1;		
-	U(R3)=0x61;		//'a'
-	R3=R3+1;		
-	U(R3)=0x68;		//'h'
-	R3=R3+1;		
-	U(R3)=0x61;		//'a'
-	R3=R3+1;		
-	U(R3)=0x0;		//'\0'
-	//Finished assigning string to heap
-	R2=R0;			//String literal address
-	R0=43;			//Return label
 	R1=0x11ffd;		//Format string address
+	R2=0x11f35;			//String literal address
 	GT(putfs_);		//Print string literal
+L 42:				
+	// End of Print string literal
+	//////////////////////////////////
+	//////////////////////////////////
+	// Get variable 'c', scope 0
+	R0=43;			//Return label
+	R2=0x11fe9;		//Variable address
+	R1=0x11ff7;		//Format char address
+	GT(getfc_);		//Get variable
 L 43:				
+	// End of Get variable 'c', scope 0
+	//////////////////////////////////
+	//////////////////////////////////
+	// Close while loop -> L:23
+	GT(23);			//Evaluate loop again
+L 24:				//Exit while loop
+STAT(25)			
+	STR(0x11f29, "You're out!");			
+CODE(25)			
+	/////////////////////////
+	// Print string literal
 	R0=44;			//Return label
-	R1=-9;			//String length
-	GT(free_);		//Free heap space for string literal
+	R1=0x11ffd;		//Format string address
+	R2=0x11f29;			//String literal address
+	GT(putfs_);		//Print string literal
 L 44:				
+	// End of Print string literal
+	//////////////////////////////////
 	//////////////////////////////////
 	// Print New_Line
 	R0=45;			//Return label
 	R1=0x11fee;		//Format New_Line address
 	GT(putnl_);		//Print variable
 L 45:				
+	// End of New_Line
 	//////////////////////////////////
-	// Close if block 
-L 40:				
-	//////////////////////////////////
-	// Open if block 
-STAT(12)			
-	DAT(0x11fb1,U,'3');	//Literal ''3'', scope 0 
-CODE(12)			
-	//////////////////////////////////
-	// Relation evaluation
-	R3=R1;			//Save R1 (should use heap)
-	R1=U(0x11fe9);		//Load value left side
-	R2=U(0x11fb1);		//Load value right side
-	R0=1;			//True
-	IF(R1 == R2) GT(47);	//Jump if true
-	R0=0;			//False
-L 47:				
-	R1=R3;			//Recover R1 (should use heap)
-	R1=R0;			//Saving R0 for relation call
-STAT(13)			
-	DAT(0x11fb0,U,'7');	//Literal ''7'', scope 0 
-CODE(13)			
-	//////////////////////////////////
-	// Relation evaluation
-	R3=R1;			//Save R1 (should use heap)
-	R1=U(0x11fe9);		//Load value left side
-	R2=U(0x11fb0);		//Load value right side
-	R0=1;			//True
-	IF(R1 == R2) GT(48);	//Jump if true
-	R0=0;			//False
-L 48:				
-	R1=R3;			//Recover R1 (should use heap)
-	R0=R0 + R1;	// or generated
-	//////////////////////////////////
-	// Evaluate if block 
-	IF(R0 == 0) GT(46);	//Jump if 0
-	/////////////////////////
-	// Print string literal
-	R0=49;			//Return label
-	R1=9;			//String length
-	GT(new_);		//Assign heap space for string literal
-L 49:				
-	R3=R0;			//Save the address in the heap of the string literal
-	//Start assigning string to heap
-	U(R3)=0x4e;		//'N'
-	R3=R3+1;		
-	U(R3)=0x75;		//'u'
-	R3=R3+1;		
-	U(R3)=0x6d;		//'m'
-	R3=R3+1;		
-	U(R3)=0x65;		//'e'
-	R3=R3+1;		
-	U(R3)=0x72;		//'r'
-	R3=R3+1;		
-	U(R3)=0x6f;		//'o'
-	R3=R3+1;		
-	U(R3)=0x3a;		//':'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x0;		//'\0'
-	//Finished assigning string to heap
-	R2=R0;			//String literal address
-	R0=50;			//Return label
-	R1=0x11ffd;		//Format string address
-	GT(putfs_);		//Print string literal
-L 50:				
-	R0=51;			//Return label
-	R1=-8;			//String length
-	GT(free_);		//Free heap space for string literal
-L 51:				
-	//////////////////////////////////
-	// Print variable 'c', scope 0
-	R0=52;			//Return label
-	R1=0x11ff7;		//Format char address
-	R2=U(0x11fe9);		//Variable value
-	GT(putfi_);		//Print variable
-L 52:				
-	//////////////////////////////////
-	// Print New_Line
-	R0=53;			//Return label
-	R1=0x11fee;		//Format New_Line address
-	GT(putnl_);		//Print variable
-L 53:				
-	//////////////////////////////////
-	// Close if block 
-L 46:				
-	/////////////////////////
-	// Print string literal
-	R0=54;			//Return label
-	R1=28;			//String length
-	GT(new_);		//Assign heap space for string literal
-L 54:				
-	R3=R0;			//Save the address in the heap of the string literal
-	//Start assigning string to heap
-	U(R3)=0x45;		//'E'
-	R3=R3+1;		
-	U(R3)=0x6e;		//'n'
-	R3=R3+1;		
-	U(R3)=0x74;		//'t'
-	R3=R3+1;		
-	U(R3)=0x65;		//'e'
-	R3=R3+1;		
-	U(R3)=0x72;		//'r'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x61;		//'a'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x6c;		//'l'
-	R3=R3+1;		
-	U(R3)=0x65;		//'e'
-	R3=R3+1;		
-	U(R3)=0x74;		//'t'
-	R3=R3+1;		
-	U(R3)=0x74;		//'t'
-	R3=R3+1;		
-	U(R3)=0x65;		//'e'
-	R3=R3+1;		
-	U(R3)=0x72;		//'r'
-	R3=R3+1;		
-	U(R3)=0x28;		//'('
-	R3=R3+1;		
-	U(R3)=0x6e;		//'n'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x74;		//'t'
-	R3=R3+1;		
-	U(R3)=0x6f;		//'o'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x65;		//'e'
-	R3=R3+1;		
-	U(R3)=0x78;		//'x'
-	R3=R3+1;		
-	U(R3)=0x69;		//'i'
-	R3=R3+1;		
-	U(R3)=0x74;		//'t'
-	R3=R3+1;		
-	U(R3)=0x29;		//')'
-	R3=R3+1;		
-	U(R3)=0x3a;		//':'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x0;		//'\0'
-	//Finished assigning string to heap
-	R2=R0;			//String literal address
-	R0=55;			//Return label
-	R1=0x11ffd;		//Format string address
-	GT(putfs_);		//Print string literal
-L 55:				
-	R0=56;			//Return label
-	R1=-27;			//String length
-	GT(free_);		//Free heap space for string literal
-L 56:				
-	//////////////////////////////////
-	// Get variable 'c', scope 0
-	R0=57;			//Return label
-	R2=0x11fe9;		//Variable address
-	R1=0x11ff7;		//Format char address
-	GT(getfc_);		//Get variable
-L 57:				
-	//////////////////////////////////
-	// Close while loop -> L:37
-	GT(37);			//Evaluate loop again
-L 38:				//Exit while loop
-	/////////////////////////
-	// Print string literal
-	R0=58;			//Return label
-	R1=12;			//String length
-	GT(new_);		//Assign heap space for string literal
-L 58:				
-	R3=R0;			//Save the address in the heap of the string literal
-	//Start assigning string to heap
-	U(R3)=0x59;		//'Y'
-	R3=R3+1;		
-	U(R3)=0x6f;		//'o'
-	R3=R3+1;		
-	U(R3)=0x75;		//'u'
-	R3=R3+1;		
-	U(R3)=0x27;		//'''
-	R3=R3+1;		
-	U(R3)=0x72;		//'r'
-	R3=R3+1;		
-	U(R3)=0x65;		//'e'
-	R3=R3+1;		
-	U(R3)=0x20;		//' '
-	R3=R3+1;		
-	U(R3)=0x6f;		//'o'
-	R3=R3+1;		
-	U(R3)=0x75;		//'u'
-	R3=R3+1;		
-	U(R3)=0x74;		//'t'
-	R3=R3+1;		
-	U(R3)=0x21;		//'!'
-	R3=R3+1;		
-	U(R3)=0x0;		//'\0'
-	//Finished assigning string to heap
-	R2=R0;			//String literal address
-	R0=59;			//Return label
-	R1=0x11ffd;		//Format string address
-	GT(putfs_);		//Print string literal
-L 59:				
-	R0=60;			//Return label
-	R1=-11;			//String length
-	GT(free_);		//Free heap space for string literal
-L 60:				
-	//////////////////////////////////
-	// Print New_Line
-	R0=61;			//Return label
-	R1=0x11fee;		//Format New_Line address
-	GT(putnl_);		//Print variable
-L 61:				
 	R0=0;			//Succesful state
 	GT(-2);			//Finish
 END

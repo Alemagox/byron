@@ -56,7 +56,7 @@ begin
       New_Line;
     end if;
 
-    if(c = '3' or c = '7') then
+    if(c = '3' or c <= '7' and c >= '5') then
       Put("Numero: ");
       Put(c);
       New_Line;        
