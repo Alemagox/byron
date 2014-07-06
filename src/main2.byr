@@ -4,6 +4,21 @@
 --Ada.Text_IO;            -- To compile in Ada
 
 procedure main is
+  procedure Error(ci: in  Character) is
+    a : Integer;
+    b : Real;
+    c : Character;
+    --d : Character;
+    --e : Character;
+    --f : Character;
+    w : Integer;
+   begin   
+
+      Put("Character is: ");  
+      Put(ci);
+
+   end Error;
+
   i : Integer;
   c : Character;
 begin
@@ -12,7 +27,10 @@ begin
   --i := c = '3' or c <= '7' and c >= '5';
   --i := i
   Put("Result = ");
-  Put(i);
+
+  Error(c);
+
+  --Put(i);
   New_Line;
 
   null;

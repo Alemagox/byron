@@ -8,12 +8,12 @@ STAT(0)
 	STR(0x11ff4,"%d");	//Format Get integer
 	STR(0x11ff1,"%c");	//Format Get char
 	STR(0x11fee,"\n");	//Format New_Line
-	DAT(0x11fea,I,0);	//Var 'i', scope 0 
-	DAT(0x11fe9,U,0);	//Var 'c', scope 0 
-CODE(0)
-L 0:
+CODE(0)			
+	//////////////////////////////////
+	// Start procedure Error 
+L 1:				
 STAT(1)			
-	STR(0x11fdf, "Result = ");			
+	STR(0x11fdf, "Character is: ");			
 CODE(1)			
 	/////////////////////////
 	// Print string literal
@@ -23,11 +23,11 @@ CODE(1)
 	I(R7)=R1;			//R1 saved
 	R7=R7-4;			//Save space for register R2
 	I(R7)=R2;			//R2 saved
-	R0=1;				//Return label
+	R0=2;				//Return label
 	R1=0x11ffd;			//Format string address
 	R2=0x11fdf;			//String literal address
 	GT(putfs_);			//Print string literal
-L 1:				
+L 2:				
 	R2=I(R7);			//R2 recovered
 	R7=R7+4;			//Free space for register R2
 	R1=I(R7);			//R1 recovered
@@ -37,25 +37,56 @@ L 1:
 	// End of Print string literal
 	//////////////////////////////////
 	//////////////////////////////////
-	// Print variable 'i', scope 0
+	// Print variable 'ci', scope 1
 	R7=R7-4;			//Save space for register R0
 	I(R7)=R0;			//R0 saved
 	R7=R7-4;			//Save space for register R1
 	I(R7)=R1;			//R1 saved
 	R7=R7-4;			//Save space for register R2
 	I(R7)=R2;			//R2 saved
-	R0=2;				//Return label
-	R1=0x11ffa;			//Format int address
-	R2=I(0x11fea);		//Variable value
+	R0=3;				//Return label
+	R1=0x11ff7;			//Format char address
+	R2=U(0x0);		//Variable value
 	GT(putfi_);			//Print variable
-L 2:				
+L 3:				
 	R2=I(R7);			//R2 recovered
 	R7=R7+4;			//Free space for register R2
 	R1=I(R7);			//R1 recovered
 	R7=R7+4;			//Free space for register R1
 	R0=I(R7);			//R0 recovered
 	R7=R7+4;			//Free space for register R0
-	// End of Print variable 'i', scope 0
+	// End of Print variable 'ci', scope 1
+	//////////////////////////////////
+	// End procedure Error 
+	//////////////////////////////////
+STAT(2)			
+	DAT(0x11fdb,I,0);	//Var 'i', scope 0 
+	DAT(0x11fda,U,0);	//Var 'c', scope 0 
+CODE(2)
+L 0:
+STAT(3)			
+	STR(0x11fd0, "Result = ");			
+CODE(3)			
+	/////////////////////////
+	// Print string literal
+	R7=R7-4;			//Save space for register R0
+	I(R7)=R0;			//R0 saved
+	R7=R7-4;			//Save space for register R1
+	I(R7)=R1;			//R1 saved
+	R7=R7-4;			//Save space for register R2
+	I(R7)=R2;			//R2 saved
+	R0=4;				//Return label
+	R1=0x11ffd;			//Format string address
+	R2=0x11fd0;			//String literal address
+	GT(putfs_);			//Print string literal
+L 4:				
+	R2=I(R7);			//R2 recovered
+	R7=R7+4;			//Free space for register R2
+	R1=I(R7);			//R1 recovered
+	R7=R7+4;			//Free space for register R1
+	R0=I(R7);			//R0 recovered
+	R7=R7+4;			//Free space for register R0
+	// End of Print string literal
 	//////////////////////////////////
 	//////////////////////////////////
 	// Print New_Line
@@ -63,10 +94,10 @@ L 2:
 	I(R7)=R0;			//R0 saved
 	R7=R7-4;			//Save space for register R1
 	I(R7)=R1;			//R1 saved
-	R0=3;				//Return label
+	R0=5;				//Return label
 	R1=0x11fee;			//Format New_Line address
 	GT(putnl_);			//Print variable
-L 3:				
+L 5:				
 	R1=I(R7);			//R1 recovered
 	R7=R7+4;			//Free space for register R1
 	R0=I(R7);			//R0 recovered

@@ -23,7 +23,7 @@ FILE *yyout;		// Compiled file
 /////////////////////////////////////////////
 // Variables used to work with symbols table
 symbolsTable sT;
-registerStruct *auxRegister, *auxRegisterList;
+registerStruct *auxRegister, *auxRegisterList, *parentSubprogram;
 qMachine Q;
 
 int errorCode, nRegisters;
@@ -591,20 +591,31 @@ object_declaration :
 			YYABORT;
 		} 
 
-		errorCode = getVarStaticAddress( &Q, auxRegister );
-		if( errorCode == -1 ){
-			yyerror("Symbol created is not a variable");
-			YYABORT;
-		}
-		if( errorCode == -2){
-			yyerror("Case for object_declaration not implemented yet");
-			YYABORT;
-		}
+		// Only variables at scope 0 are static
+		if(sT.currentScope == 0){
+			errorCode = getVarStaticAddress( &Q, auxRegister );
+			if( errorCode == -1 ){
+				yyerror("Symbol created is not a variable");
+				YYABORT;
+			}
+			if( errorCode == -2){
+				yyerror("Case for object_declaration not implemented yet");
+				YYABORT;
+			}
 
-		errorCode = generateCodeVarStatic( yyout, &Q, auxRegister, "0" );
-		if( errorCode == -1 ){
-			yyerror("Symbol created is not a variable");
-			YYABORT;
+			errorCode = generateCodeVarStatic( yyout, &Q, auxRegister, "0" );
+			if( errorCode == -1 ){
+				yyerror("Symbol created is not a variable");
+				YYABORT;
+			}
+		}
+		// If scope!=0, variables are locals 
+		else{
+			errorCode = setVarStackAddress( &Q, auxRegister, &parentSubprogram );
+			if( errorCode == -1 ){
+				yyerror("Symbol created is not a variable");
+				YYABORT;
+			}
 		}
 	}
 	;
@@ -714,7 +725,8 @@ procedure_call_statement :
   	
   	// It sets auxRegisterList as NULL
 		deleteRegisterList( &auxRegisterList );
-		// Generate code		
+
+		// Generate code
 	}
 
 	| PUT '(' STRING_LITERAL ')' ';'
@@ -935,12 +947,16 @@ subprogram_body_ :
 	subprogram_specification IS 
 	{
 		enterScope ( &sT );
+		parentSubprogram = $1;
 
 		errorCode = addParametersToSymbolsTable(&sT, $<regStruct>1);
 		if ( errorCode!=0 ){
 	  	yyerror("Error adding parameters of subprogram %s", $<regStruct>1->key.id);
 	  	YYABORT;
 		}
+
+		//make function for this
+		generateCodeBeginSubprogram( yyout, &Q, $1->key.id );
 
 		$$ = $1;
 	}
@@ -952,12 +968,22 @@ subprogram_body :
 		declarative_part
 	BEGIN_
 		sequence_of_statements
-	END IDENTIFIER';' { exitScope ( &sT ); $$ = $1; }
+	END IDENTIFIER';' 
+	{ 
+		exitScope ( &sT, $1 ); 
+		generateCodeEndSubprogram( yyout, &Q, $1->key.id ); 
+		$$ = $1; 
+	}
 |	subprogram_body_
 		declarative_part
 	BEGIN_
 		sequence_of_statements
-	END ';' { exitScope ( &sT ); $$ = $1; }
+	END ';' 
+	{ 
+		exitScope ( &sT, $1 ); 
+		generateCodeEndSubprogram( yyout, &Q, $1->key.id ); 
+		$$ = $1; 
+	}
 ;
 
 
@@ -1082,6 +1108,11 @@ variable :
 
 void generateAnonymousId(){
   sprintf(anonymousIdString, "%d", anonymousId++);
+}
+
+void printRegQ( qMachine Q ){
+	printf("%d-%d-%d-%d-%d-%d\n" , Q.R[0], Q.R[1], Q.R[2], Q.R[3], Q.R[4], Q.R[5] );
+	printf("lastR:%d\n" , Q.lastRstack );
 }
 
 int main(int argc, char** argv){

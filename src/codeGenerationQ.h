@@ -90,7 +90,9 @@ void generateCodeEvaluateIf( FILE* yyout, qMachine *Q, int outLabel );
 
 void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ); 
 
+void generateCodeBeginSubprogram( FILE* yyout, qMachine *Q, char pName[] );
 
+void generateCodeEndSubprogram( FILE* yyout, qMachine *Q, char pName[] );
 
 
 /******************************
@@ -100,9 +102,11 @@ char getVarMemLabel (variableType vT);
 
 int getVarStaticAddress( qMachine *Q, registerStruct *r );
 
-int newRegister( qMachine *Q );
+int setVarStackAddress( qMachine *Q, registerStruct *r, registerStruct **parent );
 
-int popRegister( qMachine *Q );
+int newRegister( FILE* yyout, qMachine *Q );
+
+int popRegister( FILE* yyout, qMachine *Q );
 
 int lastRegister( qMachine *Q );
 

@@ -76,5 +76,16 @@ begin
   end loop;
   Put("You're out!");
   New_Line;
+
+
+  --c := '4';
+  --i := 2*12-2*(5+5)/(2-1);
+  --i := c = '3' or c <= '7' and c >= '5';
+  --i := i
+  --Put("Result = ");
+  --Put(i);
+  New_Line;
+
   null;
+
 end main;

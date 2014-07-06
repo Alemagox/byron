@@ -305,13 +305,13 @@ void generateCodeAssignment( FILE* yyout, qMachine *Q, registerStruct *r1,
     //fprintf(yyout,"\tR1=R0;\t\t//Load value right side\n" );
   }else{
     fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right side\n", 
-                newRegister( Q ), getVarMemLabel( r2->typeVariable ), r2->address);
+                newRegister( yyout, Q ), getVarMemLabel( r2->typeVariable ), r2->address);
   }
   
   fprintf(yyout,"\t%c(0x%x)=R%d;\t\t//Save value right side into variable\n", 
                 getVarMemLabel( r1->typeVariable ), r1->address, lastRegister( Q )-1);
 
-  popRegister( Q ); // Free assigned register
+  popRegister( yyout, Q ); // Free assigned register
 }
 
 void generateCodeMultiply( FILE* yyout, qMachine *Q, registerStruct *r1,
@@ -330,7 +330,7 @@ void generateCodeMultiply( FILE* yyout, qMachine *Q, registerStruct *r1,
   fprintf(yyout,"\t// Multilply factors\n");
 
   if( r2->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    rightR = newRegister( Q );
+    rightR = newRegister( yyout, Q );
     fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right factor\n",
                 rightR, 
                 getVarMemLabel( r2->typeVariable ), r2->address);
@@ -340,7 +340,7 @@ void generateCodeMultiply( FILE* yyout, qMachine *Q, registerStruct *r1,
   }
 
   if( r1->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    leftR = newRegister( Q );
+    leftR = newRegister( yyout,  Q );
     fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value left factor\n", 
                     leftR,
                     getVarMemLabel( r1->typeVariable ), r1->address);
@@ -352,7 +352,7 @@ void generateCodeMultiply( FILE* yyout, qMachine *Q, registerStruct *r1,
   fprintf(yyout,"\tR%d=R%d%cR%d;\t\t//Multiply factors\n", leftR<rightR?leftR:rightR, 
                 leftR, op, rightR);
 
-  popRegister( Q ); // We free the greater register
+  popRegister( yyout, Q ); // We free the greater register
 }
 
 void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
@@ -371,7 +371,7 @@ void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
   fprintf(yyout,"\t// Add terms\n");
 
   if( r2->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    rightR = newRegister( Q );
+    rightR = newRegister( yyout, Q );
     fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right term\n",
                 rightR, 
                 getVarMemLabel( r2->typeVariable ), r2->address);
@@ -381,7 +381,7 @@ void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
   }
 
   if( r1->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    leftR = newRegister( Q );
+    leftR = newRegister( yyout, Q );
     fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value left term\n", 
                     leftR,
                     getVarMemLabel( r1->typeVariable ), r1->address);
@@ -393,7 +393,7 @@ void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
   fprintf(yyout,"\tR%d=R%d%cR%d;\t\t//Add terms\n", leftR<rightR?leftR:rightR, 
                 leftR, op, rightR);
 
-  popRegister( Q ); // We free the greater register
+  popRegister( yyout, Q ); // We free the greater register
 }
 
 void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1, 
@@ -414,7 +414,7 @@ void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1,
 
  
   if( r2->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    rightR = newRegister( Q );
+    rightR = newRegister( yyout, Q );
     fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right expression result\n",
                 rightR, 
                 getVarMemLabel( r2->typeVariable ), r2->address);
@@ -424,7 +424,7 @@ void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1,
   }
 
   if( r1->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    leftR = newRegister( Q );
+    leftR = newRegister( yyout, Q );
     fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value left expression result\n", 
                     leftR,
                     getVarMemLabel( r1->typeVariable ), r1->address);
@@ -447,7 +447,7 @@ void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1,
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
   fprintf(yyout,"\t// End of evaluation\n");
 
-  popRegister( Q ); // We free the latest register
+  popRegister( yyout, Q ); // We free the latest register
 
 }
 
@@ -464,7 +464,7 @@ void generateCodeLogical( FILE* yyout, qMachine *Q, registerStruct *r1,
   }
 
   if( r2->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    rightR = newRegister( Q );
+    rightR = newRegister( yyout, Q );
     fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right boolean\n",
                 rightR, 
                 getVarMemLabel( r2->typeVariable ), r2->address);
@@ -474,7 +474,7 @@ void generateCodeLogical( FILE* yyout, qMachine *Q, registerStruct *r1,
   }
 
   if( r1->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
-    leftR = newRegister( Q );
+    leftR = newRegister( yyout, Q );
     fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value left boolean\n", 
                     leftR,
                     getVarMemLabel( r1->typeVariable ), r1->address);
@@ -487,7 +487,7 @@ void generateCodeLogical( FILE* yyout, qMachine *Q, registerStruct *r1,
   fprintf(yyout,"\tR%d=R%d%cR%d;\t\t//Evaluate expressions\n", leftR<rightR?leftR:rightR, 
                 leftR, op, rightR);
 
-  popRegister( Q ); // We free the greater register 
+  popRegister( yyout, Q ); // We free the greater register 
 }
 
 int generateCodeOpenWhile( FILE* yyout, qMachine *Q ){
@@ -519,10 +519,8 @@ void generateCodeEvaluateWhile( FILE* yyout, qMachine *Q, int outLabel ){
   fprintf(yyout,"\t//////////////////////////////////\n");
   fprintf(yyout,"\t// Evaluate while loop -> L:%d\n", outLabel-1 );
   
-  // R0 contains the result of the expression
+  // Rlast contains the result of the expression
   fprintf(yyout,"\tIF(R%d==0) GT(%d);\t//Jump if 0\n", lastRegister( Q )-1, outLabel);
-
-
 }
 
 void generateCodeCloseWhile( FILE* yyout, qMachine *Q, int outLabel ){
@@ -571,6 +569,33 @@ void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ){
   fprintf(yyout,"L %d:\t\t\t\t\n", outLabel);
 }
 
+void generateCodeBeginSubprogram( FILE* yyout, qMachine *Q, char pName[] ){
+    // When stat is 0, we are in a STAT block.
+    // When stat is 1, we are in a CODE blocke
+    if( Q->stat==0 ){
+      fprintf(yyout,"CODE(%d)\t\t\t\n", Q->nextCodeNumber++);
+
+      Q->stat=1;
+    }
+
+    fprintf(yyout,"\t//////////////////////////////////\n");
+    fprintf(yyout,"\t// Start procedure %s \n", pName);
+    fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+}
+
+void generateCodeEndSubprogram( FILE* yyout, qMachine *Q, char pName[] ){
+    // When stat is 0, we are in a STAT block.
+    // When stat is 1, we are in a CODE blocke
+    if( Q->stat==0 ){
+      fprintf(yyout,"CODE(%d)\t\t\t\n", Q->nextCodeNumber++);
+
+      Q->stat=1;
+    }
+
+    fprintf(yyout,"\t// End procedure %s \n", pName);
+    fprintf(yyout,"\t//////////////////////////////////\n");
+}
+
 /******************************
   Q machine management methods 
 ******************************/
@@ -616,20 +641,68 @@ int getVarStaticAddress( qMachine *Q, registerStruct *r ){
   return 0;
 }
 
+int setVarStackAddress( qMachine *Q, registerStruct *r, registerStruct **parent ){
+  if(r->typeSymbol != Variable && r->typeSymbol != Literal ) return -1;
+
+  registerStruct *aux = createRegister( r->key.id, r->key.scope,
+                                     r->typeSymbol, r->typeVariable );
+
+  switch( r->typeVariable ){
+    case Integer:
+    case Bool:
+      aux->size = 4;
+      break;
+    case Character:
+      aux->size = 1;
+      break;
+    case Real:
+      aux->size = 8;
+      break;
+    default:
+      return -2;
+  }
+  
+  aux->stackAddress=(*parent)->sizeLocals;
+
+  (*parent)->nLocals++;
+  (*parent)->sizeLocals+=aux->size;
+
+  addRegisterToList( &((*parent)->registerListLocals), 
+                     aux
+                    );
+  return 0;
+}
+
+
 int lastRegister( qMachine *Q ){
   return Q->lastRstack;
 }
 
-int newRegister( qMachine *Q ){
-  //int r=Q->lastRstack++;
+int newRegister( FILE* yyout, qMachine *Q ){
+  int r=Q->lastRstack++;
 
-  return Q->lastRstack++;
+  Q->lastRstack=Q->lastRstack%6;
+  if(Q->R[r] > 0){ //Rr is already in use
+    pushRstack( yyout, r );
+  }
+  Q->R[r]++;
+
+  return r;
 }
 
-int popRegister( qMachine *Q ){
-  //int r=Q->lastRstack;
+int popRegister( FILE* yyout, qMachine *Q ){
+  int r=--Q->lastRstack;
 
-  return --Q->lastRstack;
+  if(r<0){
+    r = 5;
+    Q->lastRstack = 5;
+  }
+  if(Q->R[r] > 1){ //Rr was in used before 
+    popRstack( yyout, r );
+  }
+  Q->R[r]--;
+
+  return r;
 }
 
 int pushRstack( FILE* yyout, int r ){
