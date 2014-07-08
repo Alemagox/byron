@@ -167,6 +167,8 @@ main :
 	BEGIN_ 
 		{ 
 			fprintf( yyout, "CODE(%d)\nL 0:\n", Q.nextCodeNumber++ ); 
+			fprintf( yyout, "\tR6=R7;\t\t\t//Initialize R6\n"); 
+			
 			Q.stat = 1;
 		}
    	sequence_of_statements
@@ -584,7 +586,7 @@ null_statement :
 object_declaration : 
 	IDENTIFIER identifier_list ':' constant type_definition assign_expression ';' 
 	{ 
-		auxRegister = createRegister( $1, sT.currentScope,  Variable, $5 ); 
+	  auxRegister = createRegister( $1, sT.currentScope,  Variable, $5 ); 
 	  errorCode = addRegister( &sT, auxRegister ); 
 	  if(errorCode){
 			yyerror();
@@ -727,6 +729,8 @@ procedure_call_statement :
 		deleteRegisterList( &auxRegisterList );
 
 		// Generate code
+
+		generateCodeProcedureCall( yyout, &Q, auxRegister );
 	}
 
 	| PUT '(' STRING_LITERAL ')' ';'
@@ -792,7 +796,10 @@ procedure_specification :
 
 	  }
 
-	  addParametersToSubprogram( &sT, $3, auxRegister );
+	  addParametersToSubprogram( &sT, $3, &auxRegister );
+
+	  setParamsStackAddress( &Q, &auxRegister );  // Addresses of parameters
+
 	  auxRegisterList = NULL;
 
 	  $<regStruct>$ = auxRegister; 
@@ -958,6 +965,9 @@ subprogram_body_ :
 		//make function for this
 		generateCodeBeginSubprogram( yyout, &Q, $1->key.id );
 
+		// Save subprogram label
+		$1->label=Q.nextLabel-1;
+
 		$$ = $1;
 	}
 	;
@@ -967,24 +977,17 @@ subprogram_body :
 	subprogram_body_
 		declarative_part
 	BEGIN_
+	{
+		generateCodeSubprogramBase( yyout, $1 );
+	}
 		sequence_of_statements
 	END IDENTIFIER';' 
 	{ 
 		exitScope ( &sT, $1 ); 
-		generateCodeEndSubprogram( yyout, &Q, $1->key.id ); 
+		generateCodeEndSubprogram( yyout, &Q, $1 ); 
 		$$ = $1; 
 	}
-|	subprogram_body_
-		declarative_part
-	BEGIN_
-		sequence_of_statements
-	END ';' 
-	{ 
-		exitScope ( &sT, $1 ); 
-		generateCodeEndSubprogram( yyout, &Q, $1->key.id ); 
-		$$ = $1; 
-	}
-;
+	;
 
 
 subprogram_specification : 

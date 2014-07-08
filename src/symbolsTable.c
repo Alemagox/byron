@@ -84,6 +84,9 @@ registerStruct *createRegister( char *id, int scope, symbolType typeSymbol, vari
   r->defined = 0;
   r->address = 0;
 
+  r->nRegisters = 0;
+  r->sizeParams = 0; 
+
   r->registerListLocals=NULL;
   r->nLocals = 0;
   r->sizeLocals = 0; 
@@ -122,11 +125,12 @@ int addRegister( symbolsTable *sT, registerStruct *r ) {
 
 void printRegister(registerStruct r);
 
-int addParametersToSubprogram( symbolsTable *sT, registerStruct *parametersList, registerStruct *r ){
+
+int addParametersToSubprogram( symbolsTable *sT, registerStruct *parametersList, registerStruct **r ){
   
-  destroyRegisterList( &(r->registerList) );
-  r->nRegisters   = HASH_COUNT( parametersList );
-  r->registerList = parametersList;
+  destroyRegisterList( &((*r)->registerList) );
+  (*r)->nRegisters   = HASH_COUNT( parametersList );
+  (*r)->registerList = parametersList;
 
   return 0;
 }
@@ -662,8 +666,8 @@ void printSubprogramRegisterList( registerStruct *subprogram ){
     getSymbolTypeName( name, iterator->typeSymbol );
     getVariableTypeName( nameVar, iterator->typeVariable );
 
-    printf("    + Param(%u): id -> %s; symbolType -> %s; variableType -> %s\n", 
-            counter, iterator->key.id, name, nameVar);
+    printf("    + Param(%u): id -> %s; symbolType -> %s; variableType -> %s; stackAddress -> %d\n", 
+            counter, iterator->key.id, name, nameVar, iterator->stackAddress);
 
     counter++;
   }
@@ -758,12 +762,15 @@ void printSymbolsTable( symbolsTable sT ) {
       ){
     
       printf("  - Defined -> %d\n", iterator->defined );
-      printf("  - sizeLocals -> %d\n", iterator->sizeLocals);
-
+      
       if (iterator->defined){
+        printf("  - sizeParams -> %d\n", iterator->sizeParams);
         printSubprogramRegisterList(iterator);
+
+        printf("  - sizeLocals -> %d\n", iterator->sizeLocals);
         printSubprogramRegisterListLocals(iterator);
       }
+
  
     }else if( iterator->typeSymbol == Type){
       printf("  - Defined -> %d\n", iterator->defined );

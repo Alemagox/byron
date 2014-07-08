@@ -193,8 +193,15 @@ void generateCodePutVariable( FILE* yyout, qMachine *Q, registerStruct *r ){
   }else{
     fprintf(yyout,"\tR1=0x%x;\t\t\t//Format int address\n", Q->formatPutIntAddress );
   }
-  fprintf(yyout,"\tR2=%c(0x%x);\t\t//Variable value\n", 
+
+  if(r->key.scope==0){
+    fprintf(yyout,"\tR2=%c(0x%x);\t\t//Static variable value\n", 
                 getVarMemLabel( r->typeVariable ), r->address);
+  }else{
+    fprintf(yyout,"\tR2=%c(R6+%d);\t\t\t//Local variable value\n", 
+                getVarMemLabel( r->typeVariable ), r->stackAddress);
+  }
+
   fprintf(yyout,"\tGT(putfi_);\t\t\t//Print variable\n" );
 
 
@@ -583,7 +590,13 @@ void generateCodeBeginSubprogram( FILE* yyout, qMachine *Q, char pName[] ){
     fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
 }
 
-void generateCodeEndSubprogram( FILE* yyout, qMachine *Q, char pName[] ){
+void generateCodeSubprogramBase( FILE* yyout,  registerStruct *r ){
+
+  fprintf(yyout,"\tR6=R7;\t\t\t\t//New base\n");
+  fprintf(yyout,"\tR7=R7-%d;\t\t\t//Reserve space for local variables\n", r->sizeLocals);
+}
+
+void generateCodeEndSubprogram( FILE* yyout, qMachine *Q, registerStruct *r ){
     // When stat is 0, we are in a STAT block.
     // When stat is 1, we are in a CODE blocke
     if( Q->stat==0 ){
@@ -592,8 +605,62 @@ void generateCodeEndSubprogram( FILE* yyout, qMachine *Q, char pName[] ){
       Q->stat=1;
     }
 
-    fprintf(yyout,"\t// End procedure %s \n", pName);
+    fprintf(yyout,"\tR7=R6;\t\t\t\t//Free local variables\n");
+    fprintf(yyout,"\tR6=P(R7+%d);\t\t\t//Recover base\n", r->sizeLocals);
+
+    pushRstack( yyout, 5 );
+    fprintf(yyout,"\tR5=P(R7+4);\t\t\t//Get return label\n" );
+    fprintf(yyout,"\tGT(R5);\t\t\t\t//Return!\n" );
+
+    fprintf(yyout,"\t// End procedure %s \n", r->key.id);
     fprintf(yyout,"\t//////////////////////////////////\n");
+}
+
+void generateCodeProcedureCall( FILE* yyout, qMachine *Q, registerStruct *r ){
+
+  // When stat is 0, we are in a STAT block.
+  // When stat is 1, we are in a CODE blocke
+  if( Q->stat==0 ){
+    fprintf(yyout,"CODE(%d)\t\t\t\n", Q->nextCodeNumber++);
+
+    Q->stat=1;
+  }
+
+  fprintf(yyout,"\t//////////////////////////////////\n");
+  fprintf(yyout,"\t// Start procedure call %s \n", r->key.id);
+
+  fprintf(yyout,"\tR7=R7-%d;\t\t\t//Reserve params space\n", r->sizeParams+8);
+
+  registerStruct *iterator;
+  int reg, counter = 1;
+  
+  for ( iterator=r->registerList; iterator != NULL; 
+        iterator=iterator->hh.next )
+  {
+    reg=newRegister( yyout, Q );
+    fprintf(yyout,"\tR%d=%c(R6-%x);\t\t\t//&%s\n", 
+                  reg, getVarMemLabel( iterator->typeVariable ), 
+                  iterator->stackAddress+8, iterator->key.id );
+    fprintf(yyout,"\t%c(R6+%x)=R%d;\t\t\t//Save parameter %d\n", 
+                  getVarMemLabel( iterator->typeVariable ), 
+                  iterator->stackAddress+8, reg, counter );
+
+    popRegister( yyout, Q );
+
+    counter++;
+  }
+
+  fprintf(yyout,"\tP(R7+4)=R6;\t\t\t//Save active base\n");
+  fprintf(yyout,"\tP(R7)=%d;\t\t\t//Save return label\n", Q->nextLabel);
+  fprintf(yyout,"\tGT(%d);\t\t\t\t//Jump to subprogram %s\n", r->label, r->key.id);
+
+  fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+  popRstack( yyout, 5 ); // Free return register
+  fprintf(yyout,"\tR7=R7+%d;\t\t\t//Free params space\n", r->sizeParams+8);
+
+  fprintf(yyout,"\t// End procedure call %s \n", r->key.id);
+  fprintf(yyout,"\t//////////////////////////////////\n");
+  
 }
 
 /******************************
@@ -617,9 +684,10 @@ char getVarMemLabel( variableType vT ){
   }
 }
 
-int getVarStaticAddress( qMachine *Q, registerStruct *r ){
-
-  if(r->typeSymbol != Variable && r->typeSymbol != Literal ) return -1;
+int getSize( registerStruct *r ){
+  if(r->typeSymbol != Variable && r->typeSymbol != Literal && 
+     r->typeSymbol != In && r->typeSymbol != InOut &&
+     r->typeSymbol != Out) return -1;
 
   switch( r->typeVariable ){
     case Integer:
@@ -635,31 +703,53 @@ int getVarStaticAddress( qMachine *Q, registerStruct *r ){
     default:
       return -2;
   }
+
+  return r->size;
+}
+
+int getVarStaticAddress( qMachine *Q, registerStruct *r ){
+
+  int size=getSize( r );
+  if(size < 0){
+    return size;
+  }
+
   Q->Ztop = Q->Ztop - r->size;
   r->address = Q->Ztop;
 
   return 0;
 }
 
+int setParamsStackAddress( qMachine *Q, registerStruct **parent ){
+
+  registerStruct *iterator;
+  int size;
+
+  for ( iterator=(*parent)->registerList; iterator != NULL; 
+        iterator=iterator->hh.next )
+  {
+    size=getSize( iterator );
+
+    if(size < 0){
+      return size;
+    }
+
+    iterator->stackAddress=(*parent)->sizeParams;
+
+    (*parent)->sizeParams+=iterator->size;
+  }
+
+  return 0;
+}
+
 int setVarStackAddress( qMachine *Q, registerStruct *r, registerStruct **parent ){
-  if(r->typeSymbol != Variable && r->typeSymbol != Literal ) return -1;
 
   registerStruct *aux = createRegister( r->key.id, r->key.scope,
                                      r->typeSymbol, r->typeVariable );
 
-  switch( r->typeVariable ){
-    case Integer:
-    case Bool:
-      aux->size = 4;
-      break;
-    case Character:
-      aux->size = 1;
-      break;
-    case Real:
-      aux->size = 8;
-      break;
-    default:
-      return -2;
+  int size=getSize( aux );
+  if(size < 0){
+    return size;
   }
   
   aux->stackAddress=(*parent)->sizeLocals;
@@ -681,6 +771,8 @@ int lastRegister( qMachine *Q ){
 int newRegister( FILE* yyout, qMachine *Q ){
   int r=Q->lastRstack++;
 
+  fprintf(yyout,"\t//Get R%d\n", r);
+  pushRstack( yyout, r );
   Q->lastRstack=Q->lastRstack%6;
   if(Q->R[r] > 0){ //Rr is already in use
     pushRstack( yyout, r );
@@ -697,6 +789,7 @@ int popRegister( FILE* yyout, qMachine *Q ){
     r = 5;
     Q->lastRstack = 5;
   }
+  fprintf(yyout,"\t//Free R%d\n", r);
   if(Q->R[r] > 1){ //Rr was in used before 
     popRstack( yyout, r );
   }

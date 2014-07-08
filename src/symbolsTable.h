@@ -68,11 +68,14 @@ struct registerStruct{
     unsigned int stackAddress; //For locals
     int size;
 
+    int label; // Label for calling the subprogram
+
     // If the symbol is a **function** or **procedure**:
     //   - nRegisters counts the number of parameters.
     // If the symbol is a **type**:
     //   - nRegisters counts the number of fields.
     int nRegisters;
+    int sizeParams;
     struct registerStruct *registerList;
 
     int nLocals;
@@ -128,7 +131,7 @@ int addRegisterToList( registerStruct **list, registerStruct *r );
 
 int addRegister( symbolsTable *sT, registerStruct *r );
 
-int addParametersToSubprogram( symbolsTable *sT, registerStruct *parametersList, registerStruct *r );
+int addParametersToSubprogram( symbolsTable *sT, registerStruct *parametersList, registerStruct **r );
 
 int addParametersToSymbolsTable( symbolsTable *sT, registerStruct *r );
 

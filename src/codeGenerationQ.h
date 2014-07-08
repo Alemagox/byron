@@ -92,7 +92,11 @@ void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel );
 
 void generateCodeBeginSubprogram( FILE* yyout, qMachine *Q, char pName[] );
 
-void generateCodeEndSubprogram( FILE* yyout, qMachine *Q, char pName[] );
+void generateCodeSubprogramBase( FILE* yyout, registerStruct *r );
+
+void generateCodeEndSubprogram( FILE* yyout, qMachine *Q, registerStruct *r );
+
+void generateCodeProcedureCall( FILE* yyout, qMachine *Q, registerStruct *r );
 
 
 /******************************
@@ -100,7 +104,11 @@ void generateCodeEndSubprogram( FILE* yyout, qMachine *Q, char pName[] );
 ******************************/
 char getVarMemLabel (variableType vT);
 
+int getSize( registerStruct *r );
+
 int getVarStaticAddress( qMachine *Q, registerStruct *r );
+
+int setParamsStackAddress( qMachine *Q, registerStruct **parent );
 
 int setVarStackAddress( qMachine *Q, registerStruct *r, registerStruct **parent );
 
