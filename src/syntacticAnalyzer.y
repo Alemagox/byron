@@ -364,12 +364,16 @@ case_statement_alternative_list :
 
 component_item : 
 	IDENTIFIER identifier_list ':' type_definition assign_expression ';'
+	{
+		auxRegister = createRegister( $1, sT.currentScope,  Field, $4); 
+		addRegisterToList( &auxRegisterList, auxRegister ); 
+	}
 	;
 
 
 component_list : 
-	component_list component_item
-	| /* empty */
+	component_item component_list 
+	| component_item
 	;
 
 
@@ -761,6 +765,9 @@ record_type_definition :
 	RECORD
 		component_list
 	END RECORD
+	{
+		auxRegisterList = NULL;
+	}
 	;
 
 
@@ -845,6 +852,14 @@ selected_component :
 	variable '.' IDENTIFIER // Original rule was 
 						// name '.' IDENTIFIER 
 						// which allowed select directly from a function
+		/* {
+			if($1->typeVariable == Record){
+				
+			}else{
+				yyerror("%s it is not a Record type", $1);
+				YYABORT;
+			}
+		} */
 	;
 
 
@@ -1005,6 +1020,15 @@ term :
 
 type_declaration : 
 	TYPE IDENTIFIER IS type_definition ';'
+	{
+		auxRegister = createRegister( $2, sT.currentScope,  Type, Void );
+		errorCode = addRegister( &sT, auxRegister );
+		printf("##################################\n");
+		if(errorCode){
+			yyerror("Type %s is already defined.", $4);
+			YYABORT;
+		}
+	}
 	;
 
 
