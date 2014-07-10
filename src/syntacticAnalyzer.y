@@ -725,12 +725,12 @@ procedure_call_statement :
   	  YYABORT;
   	}
   	
-  	// It sets auxRegisterList as NULL
-		deleteRegisterList( &auxRegisterList );
-
 		// Generate code
+		generateCodeProcedureCall( yyout, &Q, &sT, auxRegister, auxRegisterList );
 
-		generateCodeProcedureCall( yyout, &Q, auxRegister );
+
+		// It sets auxRegisterList as NULL
+		deleteRegisterList( &auxRegisterList );
 	}
 
 	| PUT '(' STRING_LITERAL ')' ';'
@@ -747,7 +747,10 @@ procedure_call_statement :
 			} 
 
 			// Generate code
-			generateCodePutVariable( yyout, &Q, $3 );
+			//auxRegister=getSymbol(  &sT, $3->key.id, $3->key.scope );
+			//printRegister(*auxRegister);
+
+			generateCodePutVariable( yyout, &Q, auxRegister );
 		}
 	| GET '(' variable ')' ';'
 		{ 
@@ -798,7 +801,8 @@ procedure_specification :
 
 	  addParametersToSubprogram( &sT, $3, &auxRegister );
 
-	  setParamsStackAddress( &Q, &auxRegister );  // Addresses of parameters
+	 
+	  //setParamsStackAddress( &Q, &auxRegister );  // Addresses of parameters
 
 	  auxRegisterList = NULL;
 
@@ -955,6 +959,8 @@ subprogram_body_ :
 	{
 		enterScope ( &sT );
 		parentSubprogram = $1;
+
+		setParamsStackAddress( &Q, &parentSubprogram );  // Addresses of parameters
 
 		errorCode = addParametersToSymbolsTable(&sT, $<regStruct>1);
 		if ( errorCode!=0 ){

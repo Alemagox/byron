@@ -1,0 +1,128 @@
+-- procedure main is
+
+--   procedure Mellamanbucle(c2: in out Character) is
+--    begin
+
+--     while (c2 /= 'n' and c2/= 'q') loop
+--       -- if(c='a')then
+--       --   Put("Muahahaha");
+--       --   New_Line;
+--       -- end if;
+
+--       -- if(c = '3' or c <= '7' and c >= '5') then
+--       --   Put("Numero: ");
+--       --   Put(c);
+--       --   New_Line;        
+--       -- end if;
+
+--       Put("Enter a letter(n to exit): ");
+--       Get(c2);
+--     end loop;
+
+--   end Mellamanbucle;
+
+--   i : Integer;
+--   c : Character;
+-- begin
+
+
+--   Put("Enter a letter(n to exit): ");
+--   Get(c);
+
+--   Mellamanbucle(c);
+
+--   Put("You're out! :");
+--   Put(c);
+--   New_Line;
+
+
+--   New_Line;
+
+--   null;
+
+-- end main;
+
+-- arithmeticInterpreter.byr
+
+--With                    -- To compile in Ada
+--Ada.Text_IO;            -- To compile in Ada
+
+procedure main is
+
+   --Use Ada.Text_IO;     -- To compile in Ada
+
+   procedure Expresion(c: in out Character; resultado: out Integer);
+
+   procedure Error is
+   begin   
+
+      Put("Expresion erronea");  
+
+   end Error;
+
+
+   procedure Numero(c: in out Character; resultado: out Integer) is
+      aux : Integer;
+    op : Character;
+   begin
+      
+
+      resultado := 0;
+      
+      if (c < '0' or c > '9') then
+        --Error();        
+        null;
+      end if;
+
+      -- while (c > '0' and c < '9') loop
+      while ('1') loop
+         --resultado := 10*resultado+Character'Pos(c)-Character'Pos('0'); -- To compile in Ada
+         -- resultado := 10*resultado + c - '0' ;                            -- Byron style, explicit casting.
+         Error();
+         Get (c);
+      end loop; 
+
+   end Numero;
+
+   procedure Factor(c: in out Character; resultado: out Integer) is
+   begin
+
+      Numero(c, resultado);   
+
+  end Factor;
+
+  procedure Termino(c: in out Character; resultado: out Integer) is
+    aux : Integer;
+    op : Character;
+  begin
+    Factor(c, resultado);            
+  end Termino; 
+
+  procedure Expresion(c: in out Character; resultado: out Integer) is 
+    aux : Integer;
+    op : Character;
+  begin
+         
+    Put("-"); 
+    Put(c); 
+    Put("-");
+
+    Termino(c, resultado);
+            
+  end Expresion;
+      
+      
+  c : Character;
+  resultado : Integer;
+
+begin
+
+   c:='y';
+   while (c /= 'n') loop
+     Get(c);
+     Expresion(c, resultado);
+     
+     null;
+   end loop;
+
+end main;

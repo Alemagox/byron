@@ -1,0 +1,151 @@
+-- arithmeticInterpreter.byr
+
+--With                    -- To compile in Ada
+--Ada.Text_IO;            -- To compile in Ada
+
+procedure main is
+
+   --Use Ada.Text_IO;     -- To compile in Ada
+
+    procedure Expresion(c: in out Character; resultado: out Integer);
+
+   procedure Error is
+   begin   
+
+      Put("Expresion erronea");
+      New_Line;
+
+   end Error;
+
+
+   procedure Numero(c: in out Character; resultado: out Integer) is
+   begin
+
+      resultado := 0;
+      
+      if (c < '0' or c > '9') then
+        Error();        
+      end if;
+
+      while (c > '0' and c < '9') loop
+         resultado := 10*resultado + c - '0' ;                            -- Byron style, explicit casting.
+         --Put(resultado);
+         Get (c);
+      end loop; 
+
+   end Numero;
+
+   procedure Factor(c: in out Character; resultado: out Integer) is
+   begin
+
+    resultado := 0;
+      
+    if (c = '(') then
+      Get (c);
+       
+      Expresion(c,resultado);
+       
+      if (c = ')') then
+        Get (c);
+      else
+        --Put("1");
+        Error();
+      end if;
+       
+    else
+      Put("Paso a numero");
+      New_Line;
+      Numero(c, resultado);   
+    end if;
+
+  end Factor;
+
+  procedure Termino(c: in out Character; resultado: out Integer) is
+    aux : Integer;
+    op : Character;
+  begin
+    Factor(c, resultado);
+      
+    -- while (c = '*' or c = '/') loop
+      op:=c;
+      Get(c);
+      Factor(c, aux);
+         
+
+      if(op = '*') then
+        resultado := resultado*aux;
+      end if;
+      if(op = '/') then
+        resultado := resultado/aux;
+      end if;
+      null;
+    -- end loop;
+    null;
+            
+  end Termino; 
+
+  procedure Expresion(c: in out Character; resultado: out Integer) is 
+    -- aux : Integer;
+    -- op : Character;
+  begin
+     
+    Put("-"); 
+    Put(c); 
+    Put("-");
+
+    -- if(c='+' or c='-')then
+    --    op := c;
+    --    Get(c);
+    -- end if;
+    
+    -- Termino(c, resultado);
+      
+    -- if (op = '-') then
+    --   resultado := -resultado;
+    -- end if;
+      
+    -- while (c = '+' or c = '-') loop
+    --   op:=c;
+    --   Get(c);
+    --   Termino(c, aux);
+    
+
+    --   if(op = '+') then
+    --     resultado := resultado+aux;
+    --   end if;
+    --   if(op = '-') then
+    --     resultado := resultado-aux;
+    --   end if;
+
+    -- end loop;
+            
+  end Expresion;
+      
+      
+  c : Character;
+  resultado : Integer;
+
+begin
+
+  --Put("Put your expression: ");
+
+  c:='y';
+   
+  -- Due to limitations of get in Ada, the expression has to finish with ;
+   
+  while (c /= 'n') loop
+    Get(c);
+    Expresion(c, resultado);
+      
+    --Put("Result is: "); 
+
+    --Put(resultado);  -- Byron style, implicit casting to literal_string
+    --New_Line;
+      
+    --Put("New expression?(y/n): ");
+    --Get (c);
+  end loop;
+    
+  null;
+
+end main;

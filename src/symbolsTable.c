@@ -145,6 +145,10 @@ int addParametersToSymbolsTable( symbolsTable *sT, registerStruct *r ){
                                currentRegister->typeSymbol,
                                currentRegister->typeVariable );
 
+    toInsert->stackAddress=currentRegister->stackAddress;
+    toInsert->address=currentRegister->address;
+    toInsert->size=currentRegister->size;
+
     errorCode = addRegister( sT, toInsert );
     if(errorCode != 0) return errorCode; 
   }

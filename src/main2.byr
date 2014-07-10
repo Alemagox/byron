@@ -4,7 +4,7 @@
 --Ada.Text_IO;            -- To compile in Ada
 
 procedure main is
-  procedure Error(ci: in  Character) is
+  procedure Error(ci: in  Character; co: out Character; co2: out Character) is
     --a : Integer;
     --b : Real;
     --c : Character;
@@ -17,11 +17,25 @@ procedure main is
       Put("Character is: ");  
       Put(ci);
 
+      New_Line;
+
+      Put("Character out co doesn't display: ");  
+      Put(co);
+      New_Line;
+
+      Put("Character out co2 doesn't display: ");  
+      Put(co2);
+
+      New_Line;
+      co2 := 'z';
+
    end Error;
 
   i : Integer;
   i2: Integer;
   c : Character;
+  c2: Character;
+  c3: Character;
 begin
   --c := '4';
   --i := 2*12-2*(5+5)/(2-1);
@@ -31,10 +45,19 @@ begin
   Put("Result = ");
   i := 4;
   Put(i);
-  New_line;
+  New_Line;
 
   c := '9';
-  Error(c);
+  c2:= '2';
+  Put("Character out c2 does display: ");  
+  Put(c2);
+  New_Line;
+
+  Error(c, c2, c3);
+
+
+  Put("Character out c3 does display: ");  
+  Put(c3);
 
   --Put(i);
   New_Line;

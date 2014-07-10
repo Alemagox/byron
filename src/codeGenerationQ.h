@@ -96,7 +96,7 @@ void generateCodeSubprogramBase( FILE* yyout, registerStruct *r );
 
 void generateCodeEndSubprogram( FILE* yyout, qMachine *Q, registerStruct *r );
 
-void generateCodeProcedureCall( FILE* yyout, qMachine *Q, registerStruct *r );
+void generateCodeProcedureCall( FILE* yyout, qMachine *Q, symbolsTable *sT, registerStruct *r, registerStruct *parametersCalled );
 
 
 /******************************
