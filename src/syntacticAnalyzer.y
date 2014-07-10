@@ -526,8 +526,9 @@ identifier_list :
 
 if_statement : 
 	IF {  fprintf(yyout,"\t//////////////////////////////////\n");
-  			fprintf(yyout,"\t// Open if block \n");
-				$<integer>$=Q.nextLabel++; 
+  			fprintf(yyout,"\t// Open if block %d\n", Q.nextLabel-1);
+				$<integer>$=Q.nextLabel++;    // After this condition
+				Q.nextLabel++; 								// Reserve end of If statement Label 
 			}
 		'(' expression ')'
 		{ 
@@ -544,6 +545,11 @@ if_statement :
 	elsif_list
 	else_statement
 	END IF ';'
+	{
+		fprintf(yyout,"L %d:\t\t\t\t\n", $<integer>2 +1);
+  	fprintf(yyout,"\t// Close if statement %d\n", $<integer>2-1);
+  	fprintf(yyout,"\t//////////////////////////////////\n");
+	}
 	;
 
 

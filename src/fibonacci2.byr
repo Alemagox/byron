@@ -1,0 +1,37 @@
+-- fibonacci.byr
+
+procedure main is
+
+	procedure Fibonacci(n: in Integer; resultado: out Integer) is
+		resultado1 : Integer;
+		resultado2 : Integer;
+		aux : Integer;
+	begin
+		if ( n=0 or n=1 ) then
+			resultado := 1;
+		else
+
+			aux := n-1;
+			Fibonacci( aux, resultado1 );
+			
+			aux := n-2;
+			Fibonacci( aux, resultado2 );
+
+			resultado := resultado1 + resultado2;
+		end if;
+
+	end Fibonacci;
+
+	n   : Integer;
+	res : Integer;
+
+begin
+
+	Put("Entra el numero de Fibonacci a calcular: ");
+	Get(n);
+	Put("El numero es : ");
+	Put(n);
+	Fibonacci(n, res);
+	Put(res);
+
+end main;

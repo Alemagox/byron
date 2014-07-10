@@ -601,7 +601,9 @@ void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ){
     Q->stat=1;
   }
 
-  popRegister( yyout, Q );  
+  //popRegister( yyout, Q );
+  //popRegister( yyout, Q );  
+  fprintf(yyout,"\tGT(%d);// Jump out of if block \n", outLabel);
   fprintf(yyout,"\t// Close if block \n");
   fprintf(yyout,"\t//////////////////////////////////\n");
   fprintf(yyout,"L %d:\t\t\t\t\n", outLabel);
@@ -666,23 +668,22 @@ void generateCodeProcedureCall( FILE* yyout, qMachine *Q, symbolsTable *sT, regi
   registerStruct *iterator, *formalParam, *regVar;
   int reg, counter = 1;
   
+  ////////////////////////////////////////////////////////////////////////////////
   // Copy value of input parameters
   formalParam=r->registerList;
   for ( iterator=parametersCalled; iterator != NULL; 
         iterator=iterator->hh.next )
   {
+  
     if(formalParam->typeSymbol==InOut || formalParam->typeSymbol==In){
       reg=newRegister( yyout, Q );
+      printf("new register: %d\n", reg);
       regVar=getSymbol(  sT, iterator->key.id, iterator->key.scope );
 
-      if(regVar->key.scope==0){
-        fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Static variable value\n", reg,
-                    getVarMemLabel( regVar->typeVariable ), regVar->address);
-      }else{
-        fprintf(yyout,"\tR%d=%c(R6+%d);\t\t\t//Local variable value\n", reg,
-                    getVarMemLabel( regVar->typeVariable ), regVar->stackAddress+8);
-      }
-      
+      getMemAddress( regVar, addressString );
+      fprintf(yyout,"\tR%d=%c(%s);\t\t//Load variable '%s' value\n", reg,
+                    getVarMemLabel( regVar->typeVariable ), addressString, regVar->key.id);
+    
       popRegister( yyout, Q );
 
       fprintf(yyout,"\t%c(R7+%d)=R%d;\t\t\t//Pass value parameter %d\n", 
@@ -705,7 +706,7 @@ void generateCodeProcedureCall( FILE* yyout, qMachine *Q, symbolsTable *sT, regi
   //popRstack( yyout, 5 ); // Free return register
   fprintf(yyout,"\tR6=P(R7+4);\t\t\t//Recover active base\n");
 
-  
+  //////////////////////////////////////////////77
   // Copy value of outputput parameters
   counter=1;
   formalParam=r->registerList;
@@ -720,13 +721,9 @@ void generateCodeProcedureCall( FILE* yyout, qMachine *Q, symbolsTable *sT, regi
                     reg, getVarMemLabel( formalParam->typeVariable ), 
                     formalParam->stackAddress+8,  counter );
 
-      if(regVar->key.scope==0){
-        fprintf(yyout,"\t%c(0x%x)=R%d;\t\t//Static variable value\n",
-                    getVarMemLabel( regVar->typeVariable ), regVar->address, reg);
-      }else{
-        fprintf(yyout,"\t%c(R6+%d)=R%d;\t\t\t//Local variable value\n",
-                    getVarMemLabel( regVar->typeVariable ), regVar->stackAddress+8, reg);
-      }
+      getMemAddress( regVar, addressString );
+      fprintf(yyout,"\t%c(%s)=R%d;\t\t//Save variable '%s' value\n",
+                    getVarMemLabel( regVar->typeVariable ), addressString, reg, regVar->key.id);
       
       popRegister( yyout, Q );
 
@@ -914,7 +911,13 @@ int getMemAddress( registerStruct *r, char addressString[] ){
   if(r->key.scope==0 || r->typeSymbol==Literal ){
     sprintf(addressString,"0x%x", r->address);
   }else{
-    sprintf(addressString,"R6+%d", r->stackAddress+8);
+    if( r->typeSymbol==In || 
+        r->typeSymbol==InOut ||
+        r->typeSymbol==Out ){
+      sprintf(addressString,"R6+%d", r->stackAddress+8);
+    }else{
+      sprintf(addressString,"R6-%d", r->stackAddress);
+    }
   }
 
   return 0;

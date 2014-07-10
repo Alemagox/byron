@@ -139,11 +139,13 @@ L getfc_: {
     char i;
     char c;
 
-    scanf((char*)p, &i);            // leer
-    
+    //scanf((char*)p, &i);            // leer
+    i=getc(stdin);
+
+
     U(R2)=i;                        // guardar
-    if(i != '\n')
-      scanf("%c", &c);              // catch enter
+    //if(i != '\n')
+    //  scanf("%c", &c);              // catch enter
 
     reinv_str(p,&U(R1));        // re-invierte           
     GT(R0);                           // retorna
