@@ -129,10 +129,21 @@ L getfi_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er cha
 L getfc_: {
     unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
     
+    /*
     char i = getchar();
     if(i=='\n') i = getchar();
 
     U(R2)=i;                        // guardar
+    */
+
+    char i;
+    char c;
+
+    scanf((char*)p, &i);            // leer
+    
+    U(R2)=i;                        // guardar
+    if(i != '\n')
+      scanf("%c", &c);              // catch enter
 
     reinv_str(p,&U(R1));        // re-invierte           
     GT(R0);                           // retorna

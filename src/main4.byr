@@ -65,8 +65,10 @@ procedure main is
     op : Character;
   begin
     Factor(c, resultado);
-      
-    -- while (c = '*' or c = '/') loop
+    
+    Put("Sale de factor");
+
+    while (c = '*' or c = '/') loop
       op:=c;
       Get(c);
       Factor(c, aux);
@@ -79,45 +81,48 @@ procedure main is
         resultado := resultado/aux;
       end if;
       null;
-    -- end loop;
+    end loop;
     null;
             
   end Termino; 
 
   procedure Expresion(c: in out Character; resultado: out Integer) is 
-    -- aux : Integer;
-    -- op : Character;
+    aux : Integer;
+    op : Character;
   begin
      
     Put("-"); 
     Put(c); 
     Put("-");
 
-    -- if(c='+' or c='-')then
-    --    op := c;
-    --    Get(c);
-    -- end if;
+    if(c='+' or c='-')then
+       op := c;
+       Put("Op");
+       Get(c);
+    end if;
     
-    -- Termino(c, resultado);
+    Termino(c, resultado);
       
-    -- if (op = '-') then
-    --   resultado := -resultado;
-    -- end if;
+    if (op = '-') then
+      resultado := -resultado;
+    end if;
       
-    -- while (c = '+' or c = '-') loop
-    --   op:=c;
-    --   Get(c);
-    --   Termino(c, aux);
+    while (c = '+' or c = '-') loop
+      op:=c;
+      Put("Op2");
+
+      Get(c);
+      Termino(c, aux);
     
 
-    --   if(op = '+') then
-    --     resultado := resultado+aux;
-    --   end if;
-    --   if(op = '-') then
-    --     resultado := resultado-aux;
-    --   end if;
+      if(op = '+') then
+        resultado := resultado+aux;
+      end if;
+      if(op = '-') then
+        resultado := resultado-aux;
+      end if;
 
-    -- end loop;
+    end loop;
             
   end Expresion;
       
@@ -135,15 +140,16 @@ begin
    
   while (c /= 'n') loop
     Get(c);
+
     Expresion(c, resultado);
       
-    --Put("Result is: "); 
+    Put("Result is: "); 
 
-    --Put(resultado);  -- Byron style, implicit casting to literal_string
-    --New_Line;
+    Put(resultado);  -- Byron style, implicit casting to literal_string
+    New_Line;
       
-    --Put("New expression?(y/n): ");
-    --Get (c);
+    Put("New expression?(y/n): ");
+    Get (c);
   end loop;
     
   null;

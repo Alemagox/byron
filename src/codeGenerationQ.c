@@ -318,31 +318,11 @@ void generateCodeAssignment( FILE* yyout, qMachine *Q, registerStruct *r1,
     getMemAddress( r2, addressString );
     fprintf(yyout,"\tR%d=%c(%s);\t\t//Load value right side (static)\n", 
                    newRegister( yyout, Q ), getVarMemLabel( r2->typeVariable ), addressString);
-
-/*
-    if(r2->key.scope==0 || r2->typeSymbol == Literal){
-      fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right side (static)\n", 
-                   newRegister( yyout, Q ), getVarMemLabel( r2->typeVariable ), r2->address);
-    }else{
-      fprintf(yyout,"\tR%d=%c(R6+%d);\t\t//Load value right side (local)\n", 
-                   newRegister( yyout, Q ), getVarMemLabel( r2->typeVariable ), r2->stackAddress+8);
-    }
-*/
   }
 
   getMemAddress( r1, addressString );
   fprintf(yyout,"\t%c(%s)=R%d;\t\t//Save value right side into variable (static)\n", 
                 getVarMemLabel( r1->typeVariable ), addressString, modReg(lastRegister( Q )-1));
-
-/*  
-  if(r1->key.scope==0){
-      fprintf(yyout,"\t%c(0x%x)=R%d;\t\t//Save value right side into variable (static)\n", 
-                getVarMemLabel( r1->typeVariable ), r1->address, modReg(lastRegister( Q )-1));
-  }else{
-    fprintf(yyout,"\t%c(R6+%d)=R%d;\t\t//Save value right side into variable (local)\n", 
-              getVarMemLabel( r1->typeVariable ), r1->stackAddress+8, modReg(lastRegister( Q )-1));
-  }
-*/
 
   popRegister( yyout, Q ); // Free assigned register
 }
@@ -607,8 +587,8 @@ void generateCodeEvaluateIf( FILE* yyout, qMachine *Q, int outLabel ){
   fprintf(yyout,"\t// Evaluate if block \n" );
   
   // R0 contains the result of the expression
-  fprintf(yyout,"\tIF(R%d==0) GT(%d);\t//Jump if 0\n", modReg(lastRegister( Q )-1),  outLabel);
-
+  popRegister( yyout, Q ); 
+  fprintf(yyout,"\tIF(R%d==0) GT(%d);\t//Jump if 0\n", modReg(lastRegister( Q )),  outLabel);
 
 }
 
@@ -621,8 +601,9 @@ void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ){
     Q->stat=1;
   }
 
-  fprintf(yyout,"\t//////////////////////////////////\n");
+  popRegister( yyout, Q );  
   fprintf(yyout,"\t// Close if block \n");
+  fprintf(yyout,"\t//////////////////////////////////\n");
   fprintf(yyout,"L %d:\t\t\t\t\n", outLabel);
 }
 
