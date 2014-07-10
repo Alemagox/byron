@@ -82,9 +82,15 @@ registerStruct *createRegister( char *id, int scope, symbolType typeSymbol, vari
   r->typeVariable = typeVariable;
 
   r->defined = 0;
-
   r->address = 0;
-	
+
+  r->nRegisters = 0;
+  r->sizeParams = 0; 
+
+  r->registerListLocals=NULL;
+  r->nLocals = 0;
+  r->sizeLocals = 0; 
+
 	return r;
 }
 
@@ -119,11 +125,12 @@ int addRegister( symbolsTable *sT, registerStruct *r ) {
 
 void printRegister(registerStruct r);
 
-int addParametersToSubprogram( symbolsTable *sT, registerStruct *parametersList, registerStruct *r ){
+
+int addParametersToSubprogram( symbolsTable *sT, registerStruct *parametersList, registerStruct **r ){
   
-  destroyRegisterList( &(r->registerList) );
-  r->nRegisters   = HASH_COUNT( parametersList );
-  r->registerList = parametersList;
+  destroyRegisterList( &((*r)->registerList) );
+  (*r)->nRegisters   = HASH_COUNT( parametersList );
+  (*r)->registerList = parametersList;
 
   return 0;
 }
@@ -137,6 +144,10 @@ int addParametersToSymbolsTable( symbolsTable *sT, registerStruct *r ){
     toInsert = createRegister( currentRegister->key.id, sT->currentScope,
                                currentRegister->typeSymbol,
                                currentRegister->typeVariable );
+
+    toInsert->stackAddress=currentRegister->stackAddress;
+    toInsert->address=currentRegister->address;
+    toInsert->size=currentRegister->size;
 
     errorCode = addRegister( sT, toInsert );
     if(errorCode != 0) return errorCode; 
@@ -205,12 +216,10 @@ void enterScope( symbolsTable *sT ){
   sT->currentScope++;
 }
 
-void exitScope( symbolsTable *sT ){
+void exitScope( symbolsTable *sT, registerStruct *r){
   registerStruct *iterator = sT->lastRegister;
-  registerStruct *delete;
+  registerStruct *delete, *toInsert;
 
-  //printf("Exiting scope!!!!\n");
-  //printSymbolsTable (*sT);
 
   // Take out all the symbols in currentScope
   while(iterator != NULL && iterator->key.scope == sT->currentScope){
@@ -218,11 +227,11 @@ void exitScope( symbolsTable *sT ){
 
     iterator = iterator->hh.prev;
 
+    // Delete symbols
     HASH_DEL( sT->table, delete );
     destroyRegister( delete );
   }
   
-
   // Decrease currentScope
   sT->currentScope--;
 }
@@ -661,8 +670,50 @@ void printSubprogramRegisterList( registerStruct *subprogram ){
     getSymbolTypeName( name, iterator->typeSymbol );
     getVariableTypeName( nameVar, iterator->typeVariable );
 
-    printf("    + Param(%u): id -> %s; symbolType -> %s; variableType -> %s\n", 
-            counter, iterator->key.id, name, nameVar);
+    printf("    + Param(%u): id -> %s; symbolType -> %s; variableType -> %s; stackAddress -> %d\n", 
+            counter, iterator->key.id, name, nameVar, iterator->stackAddress);
+
+    counter++;
+  }
+
+}
+
+void printSubprogramRegisterListLocals( registerStruct *subprogram ){
+
+  registerStruct *iterator;
+  char name[15], nameVar[15];
+  unsigned counter = 1;
+  bool print = true;
+  
+  
+  if ( subprogram->nLocals == 0){ 
+    printf("  - Procedure has 0 parameters. \n");
+    print = false;
+
+    if (subprogram->registerListLocals != NULL){
+      printf("    !! Procedure locals list should be null!!\n");
+    }
+  }
+  else{
+    if (subprogram->nLocals == 1)
+      printf("  - Procedure has 1 local: \n");
+    else
+      printf("  - Procedure has %d locals: \n", subprogram->nLocals);
+
+    if (subprogram->registerListLocals == NULL){
+      printf("    !! Procedure locals list should NOT be null!!\n");
+      print = false;
+    } 
+  }
+  
+  for ( iterator=subprogram->registerListLocals; iterator != NULL; 
+        iterator=iterator->hh.next )
+  {
+    getSymbolTypeName( name, iterator->typeSymbol );
+    getVariableTypeName( nameVar, iterator->typeVariable );
+
+    printf("    + Local(%u): id -> %s; symbolType -> %s; variableType -> %s; stackAddress -> %d\n", 
+            counter, iterator->key.id, name, nameVar, iterator->stackAddress);
 
     counter++;
   }
@@ -715,10 +766,15 @@ void printSymbolsTable( symbolsTable sT ) {
       ){
     
       printf("  - Defined -> %d\n", iterator->defined );
-
+      
       if (iterator->defined){
+        printf("  - sizeParams -> %d\n", iterator->sizeParams);
         printSubprogramRegisterList(iterator);
+
+        printf("  - sizeLocals -> %d\n", iterator->sizeLocals);
+        printSubprogramRegisterListLocals(iterator);
       }
+
  
     }else if( iterator->typeSymbol == Type){
       printf("  - Defined -> %d\n", iterator->defined );

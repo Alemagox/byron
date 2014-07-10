@@ -23,7 +23,7 @@ FILE *yyout;		// Compiled file
 /////////////////////////////////////////////
 // Variables used to work with symbols table
 symbolsTable sT;
-registerStruct *auxRegister, *auxRegisterList;
+registerStruct *auxRegister, *auxRegisterList, *parentSubprogram;
 qMachine Q;
 
 int errorCode, nRegisters;
@@ -65,11 +65,9 @@ void generateAnonymousId();
 %token BEGIN_	// It created conflict with BEGIN from flex :(
 %token CASE
 %token CONSTANT
-//%token DO
 %token ELSE
 %token ELSIF
 %token END
-//%token END_LINE  //In byron we can directly ignore new lines
 %token FUNCTION
 %token IF
 %token <string> IDENTIFIER
@@ -98,19 +96,16 @@ void generateAnonymousId();
 %token LESSER_EQUAL_OP	// <=
 
 // Setting operators precedence
-%left '+'
-%left '-'
-%left '*'
-%left POWER_OP			// **
+%left '+' '-' 
+%left '*' '/'
+%left OR 
 %left AND
-%left OR
 
 // Built in functions
 %token PUT
 %token GET
 %token LENGTH
 %token NEW_LINE
-%token CONCAT
 
 // Type tokens
 %token <integer> INTEGER_TYPE
@@ -132,8 +127,6 @@ void generateAnonymousId();
 %type <regStruct>			actual_parameter_list
 %type <regStruct>			actual_parameter_part
 %type <regStruct>			assignment_statement
-%type <regStruct>		 	binary_adding_list
-%type <op>						binary_adding_operator
 %type <regStruct>			discrete_choice
 %type <regStruct>			discrete_choice_list
 %type <regStruct>			expression
@@ -141,15 +134,13 @@ void generateAnonymousId();
 %type <regStruct>			factor
 %type <regStruct>			formal_part
 %type <regStruct>			function_specification
-%type <op>						logical_operator
 %type <typeSymbol>		mode
-%type <op>						multiplying_operator
 %type <regStruct>			primary 
 %type <regStruct>			procedure_specification 
 %type <regStruct>			relation
-%type <regStruct>			relation_list
 %type <string>				relational_operator
 %type <regStruct>			simple_expression
+%type <regStruct>			simple_expression_
 %type <regStruct>			subprogram_body
 %type <regStruct>			subprogram_body_
 %type <regStruct>			subprogram_specification
@@ -176,6 +167,8 @@ main :
 	BEGIN_ 
 		{ 
 			fprintf( yyout, "CODE(%d)\nL 0:\n", Q.nextCodeNumber++ ); 
+			fprintf( yyout, "\tR6=R7;\t\t\t//Initialize R6\n"); 
+			
 			Q.stat = 1;
 		}
    	sequence_of_statements
@@ -210,26 +203,6 @@ actual_parameter_list :
 			//$$ = auxRegisterList;
 		}
 	;
-
-/*
-actual_parameter_list : 
-	expression expression_list
-	{ 
-		/*
-		printf("!¡!¡ - actual_parameter_list. Line: %d\n", line);
-		printSymbolsTable(sT);
-		printf("\n");
-		addRegisterToList( &auxRegisterList, $1 );
-		printf("\n");
-		printSymbolsTable(sT);
-		printf("\n");
-		
-
-		addRegisterToList( &auxRegisterList, $1 );
-		$$ = auxRegisterList;
-	}
-	;
-*/
 
 actual_parameter_part : 
 	'(' ')' { $$ = NULL; }
@@ -284,57 +257,6 @@ assignment_statement :
 		generateCodeAssignment( yyout, &Q, $1, $3 );
 	}
 	;
-
-
-binary_adding_list : 
-	binary_adding_operator term
-		{
-			errorCode = checkIfNumeric(errorString, $<regStruct>2, 1);
-			if(errorCode){
-				yyerror(errorString);
-				YYABORT;
-			}
-
-			/* Generate code for addition */
-			generateCodeAddition( yyout, &Q, $<regStruct>-1, $2, $1 );
-
-			generateAnonymousId();
-			auxRegister = createRegister( anonymousIdString, 
-																		sT.currentScope, Auxiliar, 
-																		getFactorVariableType($<regStruct>-1, $2)
-																	);	
-			if($2->typeSymbol==Auxiliar) destroyRegister($2);
-			$$ = auxRegister;
-		}
-	| binary_adding_operator term { $<regStruct>$ = $2 ; } binary_adding_list
-		{
-			errorCode = checkIfNumeric(errorString, $<regStruct>2, 1);
-			if(errorCode){
-				yyerror(errorString);
-				YYABORT;
-			}
-
-			/* Generate code for addition */
-			generateCodeAddition( yyout, &Q, $<regStruct>-1, $4, $1 );
-
-			generateAnonymousId();
-			auxRegister = createRegister( anonymousIdString, 
-																		sT.currentScope, Auxiliar, 
-																		getFactorVariableType($<regStruct>-1, $4)
-																	);	
-
-			if($2->typeSymbol==Auxiliar) destroyRegister($2);
-			if($4->typeSymbol==Auxiliar) destroyRegister($4);
-			//destroyRegister($4);
-			$$ = auxRegister;
-		}
-	;
-
-binary_adding_operator : 
-	'+' 	{	$$ = '+'; }
-	| '-'	{	$$ = '-'; }
-	;
-
 
 case_statement : 
 	CASE IDENTIFIER IS
@@ -419,16 +341,6 @@ declarative_item :
 	  }
 	; 
 
-/*
-declarative_part : 
-	{ enterScope ( &sT ); } declarative_part_
-
-
-declarative_part_	:
-	 declarative_item declarative_part_
-	| /* empty */ /*
-	;
-*/
 declarative_part	:
 	 declarative_item declarative_part
 	| /* empty */ 
@@ -507,17 +419,58 @@ elsif_statement :
 		{ generateCodeNextIf( yyout, &Q, $<integer>2 ); }
 	;
 
-
 expression : 
-	relation { $<regStruct>$ = $1; } relation_list {
+	relation { $<regStruct>$ = $1; } 
+	| expression AND expression
+		{
+			errorCode = checkIfNumeric(errorString, $1, 3);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			errorCode = checkIfNumeric(errorString, $3, 3);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			// Generate code for addition 
+			generateCodeLogical( yyout, &Q, $1, $3, '*' );
 
-		if($3->typeVariable == Void ){ // There's no list
-			$$ = $1;
-			destroyRegister($3);
-		}else {
-			$$ = $3;
+			generateAnonymousId();
+			auxRegister = createRegister( anonymousIdString, 
+																		sT.currentScope, Auxiliar, 
+																		getFactorVariableType($1, $3)
+																	);	
+			if($1->typeSymbol==Auxiliar) destroyRegister($1);
+			if($3->typeSymbol==Auxiliar) destroyRegister($3);
+			
+			$$ = auxRegister;
 		}
-	}
+	| expression OR expression
+		{
+			errorCode = checkIfNumeric(errorString, $1, 3);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			errorCode = checkIfNumeric(errorString, $3, 3);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			// Generate code for addition 
+			generateCodeLogical( yyout, &Q, $1, $3, '+' );
+
+			generateAnonymousId();
+			auxRegister = createRegister( anonymousIdString, 
+																		sT.currentScope, Auxiliar, 
+																		getFactorVariableType($1, $3)
+																	);	
+			if($1->typeSymbol==Auxiliar) destroyRegister($1);
+			if($3->typeSymbol==Auxiliar) destroyRegister($3);
+			
+			$$ = auxRegister;
+		}
 	;
 
 expression_list : 
@@ -535,7 +488,7 @@ expression_list :
 
 factor : 
 	primary { $<regStruct>$ = $<regStruct>1; }
-	| primary POWER_OP primary { yyerror("Incomplete factor"); $<regStruct>$ = $<regStruct>1; }
+	//| primary POWER_OP primary { yyerror("Incomplete factor"); $<regStruct>$ = $<regStruct>1; }
 	| NOT primary { yyerror("Incomplete factor"); $<regStruct>$ = $<regStruct>2; }
 	;
 
@@ -599,12 +552,6 @@ indexed_component :
 	;
 
 
-logical_operator : 
-	AND   { $$ = '*'; };
-	| OR 	{ $$ = '+'; }
-	;
-
-
 loop_statement : 
 	WHILE 								{ $<integer>$=generateCodeOpenWhile( yyout, &Q ); }
 		'(' expression ')' 	{ generateCodeEvaluateWhile( yyout, &Q, $<integer>2 ); }
@@ -631,12 +578,6 @@ mode :
 	;
 
 
-multiplying_operator : 
-	'*'   { $$='*'; }
-	| '/' { $$='/'; }
-	;
-
-
 null_statement : 
 	NULL_ ';'
 	;
@@ -645,27 +586,38 @@ null_statement :
 object_declaration : 
 	IDENTIFIER identifier_list ':' constant type_definition assign_expression ';' 
 	{ 
-		auxRegister = createRegister( $1, sT.currentScope,  Variable, $5 ); 
+	  auxRegister = createRegister( $1, sT.currentScope,  Variable, $5 ); 
 	  errorCode = addRegister( &sT, auxRegister ); 
 	  if(errorCode){
 			yyerror();
 			YYABORT;
 		} 
 
-		errorCode = getVarStaticAddress( &Q, auxRegister );
-		if( errorCode == -1 ){
-			yyerror("Symbol created is not a variable");
-			YYABORT;
-		}
-		if( errorCode == -2){
-			yyerror("Case for object_declaration not implemented yet");
-			YYABORT;
-		}
+		// Only variables at scope 0 are static
+		if(sT.currentScope == 0){
+			errorCode = getVarStaticAddress( &Q, auxRegister );
+			if( errorCode == -1 ){
+				yyerror("Symbol created is not a variable");
+				YYABORT;
+			}
+			if( errorCode == -2){
+				yyerror("Case for object_declaration not implemented yet");
+				YYABORT;
+			}
 
-		errorCode = generateCodeVarStatic( yyout, &Q, auxRegister, "0" );
-		if( errorCode == -1 ){
-			yyerror("Symbol created is not a variable");
-			YYABORT;
+			errorCode = generateCodeVarStatic( yyout, &Q, auxRegister, "0" );
+			if( errorCode == -1 ){
+				yyerror("Symbol created is not a variable");
+				YYABORT;
+			}
+		}
+		// If scope!=0, variables are locals 
+		else{
+			errorCode = setVarStackAddress( &Q, auxRegister, &parentSubprogram );
+			if( errorCode == -1 ){
+				yyerror("Symbol created is not a variable");
+				YYABORT;
+			}
 		}
 	}
 	;
@@ -773,9 +725,12 @@ procedure_call_statement :
   	  YYABORT;
   	}
   	
-  	// It sets auxRegisterList as NULL
+		// Generate code
+		generateCodeProcedureCall( yyout, &Q, &sT, auxRegister, auxRegisterList );
+
+
+		// It sets auxRegisterList as NULL
 		deleteRegisterList( &auxRegisterList );
-		// Generate code		
 	}
 
 	| PUT '(' STRING_LITERAL ')' ';'
@@ -792,7 +747,10 @@ procedure_call_statement :
 			} 
 
 			// Generate code
-			generateCodePutVariable( yyout, &Q, $3 );
+			//auxRegister=getSymbol(  &sT, $3->key.id, $3->key.scope );
+			//printRegister(*auxRegister);
+
+			generateCodePutVariable( yyout, &Q, auxRegister );
 		}
 	| GET '(' variable ')' ';'
 		{ 
@@ -841,7 +799,11 @@ procedure_specification :
 
 	  }
 
-	  addParametersToSubprogram( &sT, $3, auxRegister );
+	  addParametersToSubprogram( &sT, $3, &auxRegister );
+
+	 
+	  //setParamsStackAddress( &Q, &auxRegister );  // Addresses of parameters
+
 	  auxRegisterList = NULL;
 
 	  $<regStruct>$ = auxRegister; 
@@ -885,46 +847,6 @@ relation :
 	;
 
 
-relation_list :
-	logical_operator 
-		{ fprintf(yyout,"\tR1=R0;\t\t\t//Saving R0 for relation call\n");; } 
-	relation 
-		{ 
-			$<regStruct>$ = $3; 
-
-			errorCode = checkIfNumeric(errorString, $3, 3);
-			if(errorCode){
-				yyerror(errorString);
-				YYABORT;
-			}
-
-			/* Generate code for relation */
-			// R1 has the evaluation of the previous expression
-			generateCodeLogical( yyout, &Q, $1 );
-		}
-	relation_list
-	{
-
-		generateAnonymousId();
-		auxRegister = createRegister( anonymousIdString, 
-																	sT.currentScope, Auxiliar, 
-																	getFactorVariableType($<regStruct>-1, $3)
-																);	
-		if($3->typeSymbol==Auxiliar)destroyRegister($3);
-		$$ = auxRegister;
-	}
-	| /* empty */ 
-		{
-			generateAnonymousId();
-			auxRegister = createRegister( anonymousIdString, 
-																		sT.currentScope, Auxiliar, 
-																		Void
-																	);	
-			$$ = auxRegister; 
-		}
-	;
-
-
 relational_operator : 
 	'='									{ strcpy($$, "==");  }
 	| '<' 							{ strcpy($$, "<");  }
@@ -954,70 +876,70 @@ sequence_of_statements :
 	;
 
 
-simple_expression : 
-	unary_adding_operator term { $<regStruct>$ = $2 ; } binary_adding_list 
-		{ 
-			errorCode = checkIfNumeric(errorString, $2, 1);
+simple_expression :
+	unary_adding_operator simple_expression_
+		{
+			$$ = $2;
+		}
+	| simple_expression_
+		{
+			$$ = $1;
+		}
+	;
+
+simple_expression_ :
+	term { $$ = $1; }
+	| simple_expression_ '+' simple_expression_
+		{
+			errorCode = checkIfNumeric(errorString, $1, 1);
 			if(errorCode){
 				yyerror(errorString);
 				YYABORT;
 			}
-			/* Generate code for addition */
+			errorCode = checkIfNumeric(errorString, $3, 1);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			// Generate code for addition 
+			generateCodeAddition( yyout, &Q, $1, $3, '+' );
 
 			generateAnonymousId();
 			auxRegister = createRegister( anonymousIdString, 
 																		sT.currentScope, Auxiliar, 
-																		getFactorVariableType($2, $4)
+																		getFactorVariableType($1, $3)
 																	);	
-			if($2->typeSymbol==Auxiliar) destroyRegister($2);
-			if($4->typeSymbol==Auxiliar) destroyRegister($4);
+			if($1->typeSymbol==Auxiliar) destroyRegister($1);
+			if($3->typeSymbol==Auxiliar) destroyRegister($3);
 			
 			$$ = auxRegister;
 		}
-	| unary_adding_operator term 
-			{ 
-				errorCode = checkIfNumeric(errorString, $<regStruct>2, 1);
-				if(errorCode){
-					yyerror(errorString);
-					YYABORT;
-				}
-
-				/* Generate code for addition */
-
-				/*
-				generateAnonymousId();
-				auxRegister = createRegister( anonymousIdString, 
-																			sT.currentScope, Auxiliar, 
-																			$2->typeVariable
-																		);	
-				*/
-				
-				$$ = $2;
-		 	}
-	| term { $<regStruct>$ = $1 ; } binary_adding_list 
-			{ 	
-				errorCode = checkIfNumeric(errorString, $<regStruct>1, 1);
-				if(errorCode){
-					yyerror(errorString);
-					YYABORT;
-				}
-
-				/* Generate code for addition */
-
-				generateAnonymousId();
-				auxRegister = createRegister( anonymousIdString, 
-																			sT.currentScope, Auxiliar, 
-																			getFactorVariableType($1, $3)
-																		);
-
-				if($1->typeSymbol==Auxiliar) destroyRegister($1);
-				if($3->typeSymbol==Auxiliar) destroyRegister($3);
-	
-				$$ = auxRegister;
+	| simple_expression_ '-' simple_expression_
+		{
+			errorCode = checkIfNumeric(errorString, $1, 1);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
 			}
-	| term { $$ = $1; }
-	;
+			errorCode = checkIfNumeric(errorString, $3, 1);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			}
+			// Generate code for addition 
+			generateCodeAddition( yyout, &Q, $1, $3, '-' );
 
+			generateAnonymousId();
+			auxRegister = createRegister( anonymousIdString, 
+																		sT.currentScope, Auxiliar, 
+																		getFactorVariableType($1, $3)
+																	);	
+			if($1->typeSymbol==Auxiliar) destroyRegister($1);
+			if($3->typeSymbol==Auxiliar) destroyRegister($3);
+			
+			$$ = auxRegister;
+		}
+	;
 
 simple_statement : 
 	null_statement
@@ -1036,12 +958,21 @@ subprogram_body_ :
 	subprogram_specification IS 
 	{
 		enterScope ( &sT );
+		parentSubprogram = $1;
+
+		setParamsStackAddress( &Q, &parentSubprogram );  // Addresses of parameters
 
 		errorCode = addParametersToSymbolsTable(&sT, $<regStruct>1);
 		if ( errorCode!=0 ){
 	  	yyerror("Error adding parameters of subprogram %s", $<regStruct>1->key.id);
 	  	YYABORT;
 		}
+
+		//make function for this
+		generateCodeBeginSubprogram( yyout, &Q, $1->key.id );
+
+		// Save subprogram label
+		$1->label=Q.nextLabel-1;
 
 		$$ = $1;
 	}
@@ -1052,14 +983,17 @@ subprogram_body :
 	subprogram_body_
 		declarative_part
 	BEGIN_
+	{
+		generateCodeSubprogramBase( yyout, $1 );
+	}
 		sequence_of_statements
-	END IDENTIFIER';' { exitScope ( &sT ); $$ = $1; }
-|	subprogram_body_
-		declarative_part
-	BEGIN_
-		sequence_of_statements
-	END ';' { exitScope ( &sT ); $$ = $1; }
-;
+	END IDENTIFIER';' 
+	{ 
+		exitScope ( &sT, $1 ); 
+		generateCodeEndSubprogram( yyout, &Q, $1 ); 
+		$$ = $1; 
+	}
+	;
 
 
 subprogram_specification : 
@@ -1069,29 +1003,25 @@ subprogram_specification :
 
 
 term : 
-	factor { $$ = $<regStruct>1; }
-	| term multiplying_operator factor 
+	factor { $$ = $1; }
+	| term '*' term
 		{ 
 			errorCode = checkIfNumeric(errorString, $3, 0);
 			if(errorCode) {
-				printRegister(*$3);
 				yyerror(errorString);
 				YYABORT;
 			}
 
 			errorCode = checkIfNumeric(errorString, $1, 0);
 			if(errorCode){
-				printRegister(*$1);
 				yyerror(errorString);
 				YYABORT;
 			} 
 
 			getVariableTypeName(string1, $1->typeVariable);
   		getVariableTypeName(string2, $3->typeVariable);
-  		//printf("4##########\n");
-  		//printf("####%s - %s\n", string1, string2);
 
-  		generateCodeMultiply( yyout, &Q, $1, $3, $2 );
+  		generateCodeMultiply( yyout, &Q, $1, $3, '*' );
 
 			generateAnonymousId();
 			auxRegister = createRegister( anonymousIdString, 
@@ -1102,8 +1032,38 @@ term :
 			if($3->typeSymbol==Auxiliar) destroyRegister($3);
 
 			$$ = auxRegister;
-		}		
+		}
+	| term '/' term
+		{ 
+			errorCode = checkIfNumeric(errorString, $3, 0);
+			if(errorCode) {
+				yyerror(errorString);
+				YYABORT;
+			}
+
+			errorCode = checkIfNumeric(errorString, $1, 0);
+			if(errorCode){
+				yyerror(errorString);
+				YYABORT;
+			} 
+
+			getVariableTypeName(string1, $1->typeVariable);
+  		getVariableTypeName(string2, $3->typeVariable);
+
+  		generateCodeMultiply( yyout, &Q, $1, $3, '/' );
+
+			generateAnonymousId();
+			auxRegister = createRegister( anonymousIdString, 
+																		sT.currentScope, Auxiliar, 
+																		getFactorVariableType($1, $3)
+																	);	
+			if($1->typeSymbol==Auxiliar) destroyRegister($1);
+			if($3->typeSymbol==Auxiliar) destroyRegister($3);
+
+			$$ = auxRegister;
+		}	
 	;
+
 
 type_declaration : 
 	TYPE IDENTIFIER IS type_definition ';'
@@ -1157,6 +1117,11 @@ variable :
 
 void generateAnonymousId(){
   sprintf(anonymousIdString, "%d", anonymousId++);
+}
+
+void printRegQ( qMachine Q ){
+	printf("%d-%d-%d-%d-%d-%d\n" , Q.R[0], Q.R[1], Q.R[2], Q.R[3], Q.R[4], Q.R[5] );
+	printf("lastR:%d\n" , Q.lastRstack );
 }
 
 int main(int argc, char** argv){

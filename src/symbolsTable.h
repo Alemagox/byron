@@ -64,16 +64,23 @@ struct registerStruct{
                    //  - If 0 it's just specified.
                    //  - If 1 it's already defined.
 
+    unsigned int address; // For static
+    unsigned int stackAddress; //For locals
+    int size;
+
+    int label; // Label for calling the subprogram
 
     // If the symbol is a **function** or **procedure**:
     //   - nRegisters counts the number of parameters.
     // If the symbol is a **type**:
     //   - nRegisters counts the number of fields.
     int nRegisters;
+    int sizeParams;
     struct registerStruct *registerList;
 
-    unsigned int address;
-    int size;
+    int nLocals;
+    int sizeLocals;
+    struct registerStruct *registerListLocals;
 
     //int scope;        // Where from is the symbol accesible 
     int parentScope;
@@ -124,7 +131,7 @@ int addRegisterToList( registerStruct **list, registerStruct *r );
 
 int addRegister( symbolsTable *sT, registerStruct *r );
 
-int addParametersToSubprogram( symbolsTable *sT, registerStruct *parametersList, registerStruct *r );
+int addParametersToSubprogram( symbolsTable *sT, registerStruct *parametersList, registerStruct **r );
 
 int addParametersToSymbolsTable( symbolsTable *sT, registerStruct *r );
 
@@ -143,7 +150,7 @@ void destroySymbolsTable( symbolsTable *sT );
    Management methods
 ***********************/
 void enterScope( symbolsTable *sT ); 
-void exitScope( symbolsTable *sT ); 
+void exitScope( symbolsTable *sT, registerStruct *r ); 
 
 void markSubprogramAsDefined( registerStruct *r );
 

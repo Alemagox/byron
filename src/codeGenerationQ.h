@@ -9,10 +9,13 @@ struct qMachine{
   int Htop;
 
   // R6 and R7 are reserved 
-  int R[8];  //  = {0,0,0,0,0,0,1,1};
+  int R[6];  //  = {0,0,0,0,0,0};
   int RR[4]; //= {0,0,0,0};
 
-  int nextLabel;// = 0;
+  int usedR;  // = 0
+  int lastRstack; // = 0
+
+  int nextLabel; // =0
   int nextCodeNumber;// = 0;
 
   char formatPutString[15];
@@ -74,7 +77,8 @@ void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
 void generateCodeRelation( FILE* yyout, qMachine *Q, registerStruct *r1, 
                            registerStruct *r2, char op[] );
 
-void generateCodeLogical( FILE* yyout, qMachine *Q, char op );
+void generateCodeLogical( FILE* yyout, qMachine *Q, registerStruct *r1, 
+                           registerStruct *r2, char op );
 
 int generateCodeOpenWhile( FILE* yyout, qMachine *Q );
 
@@ -86,7 +90,13 @@ void generateCodeEvaluateIf( FILE* yyout, qMachine *Q, int outLabel );
 
 void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ); 
 
+void generateCodeBeginSubprogram( FILE* yyout, qMachine *Q, char pName[] );
 
+void generateCodeSubprogramBase( FILE* yyout, registerStruct *r );
+
+void generateCodeEndSubprogram( FILE* yyout, qMachine *Q, registerStruct *r );
+
+void generateCodeProcedureCall( FILE* yyout, qMachine *Q, symbolsTable *sT, registerStruct *r, registerStruct *parametersCalled );
 
 
 /******************************
@@ -94,6 +104,22 @@ void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel );
 ******************************/
 char getVarMemLabel (variableType vT);
 
+int getSize( registerStruct *r );
+
 int getVarStaticAddress( qMachine *Q, registerStruct *r );
+
+int setParamsStackAddress( qMachine *Q, registerStruct **parent );
+
+int setVarStackAddress( qMachine *Q, registerStruct *r, registerStruct **parent );
+
+int newRegister( FILE* yyout, qMachine *Q );
+
+int popRegister( FILE* yyout, qMachine *Q );
+
+int lastRegister( qMachine *Q );
+
+int pushRstack( FILE* yyout, int r );
+
+int popRstack( FILE* yyout, int r );
 
 #endif

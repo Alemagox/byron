@@ -34,3 +34,4 @@
 #define getfi_   -15    // lee entero
 #define getfc_   -16    // lee caracter
 #define free_    -17    // asigna o libera espacio en heap
+

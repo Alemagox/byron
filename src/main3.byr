@@ -23,7 +23,7 @@ begin
   Put(i);
   New_Line;
 
-  i := 1+7;
+  i := 1+7+1;
   Put("1+7 = ");
   Put(i);
   New_Line;
@@ -33,13 +33,13 @@ begin
   Put(i);
   New_Line;
 
-  i := 2*2+2;
-  Put("2*2+2 = ");
+  i := 2*2+3;
+  Put("2*2+3 = ");
   Put(i);
   New_Line;
 
-  i := 2*(2+2);
-  Put("2*(2+2) = ");
+  i := 2+2*3;
+  Put("2+2*3 = ");
   Put(i);
   New_Line;
 
@@ -56,7 +56,7 @@ begin
       New_Line;
     end if;
 
-    if(c = '3' or c = '7') then
+    if(c = '3' or c <= '7' and c >= '5') then
       Put("Numero: ");
       Put(c);
       New_Line;        
@@ -76,5 +76,16 @@ begin
   end loop;
   Put("You're out!");
   New_Line;
+
+
+  --c := '4';
+  --i := 2*12-2*(5+5)/(2-1);
+  --i := c = '3' or c <= '7' and c >= '5';
+  --i := i
+  --Put("Result = ");
+  --Put(i);
+  New_Line;
+
   null;
+
 end main;

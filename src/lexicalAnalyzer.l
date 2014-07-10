@@ -37,7 +37,6 @@ array			{ column=column+strlen(yytext); return ARRAY;}
 begin			{ column=column+strlen(yytext); return BEGIN_;}
 case			{ column=column+strlen(yytext); return CASE;}
 constant		{ column=column+strlen(yytext); return CONSTANT;}
- /*do 				{ column=column+strlen(yytext); return DO;}*/
 else			{ column=column+strlen(yytext); return ELSE;}
 elsif			{ column=column+strlen(yytext); return ELSIF;}
 end				{ column=column+strlen(yytext); return END;}
@@ -72,17 +71,14 @@ Boolean		{ column=column+strlen(yytext); return BOOLEAN_TYPE;}
 {numeral}{exponent_neg}				{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return FLOAT_LITERAL;}
 {numeral}"."{numeral}{exponent}?	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return FLOAT_LITERAL;}
 \'.\'								{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return CHARACTER_LITERAL;} 	/* ' */
-\"({alphanumeric}|" "|.)*\"   		{ column=column+strlen(yytext);  //strncpy(substr, buff+10, 4);
-									  strncpy(yylval.string, yytext+1, strlen(yytext)-1);
-									  yylval.string[strlen(yytext)-1]='\0';
-									  return STRING_LITERAL;}   	/* " */
+\"({alphanumeric}|" "|.)*\"   		{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return STRING_LITERAL;}   	/* " */
 True								{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return BOOLEAN_LITERAL;}
 False								{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return BOOLEAN_LITERAL;}
 
 	/* Special characters */
 "="|"<"|">"|"-"|"+"|"*"|"/"|"("|")"|"["|"]"|":"|"."|","|";"|"|" {column=column+strlen(yytext); return yytext[0];}
 "=>" 	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return ARROW; }
-"**"	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return POWER_OP;}
+ /* "**"	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return POWER_OP;}*/
 ":="	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return ASSIGNMENT_OP;}
 "/="	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return NOT_EQUAL_OP;}
 ">="	{ column=column+strlen(yytext); strcpy(yylval.string, yytext); return GREATER_EQUAL_OP;}
@@ -98,7 +94,7 @@ Put			{ column=column+strlen(yytext); return PUT; }
 Get			{ column=column+strlen(yytext); return GET; }
 \'Length	{ column=column+strlen(yytext); return LENGTH; }	/* ' */
 New_Line 	{ column=column+strlen(yytext); return NEW_LINE; }
-"++"		{ column=column+strlen(yytext); return CONCAT; }
+ /*"++"		{ column=column+strlen(yytext); return CONCAT; }*/
 
 
 {character}({alphanumeric}|_)*	{column=column+strlen(yytext);

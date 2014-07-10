@@ -5,7 +5,6 @@
 // Conservar la siguiente línea
 #include "Q.h"
 
-
 // Definiciones auxiliares (rutinas, variables, ...)
 
 /* inv_str() permite invertir el orden de las strings en Q para       
@@ -85,7 +84,8 @@ L putfi_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er cha
 L putfs_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
     unsigned char *p2=inv_str(&U(R2)); // invierte: nva. dir. real 1er char
     printf((char*)p,(char*)p2);             // trasladar
-           
+    //printf((char*)p,R2);             // trasladar
+
     reinv_str(p,&U(R1));        // re-invierte   
     reinv_str(p2,&U(R2));                 
     GT(R0);                           // retorna
@@ -126,20 +126,24 @@ L getfi_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er cha
 //          R1=dirección de la ristra de formato
 //          R2=dirección caracter a obtener (opcional según formato)
 // No modifica ningún registro ni la ristra de formato
-L getfc_: {unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
-    char i;
-    scanf((char*)p, &i);            // leer
+L getfc_: {
+    unsigned char *p=inv_str(&U(R1)); // invierte: nva. dir. real 1er char
+    
+    /*
+    char i = getchar();
+    if(i=='\n') i = getchar();
 
     U(R2)=i;                        // guardar
+    */
+
+    char i;
+    char c;
+
+    scanf((char*)p, &i);            // leer
+    
+    U(R2)=i;                        // guardar
     if(i != '\n')
-      scanf("%c", &i);              // catch enter
-/*
-    scanf("%c", &i);                 // ignorar no caracter
-    while(i != '\n'){
-      scanf("%c", &i);
-    }
-*/
-    //scanf("\n");                    // ignorar no caracter
+      scanf("%c", &c);              // catch enter
 
     reinv_str(p,&U(R1));        // re-invierte           
     GT(R0);                           // retorna

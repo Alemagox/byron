@@ -4,35 +4,63 @@
 --Ada.Text_IO;            -- To compile in Ada
 
 procedure main is
+  procedure Error(ci: in  Character; co: out Character; co2: out Character) is
+    --a : Integer;
+    --b : Real;
+    --c : Character;
+    --d : Character;
+    --e : Character;
+    --f : Character;
+    --w : Integer;
+   begin   
 
-   --Use Ada.Text_IO;     -- To compile in Ada
+      Put("Character is: ");  
+      Put(ci);
 
-   procedure Numero(c: in out Character; resultado: out Integer) is
-   begin
+      New_Line;
 
-      resultado := 10*resultado + c - '0' ;
-      
+      Put("Character out co doesn't display: ");  
+      Put(co);
+      New_Line;
 
-   end Numero;
-      
-      
+      Put("Character out co2 doesn't display: ");  
+      Put(co2);
+
+      New_Line;
+      co2 := 'z';
+
+   end Error;
+
+  i : Integer;
+  i2: Integer;
   c : Character;
-  resultado : Integer;
-
+  c2: Character;
+  c3: Character;
 begin
+  --c := '4';
+  --i := 2*12-2*(5+5)/(2-1);
+  --i := 2*1+3*4;
+  --i := c = '3' or c <= '7' and c >= '5';
+  --i := i
+  Put("Result = ");
+  i := 4;
+  Put(i);
+  New_Line;
 
-   c:='y';
-   
-   -- Due to limitations of get in Ada, the expression has to finish with ;
-   
-   
-   while (c > '0' and c < '9') loop
-         --resultado := 10*resultado+Character'Pos(c)-Character'Pos('0'); -- To compile in Ada
-         resultado := 10*resultado + c - '0' ;                            -- Byron style, explicit casting.
-        
-      end loop;
+  c := '9';
+  c2:= '2';
+  Put("Character out c2 does display: ");  
+  Put(c2);
+  New_Line;
+
+  Error(c, c2, c3);
 
 
-   null;
+  Put("Character out c3 does display: ");  
+  Put(c3);
 
+  --Put(i);
+  New_Line;
+
+  null;
 end main;
