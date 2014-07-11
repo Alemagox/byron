@@ -85,8 +85,17 @@ CODE(2)
 	U(R6+8)=R0;		//Save value right side into variable
 	//Free R0
 STAT(3)			
-	STR(0x11fca, "This is B -> c:");			
+	DAT(0x11fd6,I,20);	//Literal '20', scope 1 
 CODE(3)			
+	//////////////////////////////////
+	// Assignment to variable 'resultado', scope 1
+	//Get R0
+	R0=I(0x11fd6);		//Load value right side (static)
+	I(R6+12)=R0;		//Save value right side into variable
+	//Free R0
+STAT(4)			
+	STR(0x11fc6, "This is B -> c:");			
+CODE(4)			
 	/////////////////////////
 	// Print string literal
 	R7=R7-4;			//Save space for register R0
@@ -97,7 +106,7 @@ CODE(3)
 	I(R7)=R2;			//R2 saved
 	R0=5;				//Return label
 	R1=0x11ffd;			//Format string address
-	R2=0x11fca;			//String literal address
+	R2=0x11fc6;			//String literal address
 	GT(putfs_);			//Print string literal
 L 5:				
 	R2=I(R7);			//R2 recovered
@@ -155,9 +164,9 @@ L 7:
 L 8:				
 	R6=R7;				//New base
 	R7=R7-8;			//Reserve space for local variables
-STAT(4)			
-	STR(0x11fba, "This is A -> c:");			
-CODE(4)			
+STAT(5)			
+	STR(0x11fb6, "This is A -> c:");			
+CODE(5)			
 	/////////////////////////
 	// Print string literal
 	R7=R7-4;			//Save space for register R0
@@ -168,7 +177,7 @@ CODE(4)
 	I(R7)=R2;			//R2 saved
 	R0=9;				//Return label
 	R1=0x11ffd;			//Format string address
-	R2=0x11fba;			//String literal address
+	R2=0x11fb6;			//String literal address
 	GT(putfs_);			//Print string literal
 L 9:				
 	R2=I(R7);			//R2 recovered
@@ -216,13 +225,13 @@ L 11:
 	R7=R7+4;			//Free space for register R0
 	// End of New_Line
 	//////////////////////////////////
-STAT(5)			
-	DAT(0x11fb6,U,'a');	//Literal ''a'', scope 1 
-CODE(5)			
+STAT(6)			
+	DAT(0x11fb2,U,'a');	//Literal ''a'', scope 1 
+CODE(6)			
 	//////////////////////////////////
 	// Assignment to variable 'c', scope 1
 	//Get R0
-	R0=U(0x11fb6);		//Load value right side (static)
+	R0=U(0x11fb2);		//Load value right side (static)
 	U(R6+8)=R0;		//Save value right side into variable
 	//Free R0
 	//////////////////////////////////
@@ -249,9 +258,9 @@ L 12:
 	R7=R7+16;			//Free params space
 	// End procedure call B 
 	//////////////////////////////////
-STAT(6)			
-	STR(0x11fa6, "This is A -> c:");			
-CODE(6)			
+STAT(7)			
+	STR(0x11fa2, "This is A -> c:");			
+CODE(7)			
 	/////////////////////////
 	// Print string literal
 	R7=R7-4;			//Save space for register R0
@@ -262,7 +271,7 @@ CODE(6)
 	I(R7)=R2;			//R2 saved
 	R0=13;				//Return label
 	R1=0x11ffd;			//Format string address
-	R2=0x11fa6;			//String literal address
+	R2=0x11fa2;			//String literal address
 	GT(putfs_);			//Print string literal
 L 13:				
 	R2=I(R7);			//R2 recovered
@@ -315,27 +324,27 @@ L 15:
 	GT(R6);				//Return!
 	// End procedure A 
 	//////////////////////////////////
-STAT(7)			
-	DAT(0x11fa2,U,0);	//Var 'c', scope 0 
-	DAT(0x11f9e,U,0);	//Var 'n', scope 0 
-	DAT(0x11f9a,I,0);	//Var 'res', scope 0 
-CODE(7)
+STAT(8)			
+	DAT(0x11f9e,U,0);	//Var 'c', scope 0 
+	DAT(0x11f9a,U,0);	//Var 'n', scope 0 
+	DAT(0x11f96,I,0);	//Var 'res', scope 0 
+CODE(8)
 L 0:
 	R6=R7;			//Initialize R6
-STAT(8)			
-	DAT(0x11f96,U,'e');	//Literal ''e'', scope 0 
-CODE(8)			
+STAT(9)			
+	DAT(0x11f92,U,'e');	//Literal ''e'', scope 0 
+CODE(9)			
 	//////////////////////////////////
 	// Assignment to variable 'c', scope 0
 	//Get R0
-	R0=U(0x11f96);		//Load value right side (static)
-	U(0x11fa2)=R0;		//Save value right side into variable
+	R0=U(0x11f92);		//Load value right side (static)
+	U(0x11f9e)=R0;		//Save value right side into variable
 	//Free R0
 	//////////////////////////////////
 	// Start procedure call A 
 	R7=R7-16;			//Reserve params space
 	//Get R0
-	R0=U(0x11fa2);		//Load variable 'c' value
+	R0=U(0x11f9e);		//Load variable 'c' value
 	//Free R0
 	U(R7+8)=R0;			//Pass value parameter 1
 	//No need to pass value parameter 2. resultado is of out type. 4 address
@@ -346,14 +355,35 @@ L 16:
 	R6=P(R7+4);			//Recover active base
 	//Get R0
 	R0=U(R7+8);			//Get value parameter 1
-	U(0x11fa2)=R0;		//Save variable 'c' value
+	U(0x11f9e)=R0;		//Save variable 'c' value
 	//Free R0
 	//Get R0
 	R0=I(R7+12);			//Get value parameter 2
-	I(0x11f9a)=R0;		//Save variable 'res' value
+	I(0x11f96)=R0;		//Save variable 'res' value
 	//Free R0
 	R7=R7+16;			//Free params space
 	// End procedure call A 
+	//////////////////////////////////
+	//////////////////////////////////
+	// Print variable 'res', scope 0
+	R7=R7-4;			//Save space for register R0
+	I(R7)=R0;			//R0 saved
+	R7=R7-4;			//Save space for register R1
+	I(R7)=R1;			//R1 saved
+	R7=R7-4;			//Save space for register R2
+	I(R7)=R2;			//R2 saved
+	R0=17;				//Return label
+	R1=0x11ffa;			//Format int address
+	R2=I(0x11f96);		//Static variable value
+	GT(putfi_);			//Print variable
+L 17:				
+	R2=I(R7);			//R2 recovered
+	R7=R7+4;			//Free space for register R2
+	R1=I(R7);			//R1 recovered
+	R7=R7+4;			//Free space for register R1
+	R0=I(R7);			//R0 recovered
+	R7=R7+4;			//Free space for register R0
+	// End of Print variable 'res', scope 0
 	//////////////////////////////////
 	R0=0;			//Succesful state
 	GT(-2);			//Finish

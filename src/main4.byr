@@ -7,13 +7,12 @@ procedure main is
 
    --Use Ada.Text_IO;     -- To compile in Ada
 
-    procedure Expresion(c: in out Character; resultado: out Integer);
+   procedure Expresion(c: in out Character; resultado: out Integer);
 
    procedure Error is
    begin   
 
-      Put("Expresion erronea");
-      New_Line;
+      Put("Expresion erronea. Last car: ");
 
    end Error;
 
@@ -24,7 +23,10 @@ procedure main is
       resultado := 0;
       
       if (c < '0' or c > '9') then
-        Error();        
+        Error();       
+        Put("Numero: "); 
+        Put(c); 
+        New_Line;
       end if;
 
       while (c > '0' and c < '9') loop
@@ -41,19 +43,21 @@ procedure main is
     resultado := 0;
       
     if (c = '(') then
-      Put("New expression\n");
+
+      --Put("aa");
 
       Get (c);
-
+       
       Expresion(c,resultado);
        
       if (c = ')') then
-        Put("Out expression\n");
-
         Get (c);
       else
         --Put("1");
         Error();
+        Put("Factor: ");
+        Put(c); 
+        New_Line;
       end if;
        
     else
@@ -96,8 +100,6 @@ procedure main is
        Get(c);
     end if;
     
-    Put(c);
-    
     Termino(c, resultado);
       
     if (op = '-') then
@@ -127,7 +129,6 @@ procedure main is
   resultado : Integer;
 
 begin
-
   c:='y';
   -- Due to limitations of get in Ada, the expression has to finish with ;
    
@@ -144,7 +145,7 @@ begin
       
     Put("New expression?(y/n): ");
     Get(c);
-    --Get(n); --Avoid \n
+    Get(n); --Avoid \n
 
   end loop;
     
