@@ -752,6 +752,7 @@ char getVarMemLabel( variableType vT ){
       break;
     case Character:
       return 'U';
+      //return 'I';
       break;
     case Real:
       return 'D';
@@ -772,7 +773,7 @@ int getSize( registerStruct *r ){
       r->size = 4;
       break;
     case Character:
-      r->size = 1;
+      r->size = 4;
       break;
     case Real:
       r->size = 8;

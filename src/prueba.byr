@@ -46,99 +46,52 @@ procedure main is
 -- 	Put(res);
 -- 	New_Line;
 
-	procedure Error is
-   begin   
-
-      Put("Expresion erronea");
-      New_Line;
-
-   end Error;
-
-	procedure Numero(c: in out Character; resultado: out Integer) is
-   begin
-
-      resultado := 0;
-      
-      if (c < '0' or c > '9') then
-        Error();        
-      end if;
-
-      while (c > '0' and c < '9') loop
-         resultado := 10*resultado + c - '0' ;                            -- Byron style, explicit casting.
-         --Put(resultado);
-         Get (c);
-      end loop; 
-
-  end Numero;
-
-
-  procedure Expresion(c: in out Character; resultado: out Integer) is 
-    aux : Integer;
+	procedure B(c: in out Character; resultado: out Integer) is
+    aux : Integer; 
     op : Character;
   begin
-     
-    if(c='+' or c='-')then
-    	 Put("Op is");
-       op := c;
-       Put(op);
-       Put(c);
-       New_Line;
-       Get(c);
-    end if;
     
-    -- Termino(c, resultado);
-    Numero(c, resultado);
-      
-    if (op = '-') then
-      resultado := -resultado;
-    end if;
-      
-    -- while (c = '+' or c = '-') loop
-    --   op:=c;
+    Put("This is B -> c:");
+    Put(c);
+    New_Line;
 
-    --   Get(c);
-    --   Termino(c, aux);
-    
+    c := 'b';
 
-    --   if(op = '+') then
-    --     resultado := resultado+aux;
-    --   end if;
-    --   if(op = '-') then
-    --     resultado := resultado-aux;
-    --   end if;
-
-    -- end loop;
+    Put("This is B -> c:");
+    Put(c);
+    New_Line;
             
-  end Expresion;
+  end B; 
 
+	procedure A(c: in out Character; resultado: out Integer) is
+    aux : Integer; 
+    op : Character;
+  begin
+    
+    Put("This is A -> c:");
+    Put(c);
+    New_Line;
 
+    c := 'a';
 
+    B(c, resultado);
 
+    Put("This is A -> c:");
+    Put(c);
+    New_Line;
+            
+  end A; 
+
+  
+  
   c   : Character;
 	n   : Character;
 	res : Integer;
 
 begin
 
-	c := 'y';
-	while (c /= 'n') loop
+	c := 'e';
 
-		Put("La bola de cristal: ");
-
-		Get(n);
-		Expresion(n, res);
-
-		Put("Resultado: ");
-		Put(res);
-		New_Line;
-
-    Put("Put y: \n");
-    Get(c);
-    New_Line;
-    Get(n);
-  end loop;
-
-  Put("Ok");
-  New_Line;
+	A(c, res);
 
 end main;

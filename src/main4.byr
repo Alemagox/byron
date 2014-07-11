@@ -41,11 +41,15 @@ procedure main is
     resultado := 0;
       
     if (c = '(') then
+      Put("New expression\n");
+
       Get (c);
-       
+
       Expresion(c,resultado);
        
       if (c = ')') then
+        Put("Out expression\n");
+
         Get (c);
       else
         --Put("1");
@@ -59,8 +63,8 @@ procedure main is
   end Factor;
 
   procedure Termino(c: in out Character; resultado: out Integer) is
-    aux : Integer;
     op : Character;
+    aux : Integer;
   begin
     Factor(c, resultado);
     
@@ -83,14 +87,16 @@ procedure main is
   end Termino; 
 
   procedure Expresion(c: in out Character; resultado: out Integer) is 
-    aux : Integer;
     op : Character;
+    aux : Integer;
   begin
      
     if(c='+' or c='-')then
        op := c;
        Get(c);
     end if;
+    
+    Put(c);
     
     Termino(c, resultado);
       
@@ -116,7 +122,7 @@ procedure main is
             
   end Expresion;
       
-      
+  n : Character;    
   c : Character;
   resultado : Integer;
 
@@ -137,7 +143,8 @@ begin
     New_Line;
       
     Put("New expression?(y/n): ");
-    Get (c);
+    Get(c);
+    --Get(n); --Avoid \n
 
   end loop;
     
