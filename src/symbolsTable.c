@@ -131,7 +131,7 @@ int addParametersToSubprogram( symbolsTable *sT, registerStruct *parametersList,
   destroyRegisterList( &((*r)->registerList) );
   (*r)->nRegisters   = HASH_COUNT( parametersList );
   (*r)->registerList = parametersList;
-
+  (*r)->sizeParams=0;
   return 0;
 }
 

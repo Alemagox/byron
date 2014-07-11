@@ -600,7 +600,7 @@ void generateCodeNextIf( FILE* yyout, qMachine *Q, int outIfLabel, int nextElseL
   fprintf(yyout,"L %d:\t\t\t\t\n", nextElseLabel);
 }
 
-void generateCodeBeginSubprogram( FILE* yyout, qMachine *Q, char pName[] ){
+void generateCodeBeginSubprogram( FILE* yyout, qMachine *Q, registerStruct *r ){
     // When stat is 0, we are in a STAT block.
     // When stat is 1, we are in a CODE blocke
     if( Q->stat==0 ){
@@ -610,8 +610,8 @@ void generateCodeBeginSubprogram( FILE* yyout, qMachine *Q, char pName[] ){
     }
 
     fprintf(yyout,"\t//////////////////////////////////\n");
-    fprintf(yyout,"\t// Start procedure %s \n", pName);
-    fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
+    fprintf(yyout,"\t// Start procedure %s \n", r->key.id);
+    fprintf(yyout,"L %d:\t\t\t\t\n", r->label);
 }
 
 void generateCodeSubprogramBase( FILE* yyout,  registerStruct *r ){
@@ -657,7 +657,7 @@ void generateCodeProcedureCall( FILE* yyout, qMachine *Q, symbolsTable *sT, regi
   fprintf(yyout,"\t//////////////////////////////////\n");
   fprintf(yyout,"\t// Start procedure call %s \n", r->key.id);
 
-  fprintf(yyout,"\tR7=R7-%d;\t\t\t//Reserve params space\n", r->sizeParams+8);
+  fprintf(yyout,"\tR7=R7-%d;\t\t\t//Reserve params space : %d\n", r->sizeParams+8, r->sizeParams);
 
   registerStruct *iterator, *formalParam, *regVar;
   int reg, counter = 1;
@@ -671,7 +671,7 @@ void generateCodeProcedureCall( FILE* yyout, qMachine *Q, symbolsTable *sT, regi
   
     if(formalParam->typeSymbol==InOut || formalParam->typeSymbol==In){
       reg=newRegister( yyout, Q );
-      printf("new register: %d\n", reg);
+      //printf("new register: %d\n", reg);
       regVar=getSymbol(  sT, iterator->key.id, iterator->key.scope );
 
       getMemAddress( regVar, addressString );
@@ -803,6 +803,9 @@ int setParamsStackAddress( qMachine *Q, registerStruct **parent ){
   registerStruct *iterator;
   int size;
 
+  //if( (*parent)->defined == 2 )(*parent)->sizeParams=0;
+  (*parent)->sizeParams=0;
+
   for ( iterator=(*parent)->registerList; iterator != NULL; 
         iterator=iterator->hh.next )
   {
@@ -833,7 +836,7 @@ int setVarStackAddress( qMachine *Q, registerStruct *r, registerStruct **parent 
   
   r->stackAddress=(*parent)->sizeLocals;
 
-  printf("var %s stack address %d\n", r->key.id, r->stackAddress);
+  //printf("var %s stack address %d\n", r->key.id, r->stackAddress);
 
   aux->stackAddress=(*parent)->sizeLocals;
 
@@ -903,7 +906,7 @@ int modReg( int reg ){
     resultMod=6+resultMod;
   }
 
-  printf("resultMod says %d\n", resultMod);
+  //printf("resultMod says %d\n", resultMod);
 
   return resultMod;
 }

@@ -90,7 +90,7 @@ void generateCodeEvaluateIf( FILE* yyout, qMachine *Q, int outLabel );
 
 void generateCodeNextIf( FILE* yyout, qMachine *Q, int outIfLabel, int nextElseLabel ); 
 
-void generateCodeBeginSubprogram( FILE* yyout, qMachine *Q, char pName[] );
+void generateCodeBeginSubprogram( FILE* yyout, qMachine *Q, registerStruct *r );
 
 void generateCodeSubprogramBase( FILE* yyout, registerStruct *r );
 

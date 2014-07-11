@@ -61,7 +61,7 @@ struct registerStruct{
     variableType typeVariable;      // When the symbol is a variable, this will store it's type
  
     int defined; // Used for procedures and types:
-                   //  - If 0 it's just specified.
+                   //  - If 2 it's just specified.
                    //  - If 1 it's already defined.
 
     unsigned int address; // For static

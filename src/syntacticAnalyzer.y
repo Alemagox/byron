@@ -335,7 +335,18 @@ constant :
 declarative_item :  
 	type_declaration
 	| object_declaration
-	| subprogram_specification ';' { /*destroyRegister( $1 );*/ }
+	| subprogram_specification ';'
+	  { 
+		if( strcmp("Expresion", $1->key.id) == 0){
+			printf("Expresion -s %d\n", $1->sizeParams);
+		}
+
+		setParamsStackAddress( &Q, &$1 );  // Addresses of parameters
+		
+		if( strcmp("Expresion", $1->key.id) == 0){
+			printf("Expresion -s %d\n", $1->sizeParams);
+		} /*destroyRegister( $1 );*/ 
+	  }
 	| subprogram_body 
 	  { markSubprogramAsDefined( $1 );
 		//destroyRegister( $1 ); 
@@ -608,7 +619,7 @@ object_declaration :
 			YYABORT;
 		} 
 
-		printf("var %s in subprogram %s\n", auxRegister->key.id, parentSubprogram->key.id);
+		//printf("var %s in subprogram %s\n", auxRegister->key.id, parentSubprogram->key.id);
 
 		// Only variables at scope 0 are static
 		if(sT.currentScope == 0){
@@ -805,20 +816,20 @@ procedure_specification :
 	  	  yyerror("CheckParameterSubprogram is incomplete");
 	  	}
 
-	  	//addParametersToSubprogram( &sT, $3, auxRegister );
+	  	//addParametersToSubprogram( &sT, $3, &auxRegister );
 	  }
 	  else{ // Adding the list of parameters
 	  	//sT.currentScope = stackScope;
 	  	auxRegister = getProcedure( &sT, $2, sT.currentScope );
 
-	  	//addParametersToSubprogram( &sT, $3, auxRegister );
+	  	//Set procedure label
+	  	auxRegister->label=Q.nextLabel++;
+	  	//addParametersToSubprogram( &sT, $3, &auxRegister );
 	  	//auxRegisterList = NULL;
 
 	  }
 
 	  addParametersToSubprogram( &sT, $3, &auxRegister );
-
-	 
 	  //setParamsStackAddress( &Q, &auxRegister );  // Addresses of parameters
 
 	  auxRegisterList = NULL;
@@ -977,7 +988,15 @@ subprogram_body_ :
 		enterScope ( &sT );
 		parentSubprogram = $1;
 
+		if( strcmp("Expresion", parentSubprogram->key.id) == 0){
+			printf("Expresion %d\n", parentSubprogram->sizeParams);
+		}
+
 		setParamsStackAddress( &Q, &parentSubprogram );  // Addresses of parameters
+		if( strcmp("Expresion", parentSubprogram->key.id) == 0){
+			printf("Expresion %d\n", parentSubprogram->sizeParams);
+		}
+
 
 		errorCode = addParametersToSymbolsTable(&sT, $<regStruct>1);
 		if ( errorCode!=0 ){
@@ -986,10 +1005,10 @@ subprogram_body_ :
 		}
 
 		//make function for this
-		generateCodeBeginSubprogram( yyout, &Q, $1->key.id );
+		generateCodeBeginSubprogram( yyout, &Q, $1 );
 
 		// Save subprogram label
-		$1->label=Q.nextLabel-1;
+		//$1->label=Q.nextLabel-1;
 
 		$$ = $1;
 	}

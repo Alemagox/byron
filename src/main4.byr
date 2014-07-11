@@ -24,9 +24,9 @@ procedure main is
       
       if (c < '0' or c > '9') then
         Error();       
-        Put("Numero: "); 
+        Put("Numero: '"); 
         Put(c); 
-        New_Line;
+        Put("'\n");
       end if;
 
       while (c > '0' and c < '9') loop
@@ -35,12 +35,16 @@ procedure main is
          Get (c);
       end loop; 
 
+      --Put("Numero acaba: '"); 
+      --Put(c);
+      --Put("'\n");
+
    end Numero;
 
    procedure Factor(c: in out Character; resultado: out Integer) is
    begin
 
-    resultado := 0;
+    --resultado := 0;
       
     if (c = '(') then
 
@@ -48,21 +52,34 @@ procedure main is
 
       Get (c);
        
+      --Put("Llama Expresion: '"); 
+ 			--Put(c);
+			--Put("'\n");
+
       Expresion(c,resultado);
+
+      --Put("Vuelve Expresion: '"); 
+ 			--Put(c);
+			--Put("'\n");
+
        
       if (c = ')') then
         Get (c);
       else
         --Put("1");
         Error();
-        Put("Factor: ");
+        Put("Factor: '"); 
         Put(c); 
-        New_Line;
+        Put("'\n");
       end if;
        
     else
       Numero(c, resultado);   
     end if;
+
+    --Put("Factor acaba: '"); 
+ 		--Put(c);
+		--Put("'\n");
 
   end Factor;
 
@@ -70,13 +87,31 @@ procedure main is
     op : Character;
     aux : Integer;
   begin
+  	--Put("Llama Factor: '"); 
+  	--Put(c);
+		--Put("'\n");
+
     Factor(c, resultado);
     
+    --Put("Vuelve Factor: '"); 
+ 		--Put(c);
+		--Put("'\n");
+
     while (c = '*' or c = '/') loop
+
       op:=c;
       Get(c);
+
+      --Put("Llama Factor2: '"); 
+  	  --Put(c);
+	  	--Put("'\n");
+
       Factor(c, aux);
-         
+
+      --Put("Vuelve Factor2: '"); 
+ 			--Put(c);
+			--Put("'\n");
+      
 
       if(op = '*') then
         resultado := resultado*aux;
@@ -87,7 +122,10 @@ procedure main is
       null;
     end loop;
     null;
-            
+          
+    --Put("Sale Factor: '"); 
+ 		--Put(c);
+		--Put("'\n");        
   end Termino; 
 
   procedure Expresion(c: in out Character; resultado: out Integer) is 
@@ -100,7 +138,15 @@ procedure main is
        Get(c);
     end if;
     
+    --Put("Entra Termino: '"); 
+ 		--Put(c);
+		--Put("'\n");
+
     Termino(c, resultado);
+
+    --Put("Sale Termino: '"); 
+ 		--Put(c);
+		--Put("'\n");
       
     if (op = '-') then
       resultado := -resultado;
@@ -110,7 +156,17 @@ procedure main is
       op:=c;
 
       Get(c);
+
+      --Put("Entra Termino2: '"); 
+ 			--Put(c);
+			--Put("'\n");
+
       Termino(c, aux);
+
+      --Put("vuelve Termino2: '"); 
+ 			--Put(c);
+			--Put("'\n");
+
     
 
       if(op = '+') then
@@ -121,6 +177,11 @@ procedure main is
       end if;
 
     end loop;
+
+    --Put("Sale Expresion: '"); 
+ 		--Put(c);
+		--Put("'\n");
+
             
   end Expresion;
       
@@ -137,15 +198,25 @@ begin
     Get(c);
 
     Expresion(c, resultado);
+
+    --Get(n); --Avoid \n
+
+    --Put("'");  
+    --Put(c);
       
-    Put("Result is: "); 
+    --Put("' Result is: "); 
+    Put("Result is: ");
 
     Put(resultado);  -- Byron style, implicit casting to literal_string
     New_Line;
       
     Put("New expression?(y/n): ");
     Get(c);
-    Get(n); --Avoid \n
+    Get(n); --Ignore until ;
+    while(n /= ';') loop
+    	Get(n);
+    end loop;
+    Get(n); --Read \n
 
   end loop;
     
