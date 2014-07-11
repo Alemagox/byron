@@ -1,0 +1,100 @@
+-- fibonacci.byr
+
+procedure main is
+
+-- 	n   : Integer;
+-- 	res : Integer;
+
+-- begin
+-- 	Put("La bola de cristal: ");
+-- 	Get(n);
+-- 	if(n=1) then
+-- 		Put("Es 1 mi nino\n");
+-- 	elsif (n=2) then
+-- 		Put("Es 2 mi nino\n");
+-- 	elsif (n>2) then
+-- 		Put("Mucho contar mi nino\n");
+-- 	else
+-- 		Put("Es 0 mi nino\n");
+-- 	end if;
+
+	-- procedure Fibonacci(n: in Integer; resultado: out Integer) is
+	-- 	resultado1 : Integer;
+	-- 	resultado2 : Integer;
+	-- 	aux : Integer;
+	-- begin
+
+	-- 	if ( n=0 or n=1 ) then
+	-- 		aux := n-1;
+	-- 		resultado := aux;	
+	
+	-- 	else
+	-- 		resultado := 1;
+	-- 	end if;
+
+	-- end Fibonacci;
+
+-- 	n   : Integer;
+-- 	res : Integer;
+
+-- begin
+
+-- 	Put("Entra el numero de Fibonacci a calcular: ");
+-- 	Get(n);
+-- 	Fibonacci(n, res);
+-- 	Put("Resultado es: ");
+-- 	Put(res);
+-- 	New_Line;
+
+	procedure B(c: in out Character; resultado: out Integer) is
+    aux : Integer; 
+    op : Character;
+  begin
+    
+    Put("This is B -> c:");
+    Put(c);
+    New_Line;
+
+    c := 'b';
+    resultado := 20;
+
+    Put("This is B -> c:");
+    Put(c);
+    New_Line;
+            
+  end B; 
+
+	procedure A(c: in out Character; resultado: out Integer) is
+    aux : Integer; 
+    op : Character;
+  begin
+    
+    Put("This is A -> c:");
+    Put(c);
+    New_Line;
+
+    c := 'a';
+
+    B(c, resultado);
+
+    Put("This is A -> c:");
+    Put(c);
+    New_Line;
+            
+  end A; 
+
+  
+  
+  c   : Character;
+	n   : Character;
+	res : Integer;
+
+begin
+
+	c := 'e';
+
+	A(c, res);
+
+	Put(res);
+
+end main;

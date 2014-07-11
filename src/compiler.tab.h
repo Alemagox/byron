@@ -92,7 +92,7 @@ typedef union YYSTYPE
 {
 
 /* Line 2068 of yacc.c  */
-#line 51 "syntacticAnalyzer.y"
+#line 52 "syntacticAnalyzer.y"
 
 	int integer; 
 	char op;

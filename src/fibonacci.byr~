@@ -1,0 +1,30 @@
+-- fibonacci.byr
+
+
+procedure main is
+
+  --Use Ada.TextIO;     -- To compile in Ada
+
+  procedure Fibonacci(n: in Integer; resultado: out Integer) is 
+	resultado1 : Integer;
+	resultado2 : Integer;
+  begin
+	if ( n == 0 or n == 1) then
+		resultado := 1;
+	else
+		Fibonacci(n-1, resultado1);
+		Fibonacci(n-2, resultado2);
+		resultado := resultado1 + resultado2;
+	end if;
+  end Fibonacci;
+      
+  n: Integer;	
+  res : Integer;
+begin
+
+	Put('Entra el número de Fibonacci a calcular: ');
+	Get(n);
+	Fibonacci(n, res);
+	Put(res);
+
+end main;

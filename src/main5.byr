@@ -63,7 +63,7 @@ procedure main is
 
    procedure Numero(c: in out Character; resultado: out Integer) is
       aux : Integer;
-    op : Character;
+      op : Character;
    begin
       
 
