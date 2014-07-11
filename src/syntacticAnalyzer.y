@@ -36,6 +36,7 @@ int anonymousId = 0;
 char anonymousIdString[500];
 
 int errorCompiling;
+int exitIf;
 
 
 /////////////////////////////////////////////
@@ -384,7 +385,7 @@ discrete_choice_list :
 
 
 elsif_list : 
-	elsif_list elsif_statement
+	 elsif_statement elsif_list 
 	| /* empty */
 	;
 
@@ -402,9 +403,9 @@ else_statement :
 
 elsif_statement : 
 	ELSIF { fprintf(yyout,"\t//////////////////////////////////\n");
-  				fprintf(yyout,"\t// Open elsif block \n");
-					$<integer>$=Q.nextLabel++;
-				 } 
+					$<integer>$=exitIf;    // Exit if label
+					fprintf(yyout,"\t// Open elsif block. Exit Label is: %d\n", $<integer>-1);
+				} 
 		'(' expression ')' 
 		{ 
 			errorCode = checkIfNumeric(errorString, $4, 3);
@@ -412,11 +413,15 @@ elsif_statement :
 				yyerror(errorString);
 				YYABORT;
 			}
-			generateCodeEvaluateIf( yyout, &Q, $<integer>2 ); 
+			$<integer>$=Q.nextLabel++;		// Else (or else if) label
+			generateCodeEvaluateIf( yyout, &Q, $<integer>$ ); 
 		}
 	THEN
 		sequence_of_statements
-		{ generateCodeNextIf( yyout, &Q, $<integer>2 ); }
+		{ 
+			generateCodeNextIf( yyout, &Q, $<integer>2, $<integer>6 );
+			$<integer>$=$<integer>2;
+		}
 	;
 
 expression : 
@@ -526,9 +531,9 @@ identifier_list :
 
 if_statement : 
 	IF {  fprintf(yyout,"\t//////////////////////////////////\n");
-  			fprintf(yyout,"\t// Open if block %d\n", Q.nextLabel-1);
-				$<integer>$=Q.nextLabel++;    // After this condition
-				Q.nextLabel++; 								// Reserve end of If statement Label 
+				$<integer>$=Q.nextLabel++;    // Exit if label
+				exitIf=$<integer>$;
+				fprintf(yyout,"\t// Open if block %d. Exit Label is: %d\n", $<integer>$-2, $<integer>$);
 			}
 		'(' expression ')'
 		{ 
@@ -537,17 +542,21 @@ if_statement :
 				yyerror(errorString);
 				YYABORT;
 			}
-			generateCodeEvaluateIf( yyout, &Q, $<integer>2 ); 
+
+			$<integer>$=Q.nextLabel++;		// Else (or else if) label
+			generateCodeEvaluateIf( yyout, &Q, $<integer>$ ); 
 		}
 	THEN
 		sequence_of_statements
-		{ generateCodeNextIf( yyout, &Q, $<integer>2 ); }
+		{ 
+			generateCodeNextIf( yyout, &Q, $<integer>2, $<integer>6); 
+		}
 	elsif_list
 	else_statement
 	END IF ';'
 	{
-		fprintf(yyout,"L %d:\t\t\t\t\n", $<integer>2 +1);
-  	fprintf(yyout,"\t// Close if statement %d\n", $<integer>2-1);
+		fprintf(yyout,"L %d:\t\t\t\t\n", $<integer>2 );
+  	fprintf(yyout,"\t// Close if statement %d\n", $<integer>2-2);
   	fprintf(yyout,"\t//////////////////////////////////\n");
 	}
 	;
@@ -598,6 +607,8 @@ object_declaration :
 			yyerror();
 			YYABORT;
 		} 
+
+		printf("var %s in subprogram %s\n", auxRegister->key.id, parentSubprogram->key.id);
 
 		// Only variables at scope 0 are static
 		if(sT.currentScope == 0){

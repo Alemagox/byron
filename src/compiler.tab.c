@@ -105,6 +105,7 @@ int anonymousId = 0;
 char anonymousIdString[500];
 
 int errorCompiling;
+int exitIf;
 
 
 /////////////////////////////////////////////
@@ -114,7 +115,7 @@ void generateAnonymousId();
 
 
 /* Line 268 of yacc.c  */
-#line 118 "compiler.tab.c"
+#line 119 "compiler.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -196,7 +197,7 @@ typedef union YYSTYPE
 {
 
 /* Line 293 of yacc.c  */
-#line 51 "syntacticAnalyzer.y"
+#line 52 "syntacticAnalyzer.y"
 
 	int integer; 
 	char op;
@@ -209,7 +210,7 @@ typedef union YYSTYPE
 
 
 /* Line 293 of yacc.c  */
-#line 213 "compiler.tab.c"
+#line 214 "compiler.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -221,7 +222,7 @@ typedef union YYSTYPE
 
 
 /* Line 343 of yacc.c  */
-#line 225 "compiler.tab.c"
+#line 226 "compiler.tab.c"
 
 #ifdef short
 # undef short
@@ -440,7 +441,7 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   254
+#define YYLAST   257
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  64
@@ -449,7 +450,7 @@ union yyalloc
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  134
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  258
+#define YYNSTATES  259
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
@@ -529,7 +530,7 @@ static const yytype_int16 yyrhs[] =
       73,    -1,    72,    -1,     7,    -1,    -1,   128,    -1,   107,
       -1,   126,    52,    -1,   124,    -1,    80,    81,    -1,    -1,
      110,    -1,    21,    -1,    83,    57,    82,    -1,    82,    -1,
-      84,    87,    -1,    -1,    -1,     8,    86,   118,    -1,    -1,
+      87,    84,    -1,    -1,    -1,     8,    86,   118,    -1,    -1,
       -1,    -1,     9,    88,    54,    90,    55,    89,    26,   118,
       -1,   114,    -1,    90,     3,    90,    -1,    90,    20,    90,
       -1,    53,    90,    91,    -1,    -1,   110,    -1,    17,   110,
@@ -565,20 +566,20 @@ static const yytype_int16 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   168,   168,   164,   179,   192,   208,   210,   210,   215,
-     220,   221,   226,   262,   279,   300,   301,   306,   315,   316,
-     321,   322,   323,   324,   329,   330,   335,   336,   337,   338,
-     345,   346,   350,   358,   371,   379,   387,   388,   394,   393,
-     399,   404,   409,   404,   423,   424,   449,   477,   483,   490,
-     492,   497,   501,   506,   507,   512,   522,   523,   528,   534,
-     544,   528,   557,   562,   563,   562,   580,   581,   582,   583,
-     588,   593,   633,   642,   643,   648,   660,   672,   682,   693,
-     700,   707,   708,   709,   714,   742,   747,   761,   772,   780,
-     821,   828,   829,   857,   858,   859,   860,   861,   862,   867,
-     868,   873,   880,   881,   886,   890,   897,   898,   923,   951,
-     952,   953,   958,   959,   964,   992,   989,  1006,  1007,  1012,
-    1013,  1042,  1075,  1080,  1081,  1082,  1083,  1084,  1085,  1086,
-    1103,  1104,  1108,  1116,  1117
+       0,   169,   169,   165,   180,   193,   209,   211,   211,   216,
+     221,   222,   227,   263,   280,   301,   302,   307,   316,   317,
+     322,   323,   324,   325,   330,   331,   336,   337,   338,   339,
+     346,   347,   351,   359,   372,   380,   388,   389,   395,   394,
+     400,   405,   410,   405,   428,   429,   454,   482,   488,   495,
+     497,   502,   506,   511,   512,   517,   527,   528,   533,   539,
+     551,   533,   566,   571,   572,   571,   589,   590,   591,   592,
+     597,   602,   644,   653,   654,   659,   671,   683,   693,   704,
+     711,   718,   719,   720,   725,   753,   758,   772,   783,   791,
+     832,   839,   840,   868,   869,   870,   871,   872,   873,   878,
+     879,   884,   891,   892,   897,   901,   908,   909,   934,   962,
+     963,   964,   969,   970,   975,  1003,  1000,  1017,  1018,  1023,
+    1024,  1053,  1086,  1091,  1092,  1093,  1094,  1095,  1096,  1097,
+    1114,  1115,  1119,  1127,  1128
 };
 #endif
 
@@ -603,9 +604,9 @@ static const char *const yytname[] =
   "case_statement_alternative_list", "component_item", "component_list",
   "compound_statement", "constant", "declarative_item", "declarative_part",
   "discrete_choice", "discrete_choice_list", "elsif_list",
-  "else_statement", "$@3", "elsif_statement", "@4", "$@5", "expression",
+  "else_statement", "$@3", "elsif_statement", "@4", "@5", "expression",
   "expression_list", "factor", "formal_part", "function_call",
-  "function_specification", "identifier_list", "if_statement", "@6", "$@7",
+  "function_specification", "identifier_list", "if_statement", "@6", "@7",
   "$@8", "indexed_component", "loop_statement", "@9", "$@10", "mode",
   "null_statement", "object_declaration", "parameter_specification",
   "parameter_specification_list", "primary", "procedure_call_statement",
@@ -699,9 +700,9 @@ static const yytype_uint8 yydefact[] =
       92,    11,     0,     0,    15,    59,     0,     8,    62,    64,
       85,    86,    87,   116,    72,    47,     0,     0,     0,    33,
       35,     0,    32,     0,     5,     0,     9,    17,    13,     0,
-       0,     0,     0,    14,    34,    60,     0,    37,     0,    40,
-       0,    38,    41,     0,    36,    65,     0,     0,     0,    39,
-       0,     0,     0,    61,    42,     0,     0,    43
+       0,     0,     0,    14,    34,    60,     0,    37,     0,    41,
+      40,    37,     0,     0,    38,     0,    36,    65,     0,     0,
+       0,     0,    39,     0,    42,    61,     0,     0,    43
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -709,7 +710,7 @@ static const yytype_int16 yydefgoto[] =
 {
       -1,     2,    35,   179,    91,   136,    50,   126,    62,    63,
      204,   177,    84,    85,    64,    42,    10,    11,   220,   221,
-     239,   243,   246,   244,   247,   255,   127,   167,   105,    30,
+     240,   245,   249,   241,   243,   256,   127,   167,   105,    30,
      106,    12,    21,    65,    88,   223,   237,    66,    67,   113,
      225,   160,    68,    13,    38,    79,   107,    69,    14,    51,
      128,   174,    70,    71,    72,   129,   109,    73,    74,    15,
@@ -721,44 +722,44 @@ static const yytype_int16 yydefgoto[] =
 #define YYPACT_NINF -171
 static const yytype_int16 yypact[] =
 {
-      23,    65,    26,    81,  -171,   124,    85,    52,   114,   121,
-     124,   134,  -171,  -171,  -171,   124,  -171,    -1,  -171,    92,
-     136,    98,    92,   142,  -171,  -171,   155,  -171,  -171,   148,
-     146,    52,   160,  -171,    31,   164,  -171,    52,   120,    31,
-    -171,  -171,    31,   126,  -171,   161,  -171,  -171,  -171,  -171,
-    -171,  -171,   129,   162,  -171,    67,   138,    68,  -171,   141,
-     144,   140,  -171,  -171,  -171,  -171,  -171,  -171,  -171,  -171,
-    -171,  -171,   168,  -171,   164,   -13,   164,   143,   148,   145,
-    -171,   170,    94,    52,   161,   192,  -171,   190,   153,   154,
-      94,   156,  -171,   -24,   137,  -171,  -171,  -171,  -171,  -171,
-    -171,  -171,  -171,  -171,    94,  -171,  -171,  -171,   158,    53,
-      71,    43,   149,   159,    19,   201,  -171,   202,  -171,    94,
-     203,   207,    73,   120,  -171,    94,   166,    13,  -171,    39,
-     163,  -171,   196,  -171,    94,  -171,    94,    13,  -171,  -171,
+      55,    83,    26,    90,  -171,   123,    85,    -7,   115,   118,
+     123,   128,  -171,  -171,  -171,   123,  -171,    -1,  -171,    93,
+     124,    95,    93,   134,  -171,  -171,   148,  -171,  -171,   126,
+     129,    -7,   153,  -171,    31,   186,  -171,    -7,   103,    31,
+    -171,  -171,    31,   113,  -171,   158,  -171,  -171,  -171,  -171,
+    -171,  -171,   120,   160,  -171,    67,   122,    68,  -171,   121,
+     127,   125,  -171,  -171,  -171,  -171,  -171,  -171,  -171,  -171,
+    -171,  -171,   168,  -171,   186,   -13,   186,   135,   126,   130,
+    -171,   149,    94,    -7,   158,   172,  -171,   180,   146,   147,
+      94,   131,  -171,   -24,   139,  -171,  -171,  -171,  -171,  -171,
+    -171,  -171,  -171,  -171,    94,  -171,  -171,  -171,   151,    53,
+      71,    43,   138,   152,    19,   192,  -171,   194,  -171,    94,
+     195,   199,    73,   103,  -171,    94,   161,    13,  -171,    39,
+     154,  -171,   188,  -171,    94,  -171,    94,    13,  -171,  -171,
     -171,  -171,     3,  -171,    43,    43,    43,    43,    53,    94,
-     165,   167,    47,    51,   172,    18,  -171,   212,   204,  -171,
-      31,  -171,    33,  -171,    94,    94,    94,   173,  -171,  -171,
+     159,   163,    47,    51,   164,    18,  -171,   206,   198,  -171,
+      31,  -171,    33,  -171,    94,    94,    94,   166,  -171,  -171,
     -171,  -171,  -171,  -171,    94,    31,  -171,    14,     7,     4,
-      33,   171,  -171,  -171,  -171,  -171,  -171,     8,   175,   177,
-     179,  -171,  -171,   180,  -171,   170,  -171,   230,    13,   215,
-    -171,   170,   229,   115,  -171,  -171,    94,  -171,  -171,  -171,
-    -171,  -171,  -171,  -171,  -171,  -171,    31,   184,   185,  -171,
-    -171,   -10,  -171,   213,    33,   222,  -171,  -171,  -171,   164,
-     115,   164,   164,  -171,  -171,  -171,   231,  -171,   224,   123,
-     191,  -171,  -171,   232,  -171,  -171,   164,   193,   233,  -171,
-      94,   194,     9,  -171,  -171,   218,   164,  -171
+      33,   165,  -171,  -171,  -171,  -171,  -171,     8,   171,   175,
+     177,  -171,  -171,   178,  -171,   149,  -171,   228,    13,   213,
+    -171,   149,   227,   114,  -171,  -171,    94,  -171,  -171,  -171,
+    -171,  -171,  -171,  -171,  -171,  -171,    31,   182,   183,  -171,
+    -171,   -10,  -171,   210,    33,   221,  -171,  -171,  -171,   186,
+     114,   186,   186,  -171,  -171,  -171,   229,   231,   222,  -171,
+     233,   231,   190,   189,  -171,   234,  -171,  -171,    94,   186,
+     235,     9,  -171,   193,  -171,  -171,   220,   186,  -171
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -171,  -171,  -171,  -171,   157,  -171,  -171,  -170,  -171,  -171,
-    -171,  -171,  -171,   169,  -171,  -171,  -171,    30,    21,  -171,
-    -171,  -171,  -171,  -171,  -171,  -171,   -82,  -130,  -171,   226,
+    -171,  -171,  -171,  -171,   155,  -171,  -171,  -170,  -171,  -171,
+    -171,  -171,  -171,   167,  -171,  -171,  -171,    30,    20,  -171,
+      11,  -171,  -171,  -171,  -171,  -171,   -82,  -130,  -171,   232,
     -171,  -171,   -18,  -171,  -171,  -171,  -171,  -171,  -171,  -171,
-    -171,  -171,  -171,  -171,   174,   131,   -90,  -171,  -171,  -171,
+    -171,  -171,  -171,  -171,   179,   132,   -90,  -171,  -171,  -171,
     -171,  -171,  -171,  -171,   -73,   -48,   -96,  -171,  -171,  -171,
-    -171,  -171,  -171,     6,  -171,   -37,  -171,   -35
+    -171,  -171,  -171,    23,  -171,   -37,  -171,   -35
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -771,28 +772,28 @@ static const yytype_uint16 yytable[] =
      164,   164,   164,    40,    27,   148,   164,   139,   119,    77,
      229,   164,   142,   165,   202,   214,     4,   165,   165,   165,
       89,   217,   150,   165,    90,    43,   164,   155,   165,    75,
-      24,    75,   203,   162,    44,    26,     1,   230,   183,   184,
+      24,    75,   203,   162,    44,    26,    20,   230,   183,   184,
      120,    28,   178,   165,   180,    45,    93,   206,   182,   207,
       94,    95,   205,   209,   254,   130,   166,   187,   215,   151,
-     192,   168,   169,   170,    46,    47,    48,    49,     3,   152,
+     192,   168,   169,   170,    46,    47,    48,    49,     1,   152,
      153,    93,   196,   197,   198,    94,    95,   158,   144,   145,
-      98,    99,   100,   101,   102,   159,     5,   104,    19,   171,
-     172,   173,   189,    96,    97,    20,   190,    93,   146,   147,
+      98,    99,   100,   101,   102,   159,     3,   104,    19,   171,
+     172,   173,   189,    96,    97,     5,   190,    93,   146,   147,
      120,    94,    95,   222,   120,    98,    99,   100,   101,   102,
-     103,    89,   104,   195,   224,    90,   200,    22,    93,    96,
-      97,   241,   242,    95,    23,     6,   219,     7,   201,    25,
-     222,    98,    99,   100,   101,   102,    29,     8,   104,    31,
-      93,     9,   185,   186,    32,    95,   233,    34,   235,   236,
-      36,    37,    98,    99,   100,   101,   102,    41,   252,   104,
-      53,    39,    78,   249,    83,    87,    54,    55,   117,   226,
-      82,    86,    56,   257,    98,    99,   100,   101,   102,    57,
-      92,   104,   116,    58,    75,   114,    75,    75,   115,   122,
-     124,   125,   132,    59,    60,   133,    61,   134,   138,   135,
-     143,    75,   120,   149,   150,   154,   156,   157,   163,   175,
-     176,    75,   188,    90,   191,   193,   194,   210,   199,   211,
-     208,   212,   213,   164,   216,   218,   227,   228,   232,   231,
-     240,   238,   248,   245,   256,   251,   253,   250,    33,     0,
-     140,   234,   123,   131,   161
+     103,    89,   104,   195,   224,    90,   200,    93,    22,    96,
+      97,    23,    95,    25,     6,   219,     7,    31,   201,    37,
+     222,    98,    99,   100,   101,   102,     8,    29,   104,    34,
+       9,    32,    93,    36,    39,    78,   233,    95,   235,   236,
+      41,    98,    99,   100,   101,   102,   251,    82,   104,   185,
+     186,    83,    86,    87,    92,   114,   252,   116,   117,   226,
+     125,   115,   132,   138,   258,   124,    98,    99,   100,   101,
+     102,   122,    53,   104,    75,   133,    75,    75,    54,    55,
+     134,   120,   135,   143,    56,   150,   149,   154,   156,   157,
+     175,    57,   176,   163,    75,    58,   191,    90,   188,   193,
+     194,   199,    75,   210,   208,    59,    60,   211,    61,   212,
+     213,   164,   216,   218,   227,   228,   231,   232,   242,   238,
+     239,   244,   247,   248,   250,   255,   257,   253,   140,     0,
+     234,   131,   246,     0,    33,   161,     0,   123
 };
 
 #define yypact_value_is_default(yystate) \
@@ -807,28 +808,28 @@ static const yytype_int16 yycheck[] =
        3,     3,     3,    31,    15,   111,     3,    41,    31,    37,
       30,     3,   104,    20,    10,   195,     0,    20,    20,    20,
       54,   201,    13,    20,    58,     4,     3,   119,    20,    74,
-      10,    76,    28,   125,    13,    15,    23,    57,   144,   145,
+      10,    76,    28,   125,    13,    15,    53,    57,   144,   145,
       63,    52,   134,    20,   136,    24,    13,    53,    55,    55,
       17,    18,    55,    55,    55,    83,    53,   149,   198,    50,
-      52,    32,    33,    34,    43,    44,    45,    46,    13,   114,
+      52,    32,    33,    34,    43,    44,    45,    46,    23,   114,
      115,    13,   164,   165,   166,    17,    18,    14,    35,    36,
-      47,    48,    49,    50,    51,    22,    15,    54,    13,    60,
-      61,    62,    55,    35,    36,    53,    55,    13,    37,    38,
+      47,    48,    49,    50,    51,    22,    13,    54,    13,    60,
+      61,    62,    55,    35,    36,    15,    55,    13,    37,    38,
       63,    17,    18,   203,    63,    47,    48,    49,    50,    51,
       52,    54,    54,   160,   206,    58,   174,    13,    13,    35,
-      36,     8,     9,    18,    13,    11,    21,    13,   175,     5,
-     230,    47,    48,    49,    50,    51,    54,    23,    54,    13,
-      13,    27,   146,   147,    56,    18,   229,    15,   231,   232,
-       5,    13,    47,    48,    49,    50,    51,     7,   250,    54,
-       6,    25,    52,   246,    13,    13,    12,    13,    10,   216,
-      54,    52,    18,   256,    47,    48,    49,    50,    51,    25,
-      52,    54,    52,    29,   229,    54,   231,   232,    54,    56,
-      55,    31,    10,    39,    40,    15,    42,    54,    52,    55,
-      52,   246,    63,    54,    13,    13,    13,    10,    52,    56,
-      24,   256,    55,    58,    52,    13,    22,    52,    55,    52,
-      59,    52,    52,     3,    19,     6,    52,    52,    16,    26,
-      16,    10,    10,    52,    26,    12,    52,    54,    22,    -1,
-      93,   230,    78,    84,   123
+      36,    13,    18,     5,    11,    21,    13,    13,   175,    13,
+     230,    47,    48,    49,    50,    51,    23,    54,    54,    15,
+      27,    56,    13,     5,    25,    52,   229,    18,   231,   232,
+       7,    47,    48,    49,    50,    51,   248,    54,    54,   146,
+     147,    13,    52,    13,    52,    54,   249,    52,    10,   216,
+      31,    54,    10,    52,   257,    55,    47,    48,    49,    50,
+      51,    56,     6,    54,   229,    15,   231,   232,    12,    13,
+      54,    63,    55,    52,    18,    13,    54,    13,    13,    10,
+      56,    25,    24,    52,   249,    29,    52,    58,    55,    13,
+      22,    55,   257,    52,    59,    39,    40,    52,    42,    52,
+      52,     3,    19,     6,    52,    52,    26,    16,    16,    10,
+       9,     8,    52,    54,    10,    52,    26,    12,    93,    -1,
+     230,    84,   241,    -1,    22,   123,    -1,    78
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -858,9 +859,9 @@ static const yytype_uint8 yystos[] =
      119,   129,    10,    28,    74,    55,    53,    55,    59,    55,
       52,    52,    52,    52,    71,    91,    19,    71,     6,    21,
       82,    83,   110,    99,    90,   104,   129,    52,    52,    30,
-      57,    26,    16,   118,    82,   118,   118,   100,    10,    84,
-      16,     8,     9,    85,    87,    52,    86,    88,    10,   118,
-      54,    12,    90,    52,    55,    89,    26,   118
+      57,    26,    16,   118,    82,   118,   118,   100,    10,     9,
+      84,    87,    16,    88,     8,    85,    84,    52,    54,    86,
+      10,    90,   118,    12,    55,    52,    89,    26,   118
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1697,7 +1698,7 @@ yyreduce:
         case 2:
 
 /* Line 1806 of yacc.c  */
-#line 168 "syntacticAnalyzer.y"
+#line 169 "syntacticAnalyzer.y"
     { 
 			fprintf( yyout, "CODE(%d)\nL 0:\n", Q.nextCodeNumber++ ); 
 			fprintf( yyout, "\tR6=R7;\t\t\t//Initialize R6\n"); 
@@ -1709,7 +1710,7 @@ yyreduce:
   case 4:
 
 /* Line 1806 of yacc.c  */
-#line 180 "syntacticAnalyzer.y"
+#line 181 "syntacticAnalyzer.y"
     {
 			auxRegister = createRegister(	(yyvsp[(1) - (1)].regStruct)->key.id, (yyvsp[(1) - (1)].regStruct)->key.scope, 
 																		(yyvsp[(1) - (1)].regStruct)->typeSymbol, (yyvsp[(1) - (1)].regStruct)->typeVariable);
@@ -1727,7 +1728,7 @@ yyreduce:
   case 5:
 
 /* Line 1806 of yacc.c  */
-#line 193 "syntacticAnalyzer.y"
+#line 194 "syntacticAnalyzer.y"
     {
 			auxRegister = createRegister(	(yyvsp[(3) - (3)].regStruct)->key.id, (yyvsp[(3) - (3)].regStruct)->key.scope, 
 																		(yyvsp[(3) - (3)].regStruct)->typeSymbol, (yyvsp[(3) - (3)].regStruct)->typeVariable);
@@ -1745,28 +1746,28 @@ yyreduce:
   case 6:
 
 /* Line 1806 of yacc.c  */
-#line 208 "syntacticAnalyzer.y"
+#line 209 "syntacticAnalyzer.y"
     { (yyval.regStruct) = NULL; }
     break;
 
   case 7:
 
 /* Line 1806 of yacc.c  */
-#line 210 "syntacticAnalyzer.y"
+#line 211 "syntacticAnalyzer.y"
     {auxRegisterList = NULL;}
     break;
 
   case 8:
 
 /* Line 1806 of yacc.c  */
-#line 210 "syntacticAnalyzer.y"
+#line 211 "syntacticAnalyzer.y"
     { (yyval.regStruct) = auxRegisterList;  }
     break;
 
   case 12:
 
 /* Line 1806 of yacc.c  */
-#line 227 "syntacticAnalyzer.y"
+#line 228 "syntacticAnalyzer.y"
     { 
 		errorCode = checkAssignmentType((yyvsp[(1) - (4)].regStruct), (yyvsp[(3) - (4)].regStruct));
 
@@ -1804,7 +1805,7 @@ yyreduce:
   case 13:
 
 /* Line 1806 of yacc.c  */
-#line 265 "syntacticAnalyzer.y"
+#line 266 "syntacticAnalyzer.y"
     {
 		// Get register of the identifier
 		auxRegister = getSymbol(&sT, (yyvsp[(2) - (7)].string), sT.currentScope);
@@ -1820,7 +1821,7 @@ yyreduce:
   case 14:
 
 /* Line 1806 of yacc.c  */
-#line 281 "syntacticAnalyzer.y"
+#line 282 "syntacticAnalyzer.y"
     {
 		errorCode = checkIfNumeric(errorString, (yyvsp[(2) - (4)].regStruct), 5);
 		if(errorCode && (yyvsp[(2) - (4)].regStruct)->typeVariable!=Void){ // others have Void as varaible type
@@ -1841,7 +1842,7 @@ yyreduce:
   case 17:
 
 /* Line 1806 of yacc.c  */
-#line 307 "syntacticAnalyzer.y"
+#line 308 "syntacticAnalyzer.y"
     {
 		auxRegister = createRegister( (yyvsp[(1) - (6)].string), sT.currentScope,  Field, (yyvsp[(4) - (6)].typeVariable) ); 
 	  addRegisterToList( &auxRegisterList, auxRegister );
@@ -1851,14 +1852,14 @@ yyreduce:
   case 28:
 
 /* Line 1806 of yacc.c  */
-#line 337 "syntacticAnalyzer.y"
+#line 338 "syntacticAnalyzer.y"
     { /*destroyRegister( $1 );*/ }
     break;
 
   case 29:
 
 /* Line 1806 of yacc.c  */
-#line 339 "syntacticAnalyzer.y"
+#line 340 "syntacticAnalyzer.y"
     { markSubprogramAsDefined( (yyvsp[(1) - (1)].regStruct) );
 		//destroyRegister( $1 ); 
 	  }
@@ -1867,7 +1868,7 @@ yyreduce:
   case 32:
 
 /* Line 1806 of yacc.c  */
-#line 351 "syntacticAnalyzer.y"
+#line 352 "syntacticAnalyzer.y"
     {			
 			errorCode = checkIfDiscreteChoice(errorString, (yyvsp[(1) - (1)].regStruct));
 			if(errorCode){
@@ -1880,7 +1881,7 @@ yyreduce:
   case 33:
 
 /* Line 1806 of yacc.c  */
-#line 359 "syntacticAnalyzer.y"
+#line 360 "syntacticAnalyzer.y"
     {
 			generateAnonymousId();
 			auxRegister = createRegister( anonymousIdString, 
@@ -1894,7 +1895,7 @@ yyreduce:
   case 34:
 
 /* Line 1806 of yacc.c  */
-#line 372 "syntacticAnalyzer.y"
+#line 373 "syntacticAnalyzer.y"
     {
 			errorCode = checkIfOthers(errorString, (yyvsp[(1) - (3)].regStruct), (yyvsp[(3) - (3)].regStruct));
 			if(errorCode){
@@ -1907,7 +1908,7 @@ yyreduce:
   case 35:
 
 /* Line 1806 of yacc.c  */
-#line 380 "syntacticAnalyzer.y"
+#line 381 "syntacticAnalyzer.y"
     {
 			(yyval.regStruct) = (yyvsp[(1) - (1)].regStruct);
 		}
@@ -1916,7 +1917,7 @@ yyreduce:
   case 38:
 
 /* Line 1806 of yacc.c  */
-#line 394 "syntacticAnalyzer.y"
+#line 395 "syntacticAnalyzer.y"
     { fprintf(yyout,"\t//////////////////////////////////\n");
 			fprintf(yyout,"\t// Open else block \n");
 
@@ -1926,45 +1927,49 @@ yyreduce:
   case 41:
 
 /* Line 1806 of yacc.c  */
-#line 404 "syntacticAnalyzer.y"
+#line 405 "syntacticAnalyzer.y"
     { fprintf(yyout,"\t//////////////////////////////////\n");
-  				fprintf(yyout,"\t// Open elsif block \n");
-					(yyval.integer)=Q.nextLabel++;
-				 }
+					(yyval.integer)=exitIf;    // Exit if label
+					fprintf(yyout,"\t// Open elsif block. Exit Label is: %d\n", (yyvsp[(-1) - (1)].integer));
+				}
     break;
 
   case 42:
 
 /* Line 1806 of yacc.c  */
-#line 409 "syntacticAnalyzer.y"
+#line 410 "syntacticAnalyzer.y"
     { 
 			errorCode = checkIfNumeric(errorString, (yyvsp[(4) - (5)].regStruct), 3);
 			if(errorCode){
 				yyerror(errorString);
 				YYABORT;
 			}
-			generateCodeEvaluateIf( yyout, &Q, (yyvsp[(2) - (5)].integer) ); 
+			(yyval.integer)=Q.nextLabel++;		// Else (or else if) label
+			generateCodeEvaluateIf( yyout, &Q, (yyval.integer) ); 
 		}
     break;
 
   case 43:
 
 /* Line 1806 of yacc.c  */
-#line 419 "syntacticAnalyzer.y"
-    { generateCodeNextIf( yyout, &Q, (yyvsp[(2) - (8)].integer) ); }
+#line 421 "syntacticAnalyzer.y"
+    { 
+			generateCodeNextIf( yyout, &Q, (yyvsp[(2) - (8)].integer), (yyvsp[(6) - (8)].integer) );
+			(yyval.integer)=(yyvsp[(2) - (8)].integer);
+		}
     break;
 
   case 44:
 
 /* Line 1806 of yacc.c  */
-#line 423 "syntacticAnalyzer.y"
+#line 428 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 45:
 
 /* Line 1806 of yacc.c  */
-#line 425 "syntacticAnalyzer.y"
+#line 430 "syntacticAnalyzer.y"
     {
 			errorCode = checkIfNumeric(errorString, (yyvsp[(1) - (3)].regStruct), 3);
 			if(errorCode){
@@ -1994,7 +1999,7 @@ yyreduce:
   case 46:
 
 /* Line 1806 of yacc.c  */
-#line 450 "syntacticAnalyzer.y"
+#line 455 "syntacticAnalyzer.y"
     {
 			errorCode = checkIfNumeric(errorString, (yyvsp[(1) - (3)].regStruct), 3);
 			if(errorCode){
@@ -2024,7 +2029,7 @@ yyreduce:
   case 47:
 
 /* Line 1806 of yacc.c  */
-#line 478 "syntacticAnalyzer.y"
+#line 483 "syntacticAnalyzer.y"
     {
 		addRegisterToList( &auxRegisterList, (yyvsp[(2) - (3)].regStruct) );
 		(yyval.regStruct) = auxRegisterList;
@@ -2034,7 +2039,7 @@ yyreduce:
   case 48:
 
 /* Line 1806 of yacc.c  */
-#line 483 "syntacticAnalyzer.y"
+#line 488 "syntacticAnalyzer.y"
     {
 		(yyval.regStruct) = NULL;
 	}
@@ -2043,21 +2048,21 @@ yyreduce:
   case 49:
 
 /* Line 1806 of yacc.c  */
-#line 490 "syntacticAnalyzer.y"
+#line 495 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 50:
 
 /* Line 1806 of yacc.c  */
-#line 492 "syntacticAnalyzer.y"
+#line 497 "syntacticAnalyzer.y"
     { yyerror("Incomplete factor"); (yyval.regStruct) = (yyvsp[(2) - (2)].regStruct); }
     break;
 
   case 51:
 
 /* Line 1806 of yacc.c  */
-#line 498 "syntacticAnalyzer.y"
+#line 503 "syntacticAnalyzer.y"
     { 
 		(yyval.regStruct) = auxRegisterList; 
 	}
@@ -2066,14 +2071,14 @@ yyreduce:
   case 52:
 
 /* Line 1806 of yacc.c  */
-#line 501 "syntacticAnalyzer.y"
+#line 506 "syntacticAnalyzer.y"
     { (yyval.regStruct) = NULL; }
     break;
 
   case 55:
 
 /* Line 1806 of yacc.c  */
-#line 513 "syntacticAnalyzer.y"
+#line 518 "syntacticAnalyzer.y"
     { 
 		auxRegister = createRegister( (yyvsp[(2) - (5)].string), sT.currentScope,  Function, (yyvsp[(5) - (5)].typeVariable) ); 
 	  addRegister( &sT, auxRegister );
@@ -2084,42 +2089,46 @@ yyreduce:
   case 58:
 
 /* Line 1806 of yacc.c  */
-#line 528 "syntacticAnalyzer.y"
+#line 533 "syntacticAnalyzer.y"
     {  fprintf(yyout,"\t//////////////////////////////////\n");
-  			fprintf(yyout,"\t// Open if block %d\n", Q.nextLabel-1);
-				(yyval.integer)=Q.nextLabel++;    // After this condition
-				Q.nextLabel++; 								// Reserve end of If statement Label 
+				(yyval.integer)=Q.nextLabel++;    // Exit if label
+				exitIf=(yyval.integer);
+				fprintf(yyout,"\t// Open if block %d. Exit Label is: %d\n", (yyval.integer)-2, (yyval.integer));
 			}
     break;
 
   case 59:
 
 /* Line 1806 of yacc.c  */
-#line 534 "syntacticAnalyzer.y"
+#line 539 "syntacticAnalyzer.y"
     { 
 			errorCode = checkIfNumeric(errorString, (yyvsp[(4) - (5)].regStruct), 3);
 			if(errorCode){
 				yyerror(errorString);
 				YYABORT;
 			}
-			generateCodeEvaluateIf( yyout, &Q, (yyvsp[(2) - (5)].integer) ); 
+
+			(yyval.integer)=Q.nextLabel++;		// Else (or else if) label
+			generateCodeEvaluateIf( yyout, &Q, (yyval.integer) ); 
 		}
     break;
 
   case 60:
 
 /* Line 1806 of yacc.c  */
-#line 544 "syntacticAnalyzer.y"
-    { generateCodeNextIf( yyout, &Q, (yyvsp[(2) - (8)].integer) ); }
+#line 551 "syntacticAnalyzer.y"
+    { 
+			generateCodeNextIf( yyout, &Q, (yyvsp[(2) - (8)].integer), (yyvsp[(6) - (8)].integer)); 
+		}
     break;
 
   case 61:
 
 /* Line 1806 of yacc.c  */
-#line 548 "syntacticAnalyzer.y"
+#line 557 "syntacticAnalyzer.y"
     {
-		fprintf(yyout,"L %d:\t\t\t\t\n", (yyvsp[(2) - (14)].integer) +1);
-  	fprintf(yyout,"\t// Close if statement %d\n", (yyvsp[(2) - (14)].integer)-1);
+		fprintf(yyout,"L %d:\t\t\t\t\n", (yyvsp[(2) - (14)].integer) );
+  	fprintf(yyout,"\t// Close if statement %d\n", (yyvsp[(2) - (14)].integer)-2);
   	fprintf(yyout,"\t//////////////////////////////////\n");
 	}
     break;
@@ -2127,21 +2136,21 @@ yyreduce:
   case 63:
 
 /* Line 1806 of yacc.c  */
-#line 562 "syntacticAnalyzer.y"
+#line 571 "syntacticAnalyzer.y"
     { (yyval.integer)=generateCodeOpenWhile( yyout, &Q ); }
     break;
 
   case 64:
 
 /* Line 1806 of yacc.c  */
-#line 563 "syntacticAnalyzer.y"
+#line 572 "syntacticAnalyzer.y"
     { generateCodeEvaluateWhile( yyout, &Q, (yyvsp[(2) - (5)].integer) ); }
     break;
 
   case 65:
 
 /* Line 1806 of yacc.c  */
-#line 567 "syntacticAnalyzer.y"
+#line 576 "syntacticAnalyzer.y"
     {
 		errorCode = checkIfNumeric(errorString, (yyvsp[(4) - (11)].regStruct), 4);
 		if(errorCode){
@@ -2156,35 +2165,35 @@ yyreduce:
   case 66:
 
 /* Line 1806 of yacc.c  */
-#line 580 "syntacticAnalyzer.y"
+#line 589 "syntacticAnalyzer.y"
     { (yyval.typeSymbol) = Out; }
     break;
 
   case 67:
 
 /* Line 1806 of yacc.c  */
-#line 581 "syntacticAnalyzer.y"
+#line 590 "syntacticAnalyzer.y"
     { (yyval.typeSymbol) = InOut; }
     break;
 
   case 68:
 
 /* Line 1806 of yacc.c  */
-#line 582 "syntacticAnalyzer.y"
+#line 591 "syntacticAnalyzer.y"
     { (yyval.typeSymbol) = In; }
     break;
 
   case 69:
 
 /* Line 1806 of yacc.c  */
-#line 583 "syntacticAnalyzer.y"
+#line 592 "syntacticAnalyzer.y"
     { (yyval.typeSymbol) = In; }
     break;
 
   case 71:
 
 /* Line 1806 of yacc.c  */
-#line 594 "syntacticAnalyzer.y"
+#line 603 "syntacticAnalyzer.y"
     { 
 	  auxRegister = createRegister( (yyvsp[(1) - (7)].string), sT.currentScope,  Variable, (yyvsp[(5) - (7)].typeVariable) ); 
 	  errorCode = addRegister( &sT, auxRegister ); 
@@ -2192,6 +2201,8 @@ yyreduce:
 			yyerror();
 			YYABORT;
 		} 
+
+		printf("var %s in subprogram %s\n", auxRegister->key.id, parentSubprogram->key.id);
 
 		// Only variables at scope 0 are static
 		if(sT.currentScope == 0){
@@ -2225,7 +2236,7 @@ yyreduce:
   case 72:
 
 /* Line 1806 of yacc.c  */
-#line 634 "syntacticAnalyzer.y"
+#line 645 "syntacticAnalyzer.y"
     { 
 		auxRegister = createRegister( (yyvsp[(1) - (6)].string), sT.currentScope,  (yyvsp[(4) - (6)].typeSymbol), (yyvsp[(5) - (6)].typeVariable) ); 
 	  addRegisterToList( &auxRegisterList, auxRegister ); 
@@ -2235,7 +2246,7 @@ yyreduce:
   case 75:
 
 /* Line 1806 of yacc.c  */
-#line 648 "syntacticAnalyzer.y"
+#line 659 "syntacticAnalyzer.y"
     { generateAnonymousId();
 
 										auxRegister = createRegister( anonymousIdString, 
@@ -2253,7 +2264,7 @@ yyreduce:
   case 76:
 
 /* Line 1806 of yacc.c  */
-#line 660 "syntacticAnalyzer.y"
+#line 671 "syntacticAnalyzer.y"
     { generateAnonymousId();
 
 												auxRegister = createRegister( anonymousIdString, 
@@ -2271,7 +2282,7 @@ yyreduce:
   case 77:
 
 /* Line 1806 of yacc.c  */
-#line 672 "syntacticAnalyzer.y"
+#line 683 "syntacticAnalyzer.y"
     { auxRegister = createRegister( anonymousIdString, 
 																											sT.currentScope, Literal, 
 																											Character
@@ -2287,7 +2298,7 @@ yyreduce:
   case 78:
 
 /* Line 1806 of yacc.c  */
-#line 682 "syntacticAnalyzer.y"
+#line 693 "syntacticAnalyzer.y"
     { generateAnonymousId();
 												auxRegister = createRegister( anonymousIdString, 
 																											sT.currentScope, Literal, 
@@ -2304,7 +2315,7 @@ yyreduce:
   case 79:
 
 /* Line 1806 of yacc.c  */
-#line 693 "syntacticAnalyzer.y"
+#line 704 "syntacticAnalyzer.y"
     {	
 												auxRegister = createRegister( anonymousIdString, 
 																											sT.currentScope, Literal, 
@@ -2317,7 +2328,7 @@ yyreduce:
   case 80:
 
 /* Line 1806 of yacc.c  */
-#line 700 "syntacticAnalyzer.y"
+#line 711 "syntacticAnalyzer.y"
     { generateAnonymousId();
 												auxRegister = createRegister( anonymousIdString, 
 																											sT.currentScope, Literal, 
@@ -2330,28 +2341,28 @@ yyreduce:
   case 81:
 
 /* Line 1806 of yacc.c  */
-#line 707 "syntacticAnalyzer.y"
+#line 718 "syntacticAnalyzer.y"
     {	(yyval.regStruct) = (yyvsp[(1) - (1)].regStruct);	}
     break;
 
   case 82:
 
 /* Line 1806 of yacc.c  */
-#line 708 "syntacticAnalyzer.y"
+#line 719 "syntacticAnalyzer.y"
     {	(yyval.regStruct) = (yyvsp[(1) - (1)].regStruct);	}
     break;
 
   case 83:
 
 /* Line 1806 of yacc.c  */
-#line 709 "syntacticAnalyzer.y"
+#line 720 "syntacticAnalyzer.y"
     {	(yyval.regStruct) = (yyvsp[(2) - (3)].regStruct);	}
     break;
 
   case 84:
 
 /* Line 1806 of yacc.c  */
-#line 715 "syntacticAnalyzer.y"
+#line 726 "syntacticAnalyzer.y"
     { 
 		//printf( "line %d -- id '%s' -- scope %d\n", line, $1, sT.currentScope );
 		
@@ -2383,7 +2394,7 @@ yyreduce:
   case 85:
 
 /* Line 1806 of yacc.c  */
-#line 743 "syntacticAnalyzer.y"
+#line 754 "syntacticAnalyzer.y"
     {
 			// Generate code
 			generateCodePutStringLiteral( yyout, &Q, (yyvsp[(3) - (5)].string) );
@@ -2393,7 +2404,7 @@ yyreduce:
   case 86:
 
 /* Line 1806 of yacc.c  */
-#line 748 "syntacticAnalyzer.y"
+#line 759 "syntacticAnalyzer.y"
     { 
 			errorCode = checkPutGet( errorString, (yyvsp[(3) - (5)].regStruct) );
 		  if ( errorCode!=0 ){
@@ -2412,7 +2423,7 @@ yyreduce:
   case 87:
 
 /* Line 1806 of yacc.c  */
-#line 762 "syntacticAnalyzer.y"
+#line 773 "syntacticAnalyzer.y"
     { 
 			errorCode = checkPutGet( errorString, (yyvsp[(3) - (5)].regStruct) );
 		  if ( errorCode!=0 ){
@@ -2428,7 +2439,7 @@ yyreduce:
   case 88:
 
 /* Line 1806 of yacc.c  */
-#line 773 "syntacticAnalyzer.y"
+#line 784 "syntacticAnalyzer.y"
     {
 			generateCodeNewLine( yyout, &Q );
 		}
@@ -2437,7 +2448,7 @@ yyreduce:
   case 89:
 
 /* Line 1806 of yacc.c  */
-#line 781 "syntacticAnalyzer.y"
+#line 792 "syntacticAnalyzer.y"
     { auxRegister = createRegister( (yyvsp[(2) - (3)].string), sT.currentScope,  Procedure, Void ); 
 	  if ( addRegister( &sT, auxRegister ) ) { // Procedure has been already specified, but not defined
 	  	free(auxRegister);
@@ -2479,14 +2490,14 @@ yyreduce:
   case 91:
 
 /* Line 1806 of yacc.c  */
-#line 828 "syntacticAnalyzer.y"
+#line 839 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 92:
 
 /* Line 1806 of yacc.c  */
-#line 830 "syntacticAnalyzer.y"
+#line 841 "syntacticAnalyzer.y"
     {	//yyerror("Incomple simple expression");
 			errorCode = checkIfNumeric(errorString, (yyvsp[(1) - (3)].regStruct), 2);
 			if(errorCode){
@@ -2515,49 +2526,49 @@ yyreduce:
   case 93:
 
 /* Line 1806 of yacc.c  */
-#line 857 "syntacticAnalyzer.y"
+#line 868 "syntacticAnalyzer.y"
     { strcpy((yyval.string), "==");  }
     break;
 
   case 94:
 
 /* Line 1806 of yacc.c  */
-#line 858 "syntacticAnalyzer.y"
+#line 869 "syntacticAnalyzer.y"
     { strcpy((yyval.string), "<");  }
     break;
 
   case 95:
 
 /* Line 1806 of yacc.c  */
-#line 859 "syntacticAnalyzer.y"
+#line 870 "syntacticAnalyzer.y"
     { strcpy((yyval.string), ">");  }
     break;
 
   case 96:
 
 /* Line 1806 of yacc.c  */
-#line 860 "syntacticAnalyzer.y"
+#line 871 "syntacticAnalyzer.y"
     { strcpy((yyval.string), "!="); }
     break;
 
   case 97:
 
 /* Line 1806 of yacc.c  */
-#line 861 "syntacticAnalyzer.y"
+#line 872 "syntacticAnalyzer.y"
     { strcpy((yyval.string), (yyvsp[(1) - (1)].string)); }
     break;
 
   case 98:
 
 /* Line 1806 of yacc.c  */
-#line 862 "syntacticAnalyzer.y"
+#line 873 "syntacticAnalyzer.y"
     { strcpy((yyval.string), (yyvsp[(1) - (1)].string)); }
     break;
 
   case 104:
 
 /* Line 1806 of yacc.c  */
-#line 887 "syntacticAnalyzer.y"
+#line 898 "syntacticAnalyzer.y"
     {
 			(yyval.regStruct) = (yyvsp[(2) - (2)].regStruct);
 		}
@@ -2566,7 +2577,7 @@ yyreduce:
   case 105:
 
 /* Line 1806 of yacc.c  */
-#line 891 "syntacticAnalyzer.y"
+#line 902 "syntacticAnalyzer.y"
     {
 			(yyval.regStruct) = (yyvsp[(1) - (1)].regStruct);
 		}
@@ -2575,14 +2586,14 @@ yyreduce:
   case 106:
 
 /* Line 1806 of yacc.c  */
-#line 897 "syntacticAnalyzer.y"
+#line 908 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 107:
 
 /* Line 1806 of yacc.c  */
-#line 899 "syntacticAnalyzer.y"
+#line 910 "syntacticAnalyzer.y"
     {
 			errorCode = checkIfNumeric(errorString, (yyvsp[(1) - (3)].regStruct), 1);
 			if(errorCode){
@@ -2612,7 +2623,7 @@ yyreduce:
   case 108:
 
 /* Line 1806 of yacc.c  */
-#line 924 "syntacticAnalyzer.y"
+#line 935 "syntacticAnalyzer.y"
     {
 			errorCode = checkIfNumeric(errorString, (yyvsp[(1) - (3)].regStruct), 1);
 			if(errorCode){
@@ -2642,7 +2653,7 @@ yyreduce:
   case 114:
 
 /* Line 1806 of yacc.c  */
-#line 965 "syntacticAnalyzer.y"
+#line 976 "syntacticAnalyzer.y"
     {
 		enterScope ( &sT );
 		parentSubprogram = (yyvsp[(1) - (2)].regStruct);
@@ -2668,7 +2679,7 @@ yyreduce:
   case 115:
 
 /* Line 1806 of yacc.c  */
-#line 992 "syntacticAnalyzer.y"
+#line 1003 "syntacticAnalyzer.y"
     {
 		generateCodeSubprogramBase( yyout, (yyvsp[(1) - (3)].regStruct) );
 	}
@@ -2677,7 +2688,7 @@ yyreduce:
   case 116:
 
 /* Line 1806 of yacc.c  */
-#line 997 "syntacticAnalyzer.y"
+#line 1008 "syntacticAnalyzer.y"
     { 
 		exitScope ( &sT, (yyvsp[(1) - (8)].regStruct) ); 
 		generateCodeEndSubprogram( yyout, &Q, (yyvsp[(1) - (8)].regStruct) ); 
@@ -2688,28 +2699,28 @@ yyreduce:
   case 117:
 
 /* Line 1806 of yacc.c  */
-#line 1006 "syntacticAnalyzer.y"
+#line 1017 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 118:
 
 /* Line 1806 of yacc.c  */
-#line 1007 "syntacticAnalyzer.y"
+#line 1018 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 119:
 
 /* Line 1806 of yacc.c  */
-#line 1012 "syntacticAnalyzer.y"
+#line 1023 "syntacticAnalyzer.y"
     { (yyval.regStruct) = (yyvsp[(1) - (1)].regStruct); }
     break;
 
   case 120:
 
 /* Line 1806 of yacc.c  */
-#line 1014 "syntacticAnalyzer.y"
+#line 1025 "syntacticAnalyzer.y"
     { 
 			errorCode = checkIfNumeric(errorString, (yyvsp[(3) - (3)].regStruct), 0);
 			if(errorCode) {
@@ -2743,7 +2754,7 @@ yyreduce:
   case 121:
 
 /* Line 1806 of yacc.c  */
-#line 1043 "syntacticAnalyzer.y"
+#line 1054 "syntacticAnalyzer.y"
     { 
 			errorCode = checkIfNumeric(errorString, (yyvsp[(3) - (3)].regStruct), 0);
 			if(errorCode) {
@@ -2777,49 +2788,49 @@ yyreduce:
   case 123:
 
 /* Line 1806 of yacc.c  */
-#line 1080 "syntacticAnalyzer.y"
+#line 1091 "syntacticAnalyzer.y"
     { (yyval.typeVariable) = Integer; }
     break;
 
   case 124:
 
 /* Line 1806 of yacc.c  */
-#line 1081 "syntacticAnalyzer.y"
+#line 1092 "syntacticAnalyzer.y"
     { (yyval.typeVariable) = Real; }
     break;
 
   case 125:
 
 /* Line 1806 of yacc.c  */
-#line 1082 "syntacticAnalyzer.y"
+#line 1093 "syntacticAnalyzer.y"
     { (yyval.typeVariable) = Character; }
     break;
 
   case 126:
 
 /* Line 1806 of yacc.c  */
-#line 1083 "syntacticAnalyzer.y"
+#line 1094 "syntacticAnalyzer.y"
     { (yyval.typeVariable) = Bool; }
     break;
 
   case 127:
 
 /* Line 1806 of yacc.c  */
-#line 1084 "syntacticAnalyzer.y"
+#line 1095 "syntacticAnalyzer.y"
     { (yyval.typeVariable) = ArrayVariable; }
     break;
 
   case 128:
 
 /* Line 1806 of yacc.c  */
-#line 1085 "syntacticAnalyzer.y"
+#line 1096 "syntacticAnalyzer.y"
     { (yyval.typeVariable) = Record; }
     break;
 
   case 129:
 
 /* Line 1806 of yacc.c  */
-#line 1087 "syntacticAnalyzer.y"
+#line 1098 "syntacticAnalyzer.y"
     { 
 			auxRegister = getSymbol(&sT, (yyvsp[(1) - (1)].string), sT.currentScope);
 
@@ -2837,7 +2848,7 @@ yyreduce:
   case 132:
 
 /* Line 1806 of yacc.c  */
-#line 1108 "syntacticAnalyzer.y"
+#line 1119 "syntacticAnalyzer.y"
     { auxRegister = getSymbol(&sT, (yyvsp[(1) - (1)].string), sT.currentScope);
 							 /* check if variable really exists */
 							if(auxRegister == NULL){
@@ -2851,21 +2862,21 @@ yyreduce:
   case 133:
 
 /* Line 1806 of yacc.c  */
-#line 1116 "syntacticAnalyzer.y"
+#line 1127 "syntacticAnalyzer.y"
     { yyerror("Incomplete! -> indexed_component in variable"); YYABORT; (yyval.regStruct) = NULL; }
     break;
 
   case 134:
 
 /* Line 1806 of yacc.c  */
-#line 1117 "syntacticAnalyzer.y"
+#line 1128 "syntacticAnalyzer.y"
     { yyerror("Incomplete! -> selected_component in variable"); YYABORT; (yyval.regStruct) = NULL; }
     break;
 
 
 
 /* Line 1806 of yacc.c  */
-#line 2869 "compiler.tab.c"
+#line 2880 "compiler.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3096,7 +3107,7 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 1120 "syntacticAnalyzer.y"
+#line 1131 "syntacticAnalyzer.y"
 
 
 //Codigo C adicional

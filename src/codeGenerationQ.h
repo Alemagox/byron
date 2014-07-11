@@ -88,7 +88,7 @@ void generateCodeCloseWhile( FILE* yyout, qMachine *Q, int outLabel );
 
 void generateCodeEvaluateIf( FILE* yyout, qMachine *Q, int outLabel );
 
-void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ); 
+void generateCodeNextIf( FILE* yyout, qMachine *Q, int outIfLabel, int nextElseLabel ); 
 
 void generateCodeBeginSubprogram( FILE* yyout, qMachine *Q, char pName[] );
 

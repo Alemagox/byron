@@ -146,6 +146,8 @@ L getfc_: {
     U(R2)=i;                        // guardar
     //if(i != '\n')
     //  scanf("%c", &c);              // catch enter
+    //getc(stdin);
+
 
     reinv_str(p,&U(R1));        // re-invierte           
     GT(R0);                           // retorna

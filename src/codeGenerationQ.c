@@ -196,13 +196,9 @@ void generateCodePutVariable( FILE* yyout, qMachine *Q, registerStruct *r ){
     fprintf(yyout,"\tR1=0x%x;\t\t\t//Format int address\n", Q->formatPutIntAddress );
   }
 
-  if(r->key.scope==0){
-    fprintf(yyout,"\tR2=%c(0x%x);\t\t//Static variable value\n", 
-                getVarMemLabel( r->typeVariable ), r->address);
-  }else{
-    fprintf(yyout,"\tR2=%c(R6+%d);\t\t\t//Local variable value wuuut : %d\n", 
-                getVarMemLabel( r->typeVariable ), r->stackAddress+8, r->stackAddress);
-  }
+  getMemAddress( r, addressString );
+  fprintf(yyout,"\tR2=%c(%s);\t\t//Static variable value\n", 
+                getVarMemLabel( r->typeVariable ), addressString);
 
   fprintf(yyout,"\tGT(putfi_);\t\t\t//Print variable\n" );
 
@@ -321,7 +317,7 @@ void generateCodeAssignment( FILE* yyout, qMachine *Q, registerStruct *r1,
   }
 
   getMemAddress( r1, addressString );
-  fprintf(yyout,"\t%c(%s)=R%d;\t\t//Save value right side into variable (static)\n", 
+  fprintf(yyout,"\t%c(%s)=R%d;\t\t//Save value right side into variable\n", 
                 getVarMemLabel( r1->typeVariable ), addressString, modReg(lastRegister( Q )-1));
 
   popRegister( yyout, Q ); // Free assigned register
@@ -392,11 +388,6 @@ void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
     fprintf(yyout,"\tR%d=%c(%s);\t\t//Load value right term\n",
                 rightR, getVarMemLabel( r2->typeVariable ), addressString );
 
-    /*
-    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right term\n",
-                rightR, 
-                getVarMemLabel( r2->typeVariable ), r2->address);
-    */
   }else{
     rightR = modReg(lastRegister( Q )-1);
     fprintf(yyout,"\t//Right factor already in R%d\n", rightR );
@@ -411,11 +402,6 @@ void generateCodeAddition( FILE* yyout, qMachine *Q, registerStruct *r1,
     fprintf(yyout,"\tR%d=%c(%s);\t\t//Load value left term\n", 
                     leftR, getVarMemLabel( r1->typeVariable ), addressString);
 
-    /*
-    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value left term\n", 
-                    leftR,
-                    getVarMemLabel( r1->typeVariable ), r1->address);
-    */
   }else{
     leftR = modReg(lastRegister( Q )-2); // Register was saved in the prev to previous to last
     fprintf(yyout,"\t//Left term already in R%d\n", leftR );
@@ -500,9 +486,11 @@ void generateCodeLogical( FILE* yyout, qMachine *Q, registerStruct *r1,
 
   if( r2->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
     rightR = newRegister( yyout, Q );
-    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value right boolean\n",
+
+    getMemAddress( r2, addressString );
+    fprintf(yyout,"\tR%d=%c(%s);\t\t//Load value right boolean\n",
                 rightR, 
-                getVarMemLabel( r2->typeVariable ), r2->address);
+                getVarMemLabel( r2->typeVariable ), addressString);
   }else{
     rightR = modReg(lastRegister( Q )-1);
     fprintf(yyout,"\t//Right boolean already in R%d\n", rightR );
@@ -510,9 +498,11 @@ void generateCodeLogical( FILE* yyout, qMachine *Q, registerStruct *r1,
 
   if( r1->typeSymbol != Auxiliar ){ // When it's auxiliar, expression value is already in R0
     leftR = newRegister( yyout, Q );
-    fprintf(yyout,"\tR%d=%c(0x%x);\t\t//Load value left boolean\n", 
+
+    getMemAddress( r1, addressString );
+    fprintf(yyout,"\tR%d=%c(%s);\t\t//Load value left boolean\n", 
                     leftR,
-                    getVarMemLabel( r1->typeVariable ), r1->address);
+                    getVarMemLabel( r1->typeVariable ), addressString);
   }else{
     leftR = modReg(lastRegister( Q )-2); // Register was saved in the prev to previous to last
     fprintf(yyout,"\t//Left boolean already in R%d\n", leftR );
@@ -556,7 +546,8 @@ void generateCodeEvaluateWhile( FILE* yyout, qMachine *Q, int outLabel ){
   
   // Rlast contains the result of the expression
   //popRegister( yyout, Q );
-  fprintf(yyout,"\tIF(R%d==0) GT(%d);\t//Jump if 0\n", modReg(lastRegister( Q )-1), outLabel);
+  popRegister( yyout, Q );
+  fprintf(yyout,"\tIF(R%d==0) GT(%d);\t//Jump if 0\n", modReg(lastRegister( Q )), outLabel);
 }
 
 void generateCodeCloseWhile( FILE* yyout, qMachine *Q, int outLabel ){
@@ -592,7 +583,7 @@ void generateCodeEvaluateIf( FILE* yyout, qMachine *Q, int outLabel ){
 
 }
 
-void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ){
+void generateCodeNextIf( FILE* yyout, qMachine *Q, int outIfLabel, int nextElseLabel ){
   // When stat is 0, we are in a STAT block.
   // When stat is 1, we are in a CODE blocke
   if( Q->stat==0 ){
@@ -603,10 +594,10 @@ void generateCodeNextIf( FILE* yyout, qMachine *Q, int outLabel ){
 
   //popRegister( yyout, Q );
   //popRegister( yyout, Q );  
-  fprintf(yyout,"\tGT(%d);// Jump out of if block \n", outLabel);
+  fprintf(yyout,"\tGT(%d);// Jump out of if statement \n", outIfLabel);
   fprintf(yyout,"\t// Close if block \n");
   fprintf(yyout,"\t//////////////////////////////////\n");
-  fprintf(yyout,"L %d:\t\t\t\t\n", outLabel);
+  fprintf(yyout,"L %d:\t\t\t\t\n", nextElseLabel);
 }
 
 void generateCodeBeginSubprogram( FILE* yyout, qMachine *Q, char pName[] ){
@@ -643,6 +634,9 @@ void generateCodeEndSubprogram( FILE* yyout, qMachine *Q, registerStruct *r ){
 
     //pushRstack( yyout, 5 );
     //fprintf(yyout,"\tR5=P(R7+4);\t\t\t//Get return label\n" );
+
+    //fprintf(yyout,"\tR6=P(R7+4);\t\t\t//Recover active base\n");
+
     fprintf(yyout,"\tR6=P(R7);\t\t\t//Get return label\n" );
     fprintf(yyout,"\tGT(R6);\t\t\t\t//Return!\n" );
 
@@ -704,6 +698,7 @@ void generateCodeProcedureCall( FILE* yyout, qMachine *Q, symbolsTable *sT, regi
 
   fprintf(yyout,"L %d:\t\t\t\t\n", Q->nextLabel++);
   //popRstack( yyout, 5 ); // Free return register
+  
   fprintf(yyout,"\tR6=P(R7+4);\t\t\t//Recover active base\n");
 
   //////////////////////////////////////////////77
@@ -833,7 +828,12 @@ int setVarStackAddress( qMachine *Q, registerStruct *r, registerStruct **parent 
   if(size < 0){
     return size;
   }
+  getSize( r ); 
   
+  r->stackAddress=(*parent)->sizeLocals;
+
+  printf("var %s stack address %d\n", r->key.id, r->stackAddress);
+
   aux->stackAddress=(*parent)->sizeLocals;
 
   (*parent)->nLocals++;
@@ -916,7 +916,7 @@ int getMemAddress( registerStruct *r, char addressString[] ){
         r->typeSymbol==Out ){
       sprintf(addressString,"R6+%d", r->stackAddress+8);
     }else{
-      sprintf(addressString,"R6-%d", r->stackAddress);
+      sprintf(addressString,"R6-%d", r->stackAddress+4);
     }
   }
 

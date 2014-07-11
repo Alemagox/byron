@@ -7,18 +7,50 @@ procedure main is
 		resultado2 : Integer;
 		aux : Integer;
 	begin
+		--Put("Fibonacci invocado con n : ");
+		--Put(n);
+		--New_Line;
+
 		if ( n=0 or n=1 ) then
+			--Put("Caso base!!! : ");
+			--Put(n);
+			--New_Line;
+
 			resultado := 1;
+
 		else
+			-- Put("Caso no base : ");
+			-- Put(n);
+			-- New_Line;
 
 			aux := n-1;
+
 			Fibonacci( aux, resultado1 );
+
+			-- Put("aux despues: ");
+			-- Put(aux);
+			-- Put(" Resultado 1: ");
+			-- Put(resultado1);
+			-- New_Line;
 			
 			aux := n-2;
 			Fibonacci( aux, resultado2 );
 
+			-- Put("aux: ");
+			-- Put(aux);
+			-- Put(" Resultado 2: ");
+			-- Put(resultado2);
+			-- New_Line;
+
 			resultado := resultado1 + resultado2;
+
+			-- Put("Resultado: ");
+			-- Put(resultado);
+			-- New_Line;
+
 		end if;
+
+		-- Put("Bye!\n");
 
 	end Fibonacci;
 
@@ -29,9 +61,9 @@ begin
 
 	Put("Entra el numero de Fibonacci a calcular: ");
 	Get(n);
-	Put("El numero es : ");
-	Put(n);
 	Fibonacci(n, res);
+	Put("Resultado es: ");
 	Put(res);
+	New_Line;
 
 end main;

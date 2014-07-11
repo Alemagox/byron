@@ -53,8 +53,6 @@ procedure main is
       end if;
        
     else
-      Put("Paso a numero");
-      New_Line;
       Numero(c, resultado);   
     end if;
 
@@ -66,8 +64,6 @@ procedure main is
   begin
     Factor(c, resultado);
     
-    Put("Sale de factor");
-
     while (c = '*' or c = '/') loop
       op:=c;
       Get(c);
@@ -91,13 +87,8 @@ procedure main is
     op : Character;
   begin
      
-    Put("-"); 
-    Put(c); 
-    Put("-");
-
     if(c='+' or c='-')then
        op := c;
-       Put("Op");
        Get(c);
     end if;
     
@@ -109,7 +100,6 @@ procedure main is
       
     while (c = '+' or c = '-') loop
       op:=c;
-      Put("Op2");
 
       Get(c);
       Termino(c, aux);
@@ -132,13 +122,11 @@ procedure main is
 
 begin
 
-  --Put("Put your expression: ");
-
   c:='y';
-   
   -- Due to limitations of get in Ada, the expression has to finish with ;
    
   while (c /= 'n') loop
+    Put("Put your expression: ");
     Get(c);
 
     Expresion(c, resultado);
@@ -150,6 +138,7 @@ begin
       
     Put("New expression?(y/n): ");
     Get (c);
+
   end loop;
     
   null;
